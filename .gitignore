@@ -33,6 +33,7 @@ build/
 .vscode/
 
 # Credenciales locales - NUNCA subir
+src/main/resources/application.properties
 application-dev.properties
 application-local.properties
 *.env
