@@ -4,6 +4,7 @@ import com.tecsup.smre.auth.domain.port.out.PasswordEncoderPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -37,6 +38,15 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    // 🌟 NUEVO: Vincula de forma explícita tu servicio de usuarios con BCrypt
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(customUserDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
+    }
+
     @Bean
     public PasswordEncoderPort passwordEncoderPort(PasswordEncoder passwordEncoder) {
         return new PasswordEncoderPort() {
@@ -63,6 +73,8 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configure(http))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            // 🌟 NUEVO: Añade el proveedor de autenticación configurado explicitamente
+            .authenticationProvider(authenticationProvider())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/login").permitAll()
                 .anyRequest().authenticated()

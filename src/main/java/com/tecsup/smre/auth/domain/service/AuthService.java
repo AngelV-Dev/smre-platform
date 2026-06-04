@@ -2,15 +2,18 @@ package com.tecsup.smre.auth.domain.service;
 
 import com.tecsup.smre.auth.application.dto.request.LoginRequest;
 import com.tecsup.smre.auth.application.dto.response.LoginResponse;
+import com.tecsup.smre.auth.application.dto.response.UsuarioActualResponse;
 import com.tecsup.smre.auth.domain.model.Usuario;
+import com.tecsup.smre.auth.domain.port.in.GetUsuarioActualUseCase;
 import com.tecsup.smre.auth.domain.port.in.LoginUseCase;
+import com.tecsup.smre.auth.domain.port.in.LogoutUseCase;
 import com.tecsup.smre.auth.domain.port.out.PasswordEncoderPort;
 import com.tecsup.smre.auth.domain.port.out.TokenServicePort;
 import com.tecsup.smre.auth.domain.port.out.UsuarioRepositoryPort;
 import com.tecsup.smre.exception.BadRequestException;
 import com.tecsup.smre.exception.UnauthorizedException;
 
-public class AuthService implements LoginUseCase {
+public class AuthService implements LoginUseCase, LogoutUseCase, GetUsuarioActualUseCase {
 
     private final UsuarioRepositoryPort usuarioRepositoryPort;
     private final PasswordEncoderPort passwordEncoderPort;
@@ -24,6 +27,7 @@ public class AuthService implements LoginUseCase {
         this.tokenServicePort = tokenServicePort;
     }
 
+    // ── Login ──────────────────────────────────────────────────────────────────
     @Override
     public LoginResponse login(LoginRequest request) {
         Usuario usuario = usuarioRepositoryPort.findByEmail(request.getEmail())
@@ -41,6 +45,32 @@ public class AuthService implements LoginUseCase {
 
         return LoginResponse.builder()
                 .token(token)
+                .email(usuario.getEmail())
+                .nombre(usuario.getNombre())
+                .role(usuario.getRol().name())
+                .build();
+    }
+
+    // ── Logout ─────────────────────────────────────────────────────────────────
+    // JWT es stateless — el cliente descarta el token.
+    @Override
+    public void logout(String token) {
+        if (token == null || token.isBlank()) {
+            throw new UnauthorizedException("Token inválido");
+        }
+    }
+
+    // ── GetUsuarioActual ───────────────────────────────────────────────────────
+    @Override
+    public UsuarioActualResponse getUsuario(String token) {
+        // TokenServicePort necesita un método extractEmail — ver nota abajo
+        String email = tokenServicePort.extractEmail(token);
+
+        Usuario usuario = usuarioRepositoryPort.findByEmail(email)
+                .orElseThrow(() -> new UnauthorizedException("Usuario no encontrado"));
+
+        return UsuarioActualResponse.builder()
+                .id(usuario.getId())
                 .email(usuario.getEmail())
                 .nombre(usuario.getNombre())
                 .role(usuario.getRol().name())

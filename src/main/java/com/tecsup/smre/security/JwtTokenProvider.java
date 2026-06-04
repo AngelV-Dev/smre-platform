@@ -50,6 +50,11 @@ public class JwtTokenProvider implements TokenServicePort {
                 .compact();
     }
 
+    @Override
+    public String extractEmail(String token) {
+        return getUsernameFromJWT(token);
+    }
+
     public String getUsernameFromJWT(String token) {
         Claims claims = Jwts.parser()
                 .verifyWith(key)
