@@ -21,7 +21,7 @@ export default function Login() {
       return
     }
 
-        try {
+    try {
       setLoading(true)
       const res = await loginApi(correo, password)
       
@@ -48,8 +48,7 @@ export default function Login() {
     }
   }
 
-<<<<<<< HEAD
- return (
+  return (
     <div className="min-h-screen flex">
       {/* Panel izquierdo */}
       <div
@@ -64,25 +63,6 @@ export default function Login() {
         </h1>
         <img src="/src/assets/logo.png" alt="Tecsup" className="h-60 mb-1" />
         <p className="text-center text-sm opacity-80 max-w-xs">
-=======
-  return (
-    <div className="min-h-screen flex">
-      {/* Panel izquierdo — imagen institucional */}
-      <div
-        className="hidden md:flex w-1/2 bg-cover bg-center flex-col items-center justify-center px-12 text-white"
-        style={{
-          backgroundImage: "linear-gradient(rgba(0,51,102,0.7), rgba(0,51,102,0.7)), url('https://unsplash.com')",
-          backgroundColor: '#003366',
-        }}
-      >
-        <h1 className="text-3xl font-bold text-center leading-tight mb-4">
-          SISTEMA DE MONITOREO<br />DE RIESGO ESTUDIANTIL
-        </h1>
-        <div className="flex items-center space-x-2 mb-4">
-          <span className="text-4xl font-black text-orange-500 tracking-wide">Tecsup</span>
-        </div>
-        <p className="text-center text-sm opacity-90 max-w-xs">
->>>>>>> develop
           Una herramienta institucional para el acompañamiento y bienestar de nuestra comunidad académica
         </p>
       </div>
@@ -90,10 +70,6 @@ export default function Login() {
       {/* Panel derecho — formulario */}
       <div className="flex w-full md:w-1/2 items-center justify-center bg-gray-50 px-8">
         <div className="w-full max-w-sm bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-<<<<<<< HEAD
-=======
-          {/* Ícono usuario */}
->>>>>>> develop
           <div className="flex justify-center mb-4">
             <div className="bg-gray-100 rounded-full p-4">
               <svg className="w-10 h-10 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
@@ -133,11 +109,7 @@ export default function Login() {
             </div>
 
             <div className="text-right">
-<<<<<<< HEAD
               <a href="#" className="text-sm text-blue-700 hover:underline">
-=======
-              <a href="#" className="text-sm text-blue-600 hover:underline">
->>>>>>> develop
                 ¿Olvidaste tu contraseña?
               </a>
             </div>
@@ -151,11 +123,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-<<<<<<< HEAD
-              className="w-full bg-blue-800 hover:bg-blue-900 disabled:opacity-60 text-white font-semibold py-2 rounded transition-colors shadow-sm"
-=======
-              className="w-full bg-blue-700 hover:bg-blue-800 disabled:opacity-60 text-white font-semibold py-2 rounded transition-colors shadow-sm"
->>>>>>> develop
+              className="w-full bg-blue-900 hover:bg-blue-900 disabled:opacity-60 text-white font-semibold py-2 rounded transition-colors shadow-sm"
             >
               {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
             </button>
@@ -168,8 +136,4 @@ export default function Login() {
       </div>
     </div>
   )
-<<<<<<< HEAD
-  }
-=======
 }
->>>>>>> develop
