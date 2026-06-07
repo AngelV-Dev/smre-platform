@@ -1,0 +1,14 @@
+package com.tecsup.smre.user.domain.port.in;
+
+import com.tecsup.smre.user.application.dto.request.TutorRequest;
+import com.tecsup.smre.user.application.dto.response.TutorResponse;
+
+import java.util.List;
+
+public interface TutorUseCase {
+    TutorResponse crear(TutorRequest request);
+    List<TutorResponse> listar();
+    TutorResponse obtener(Long id);
+    TutorResponse actualizar(Long id, TutorRequest request);
+    void cambiarEstado(Long id, boolean activo);
+}
