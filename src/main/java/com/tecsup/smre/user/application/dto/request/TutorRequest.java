@@ -1,5 +1,6 @@
 package com.tecsup.smre.user.application.dto.request;
 
+import com.tecsup.smre.auth.domain.model.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -26,4 +27,6 @@ public class TutorRequest {
 
     @NotBlank(message = "El teléfono es obligatorio")
     private String telefono;
+
+    private Role rol;
 }

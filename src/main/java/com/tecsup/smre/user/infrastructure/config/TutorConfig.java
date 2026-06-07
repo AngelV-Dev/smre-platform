@@ -1,5 +1,6 @@
 package com.tecsup.smre.user.infrastructure.config;
 
+import com.tecsup.smre.auth.domain.port.out.UsuarioRepositoryPort;
 import com.tecsup.smre.user.domain.port.out.PasswordEncoderPort;
 import com.tecsup.smre.user.domain.port.out.TutorRepositoryPort;
 import com.tecsup.smre.user.domain.service.TutorService;
@@ -25,7 +26,8 @@ public class TutorConfig {
 
     @Bean
     public TutorService tutorService(TutorRepositoryPort tutorRepositoryPort,
-                                     PasswordEncoderPort tutorPasswordEncoderPort) {
-        return new TutorService(tutorRepositoryPort, tutorPasswordEncoderPort);
+                                     PasswordEncoderPort tutorPasswordEncoderPort,
+                                     UsuarioRepositoryPort usuarioRepositoryPort) {
+        return new TutorService(tutorRepositoryPort, tutorPasswordEncoderPort, usuarioRepositoryPort);
     }
 }

@@ -1,14 +1,16 @@
 package com.tecsup.smre.user.domain.service;
 
 import com.tecsup.smre.auth.domain.model.Role;
+import com.tecsup.smre.auth.domain.model.Usuario;
+import com.tecsup.smre.auth.domain.port.out.UsuarioRepositoryPort;
 import com.tecsup.smre.exception.BadRequestException;
 import com.tecsup.smre.exception.ResourceNotFoundException;
 import com.tecsup.smre.user.application.dto.request.TutorRequest;
 import com.tecsup.smre.user.application.dto.response.TutorResponse;
 import com.tecsup.smre.user.domain.model.Tutor;
 import com.tecsup.smre.user.domain.port.in.TutorUseCase;
-import com.tecsup.smre.user.domain.port.out.TutorRepositoryPort;
 import com.tecsup.smre.user.domain.port.out.PasswordEncoderPort;
+import com.tecsup.smre.user.domain.port.out.TutorRepositoryPort;
 
 import java.util.List;
 
@@ -16,11 +18,14 @@ public class TutorService implements TutorUseCase {
 
     private final TutorRepositoryPort tutorRepositoryPort;
     private final PasswordEncoderPort passwordEncoderPort;
+    private final UsuarioRepositoryPort usuarioRepositoryPort;
 
     public TutorService(TutorRepositoryPort tutorRepositoryPort,
-                        PasswordEncoderPort passwordEncoderPort) {
+                        PasswordEncoderPort passwordEncoderPort,
+                        UsuarioRepositoryPort usuarioRepositoryPort) {
         this.tutorRepositoryPort = tutorRepositoryPort;
         this.passwordEncoderPort = passwordEncoderPort;
+        this.usuarioRepositoryPort = usuarioRepositoryPort;
     }
 
     @Override
@@ -29,13 +34,23 @@ public class TutorService implements TutorUseCase {
             throw new BadRequestException("Ya existe un tutor con el correo: " + request.getEmail());
         }
 
+        String passwordEncriptado = passwordEncoderPort.encode(request.getPassword());
+        Role rol = request.getRol() != null ? request.getRol() : Role.TUTOR;
+
+        usuarioRepositoryPort.save(Usuario.builder()
+                .nombre(request.getNombre() + " " + request.getApellido())
+                .email(request.getEmail())
+                .password(passwordEncriptado)
+                .rol(rol)
+                .build());
+
         Tutor tutor = Tutor.builder()
                 .nombre(request.getNombre())
                 .apellido(request.getApellido())
                 .email(request.getEmail())
-                .password(passwordEncoderPort.encode(request.getPassword()))
+                .password(passwordEncriptado)
                 .telefono(request.getTelefono())
-                .rol(Role.TUTOR)
+                .rol(rol)
                 .activo(true)
                 .build();
 
