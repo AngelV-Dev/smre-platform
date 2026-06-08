@@ -5,6 +5,7 @@ import com.tecsup.smre.auth.domain.model.Usuario;
 import com.tecsup.smre.auth.domain.port.out.UsuarioRepositoryPort;
 import com.tecsup.smre.exception.BadRequestException;
 import com.tecsup.smre.exception.ResourceNotFoundException;
+import com.tecsup.smre.user.application.dto.request.EditarTutorRequest;
 import com.tecsup.smre.user.application.dto.request.TutorRequest;
 import com.tecsup.smre.user.application.dto.response.TutorResponse;
 import com.tecsup.smre.user.domain.model.Tutor;
@@ -72,13 +73,17 @@ public class TutorService implements TutorUseCase {
     }
 
     @Override
-    public TutorResponse actualizar(Long id, TutorRequest request) {
+    public TutorResponse actualizar(Long id, EditarTutorRequest request) {
         Tutor tutor = tutorRepositoryPort.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tutor no encontrado con id: " + id));
 
         tutor.setNombre(request.getNombre());
         tutor.setApellido(request.getApellido());
         tutor.setTelefono(request.getTelefono());
+
+        if (request.getPassword() != null && !request.getPassword().isBlank()) {
+            tutor.setPassword(passwordEncoderPort.encode(request.getPassword()));
+        }
 
         return toResponse(tutorRepositoryPort.save(tutor));
     }
