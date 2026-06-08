@@ -1,6 +1,7 @@
 package com.tecsup.smre.user.infrastructure.adapter.in.web;
 
 import com.tecsup.smre.common.dto.ApiResponse;
+import com.tecsup.smre.user.application.dto.request.EditarTutorRequest;
 import com.tecsup.smre.user.application.dto.request.TutorRequest;
 import com.tecsup.smre.user.application.dto.response.TutorResponse;
 import com.tecsup.smre.user.domain.port.in.TutorUseCase;
@@ -49,7 +50,7 @@ public class TutorController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<TutorResponse>> actualizar(
             @PathVariable Long id,
-            @Valid @RequestBody TutorRequest request) {
+            @Valid @RequestBody EditarTutorRequest request) {
         TutorResponse response = tutorUseCase.actualizar(id, request);
         return ResponseEntity.ok(ApiResponse.success(response, "Tutor actualizado correctamente"));
     }
@@ -60,7 +61,7 @@ public class TutorController {
             @PathVariable Long id,
             @RequestParam boolean activo) {
         tutorUseCase.cambiarEstado(id, activo);
-        return ResponseEntity.ok(ApiResponse.success(null, 
+        return ResponseEntity.ok(ApiResponse.success(null,
                 activo ? "Tutor activado correctamente" : "Tutor desactivado correctamente"));
     }
 }
