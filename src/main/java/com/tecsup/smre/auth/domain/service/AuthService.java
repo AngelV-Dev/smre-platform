@@ -41,6 +41,10 @@ public class AuthService implements LoginUseCase, LogoutUseCase, GetUsuarioActua
             throw new UnauthorizedException("Credenciales incorrectas");
         }
 
+        if (!usuario.isActivo()) {
+            throw new UnauthorizedException("Usuario desactivado. Contacte al administrador.");
+        }
+
         String token = tokenServicePort.generateToken(usuario);
 
         return LoginResponse.builder()
@@ -52,7 +56,6 @@ public class AuthService implements LoginUseCase, LogoutUseCase, GetUsuarioActua
     }
 
     // ── Logout ─────────────────────────────────────────────────────────────────
-    // JWT es stateless — el cliente descarta el token.
     @Override
     public void logout(String token) {
         if (token == null || token.isBlank()) {
@@ -63,7 +66,6 @@ public class AuthService implements LoginUseCase, LogoutUseCase, GetUsuarioActua
     // ── GetUsuarioActual ───────────────────────────────────────────────────────
     @Override
     public UsuarioActualResponse getUsuario(String token) {
-        // TokenServicePort necesita un método extractEmail — ver nota abajo
         String email = tokenServicePort.extractEmail(token);
 
         Usuario usuario = usuarioRepositoryPort.findByEmail(email)
