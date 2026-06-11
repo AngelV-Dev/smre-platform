@@ -43,6 +43,7 @@ public class TutorService implements TutorUseCase {
                 .email(request.getEmail())
                 .password(passwordEncriptado)
                 .rol(rol)
+                .activo(true)
                 .build());
 
         Tutor tutor = Tutor.builder()
@@ -94,6 +95,13 @@ public class TutorService implements TutorUseCase {
                 .orElseThrow(() -> new ResourceNotFoundException("Tutor no encontrado con id: " + id));
         tutor.setActivo(activo);
         tutorRepositoryPort.save(tutor);
+
+        // También actualizar en tabla usuarios para bloquear el login
+        usuarioRepositoryPort.findByEmail(tutor.getEmail())
+                .ifPresent(usuario -> {
+                    usuario.setActivo(activo);
+                    usuarioRepositoryPort.save(usuario);
+                });
     }
 
     private TutorResponse toResponse(Tutor tutor) {
