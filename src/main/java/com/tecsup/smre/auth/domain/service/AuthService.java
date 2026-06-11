@@ -54,6 +54,7 @@ public class AuthService implements LoginUseCase, LogoutUseCase, GetUsuarioActua
                 .build();
     }
 
+
     @Override
     public void logout(String token) {
         if (token == null || token.isBlank()) {

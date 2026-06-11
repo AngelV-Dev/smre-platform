@@ -33,4 +33,4 @@ public class UsuarioEntity {
 
     @Column(nullable = false, columnDefinition = "boolean default true")
     private boolean activo;
-}
+
