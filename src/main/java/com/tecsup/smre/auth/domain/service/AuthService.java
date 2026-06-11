@@ -27,7 +27,6 @@ public class AuthService implements LoginUseCase, LogoutUseCase, GetUsuarioActua
         this.tokenServicePort = tokenServicePort;
     }
 
-    // ── Login ──────────────────────────────────────────────────────────────────
     @Override
     public LoginResponse login(LoginRequest request) {
         Usuario usuario = usuarioRepositoryPort.findByEmail(request.getEmail())
@@ -55,7 +54,7 @@ public class AuthService implements LoginUseCase, LogoutUseCase, GetUsuarioActua
                 .build();
     }
 
-    // ── Logout ─────────────────────────────────────────────────────────────────
+
     @Override
     public void logout(String token) {
         if (token == null || token.isBlank()) {
@@ -63,7 +62,6 @@ public class AuthService implements LoginUseCase, LogoutUseCase, GetUsuarioActua
         }
     }
 
-    // ── GetUsuarioActual ───────────────────────────────────────────────────────
     @Override
     public UsuarioActualResponse getUsuario(String token) {
         String email = tokenServicePort.extractEmail(token);
