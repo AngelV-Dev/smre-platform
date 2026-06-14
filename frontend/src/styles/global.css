@@ -5,8 +5,9 @@
 :root {
   /* Paleta Corporativa Tecsup (Ajustada al Mockup Real) */
   --color-primary: #003B49; /* Azul oscuro institucional (Tabla) */
-  --color-secondary: #3DC9D9; /* Turquesa vibrante (Sidebar / Botones principales) */
-  --color-accent: #2fb0bf; /* Turquesa oscuro (Hovers / Detalles) */
+  --color-sidebar: #2a8a96; /* Turquesa oscuro exclusivo para el Sidebar */
+  --color-secondary: #3DC9D9; /* Turquesa vibrante (Navbar / Botones principales) */
+  --color-accent: #2fb0bf; /* Turquesa intermedio (Hovers / Detalles) */
   --color-accent-light: #e0f7fa; /* Celeste pastel (Fondos suaves) */
   
   /* Colores del Semáforo (Para Semaforo.jsx) */
