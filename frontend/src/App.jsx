@@ -1,51 +1,19 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
-import { AuthProvider } from './context/AuthContext'
-import PrivateRoute from './routes/PrivateRoute'
-import Login from './pages/auth/Login'
-import RegistroTutor from './pages/admin/RegistroTutor'
-import ListaTutores from './pages/admin/ListaTutores'
-import EditarTutor from './pages/admin/EditarTutor'
+import { Routes, Route, Navigate } from 'react-router-dom';
+import Layout from './components/layout/Layout';
+import AdminDashboard from "./pages/admin/AdminDashboard"; // <--- CAMBIO AQUÍ
 
 function App() {
   return (
-    <AuthProvider>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        
-        {/* Rutas ADMIN */}
-        <Route path="/admin/dashboard" element={
-          <PrivateRoute role="ADMIN">
-            <h1 className="p-8 text-2xl">Dashboard Admin — próximamente</h1>
-          </PrivateRoute>
-        } />
-        <Route path="/admin/tutores" element={
-          <PrivateRoute role="ADMIN">
-            <ListaTutores />
-          </PrivateRoute>
-        } />
-        <Route path="/admin/tutores/nuevo" element={
-          <PrivateRoute role="ADMIN">
-            <RegistroTutor />
-          </PrivateRoute>
-        } />
-        <Route path="/admin/tutores/editar/:id" element={
-          <PrivateRoute role="ADMIN">
-            <EditarTutor />
-          </PrivateRoute>
-        } />
+    <Routes>
+      <Route path="/admin" element={<Layout />}>
+        <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="entrevistas" element={<div><h2>Módulo de Entrevistas</h2></div>} />
+        <Route path="estadisticas" element={<div><h2>Módulo de Estadísticas</h2></div>} />
+      </Route>
 
-        {/* Rutas TUTOR */}
-        <Route path="/tutor/dashboard" element={
-          <PrivateRoute role="TUTOR">
-            <h1 className="p-8 text-2xl">Dashboard Tutor — próximamente</h1>
-          </PrivateRoute>
-        } />
-
-        <Route path="/" element={<Navigate to="/login" />} />
-        <Route path="*" element={<Navigate to="/login" />} />
-      </Routes>
-    </AuthProvider>
-  )
+      <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
+    </Routes>
+  );
 }
 
-export default App
+export default App;
