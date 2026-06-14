@@ -1,6 +1,17 @@
 import '../../components/layout/Layout.css';
+import TablaGenerica from '../../components/shared/TablaGenerica';
 
 const AdminDashboard = () => {
+  // Definimos las columnas
+  const headers = ['N°', 'Especialidad', 'Ciclo', 'Tutor', 'Secciones'];
+
+  // Definimos las filas (cada arreglo interno es una fila)
+  const data = [
+    ['1', 'Diseño y Desarrollo de Software', 'IV', 'Carlos Pérez', 'A, B'],
+    ['2', 'Electrónica Industrial', 'II', 'María López', 'C'],
+    ['3', 'Mecatrónica Automotriz', 'I', 'Luis Gómez', 'A'],
+  ];
+
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
@@ -16,33 +27,8 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      <table className="data-table">
-        <thead>
-          <tr>
-            <th>N°</th>
-            <th>Especialidad</th>
-            <th>Ciclo</th>
-            <th>Tutor</th>
-            <th>Secciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td>Diseño y Desarrollo de Software</td>
-            <td>IV</td>
-            <td>Carlos Pérez</td>
-            <td>A, B</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>Electrónica Industrial</td>
-            <td>II</td>
-            <td>María López</td>
-            <td>C</td>
-          </tr>
-        </tbody>
-      </table>
+      {/* Usamos la tabla genérica */}
+      <TablaGenerica headers={headers} data={data} />
     </div>
   );
 };

@@ -16,5 +16,6 @@ public class AssignmentResponse {
     private String periodo;
     private String especialidad;
     private String ciclo;
+    private String grupo;
     private String secciones;
 }

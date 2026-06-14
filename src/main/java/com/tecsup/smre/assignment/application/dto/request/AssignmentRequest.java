@@ -25,6 +25,9 @@ public class AssignmentRequest {
     @NotBlank(message = "El ciclo es obligatorio")
     private String ciclo;
 
+    @NotBlank(message = "El grupo es obligatorio") // 👈 NUEVO
+    private String grupo;
+
     @NotBlank(message = "Las secciones son obligatorias")
     private String secciones;
 }

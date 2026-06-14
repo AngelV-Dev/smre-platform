@@ -16,5 +16,6 @@ public class Assignment {
     private String periodo; // Ej: "2026-1"
     private String especialidad; // Ej: "Diseño y Desarrollo de Software"
     private String ciclo; // Ej: "I", "II", "III", "IV", "V", "VI"
+    private String grupo;
     private String secciones; // Ej: "A, B"
 }
