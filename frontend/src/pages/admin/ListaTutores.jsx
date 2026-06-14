@@ -1,12 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-<<<<<<< HEAD
 import Sidebar from '../../components/layout/SideBar'
 import Navbar from '../../components/layout/Navbar'
-=======
-import Sidebar from '../../components/Sidebar'
-import Navbar from '../../components/Navbar'
->>>>>>> 0e35e31084e1f1757955ae267d3a35a979237abb
 import api from '../../api/axiosInstance'
 
 export default function ListaTutores() {
