@@ -1,0 +1,38 @@
+.semaforo-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.semaforo-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* Colores usando las variables de global.css */
+.semaforo-alto {
+  background-color: var(--color-danger); /* Rojo */
+}
+
+.semaforo-medio {
+  background-color: var(--color-warning); /* Amarillo */
+}
+
+.semaforo-bajo {
+  background-color: var(--color-success); /* Verde */
+}
+
+.semaforo-neutro {
+  background-color: var(--color-text-light); /* Gris */
+}
+
+.semaforo-label {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: capitalize;
+  color: var(--color-text);
+}
