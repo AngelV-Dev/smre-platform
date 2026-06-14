@@ -1,4 +1,4 @@
-package com.tecsup.smre.auth.infrastructure.adapter.out.persistence;
+package com.tecsup.smre.user.infrastructure.adapter.out.persistence;
 
 import com.tecsup.smre.auth.domain.model.Role;
 import jakarta.persistence.*;
@@ -8,12 +8,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "usuarios")
+@Table(name = "tutores")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UsuarioEntity {
+public class TutorEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,16 +22,22 @@ public class UsuarioEntity {
     @Column(nullable = false)
     private String nombre;
 
+    @Column(nullable = false)
+    private String apellido;
+
     @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private String telefono;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role rol;
 
-    @Column(nullable = false, columnDefinition = "boolean default true")
+    @Column(nullable = false)
     private boolean activo;
 }

@@ -1,4 +1,4 @@
-package com.tecsup.smre.auth.domain.model;
+package com.tecsup.smre.user.application.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,15 +9,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Usuario {
+public class TutorResponse {
     private Long id;
     private String nombre;
+    private String apellido;
     private String email;
-    private String password;
-    private Role rol;
+    private String telefono;
+    private String rol;
     private boolean activo;
-
-    public boolean hasTecsupDomain() {
-        return email != null && email.endsWith("@tecsup.edu.pe");
-    }
 }
