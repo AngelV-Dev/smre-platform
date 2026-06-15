@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import Sidebar from '../../components/Sidebar'
-import Navbar from '../../components/Navbar'
+import Sidebar from '../../components/layout/SideBar'
+import Navbar from '../../components/layout/Navbar'
 import api from '../../api/axiosInstance'
 
 export default function EditarTutor() {

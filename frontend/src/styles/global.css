@@ -1,0 +1,54 @@
+/* ========================================
+   SMRE PLATFORM - Global Styles & Variables
+   ======================================== */
+
+:root {
+  /* Paleta Corporativa Tecsup (Ajustada al Mockup Real) */
+  --color-primary: #003B49; /* Azul oscuro institucional (Tabla) */
+  --color-sidebar: #2a8a96; /* Turquesa oscuro exclusivo para el Sidebar */
+  --color-secondary: #3DC9D9; /* Turquesa vibrante (Navbar / Botones principales) */
+  --color-accent: #2fb0bf; /* Turquesa intermedio (Hovers / Detalles) */
+  --color-accent-light: #e0f7fa; /* Celeste pastel (Fondos suaves) */
+  
+  /* Colores del Semáforo (Para Semaforo.jsx) */
+  --color-danger: #dc3545; /* Rojo - ALTO */
+  --color-warning: #ffc107; /* Amarillo - MEDIO */
+  --color-success: #28a745; /* Verde - BAJO */
+
+  /* Colores de Interfaz */
+  --color-bg: #f4f6f9; /* Fondo gris claro de la app */
+  --color-white: #ffffff;
+  --color-text: #333333;
+  --color-text-light: #6c757d;
+  --color-border: #dee2e6;
+
+  /* Tipografía */
+  --font-family: 'Poppins', sans-serif;
+}
+
+/* Reseteo básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  font-family: var(--font-family);
+  border: none;
+  outline: none;
+}
