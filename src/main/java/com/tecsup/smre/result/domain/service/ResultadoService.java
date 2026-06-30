@@ -51,9 +51,26 @@ public class ResultadoService implements
 
     @Override
     public byte[] exportar(Long entrevistaId, Usuario solicitante) {
-        // Pendiente: generación real de PDF (prioridad Media, "si alcanza tiempo").
-        getResultado(entrevistaId, solicitante); // reutiliza la validación de acceso
-        throw new UnsupportedOperationException("Exportar a PDF aún no está implementado");
+        ResultadoResponseDto resultado = getResultado(entrevistaId, solicitante);
+
+        StringBuilder csv = new StringBuilder();
+
+        // Encabezados
+        csv.append("Campo,Valor\n");
+
+        // Datos del alumno
+        csv.append("Nombre,").append(resultado.getAlumnoNombre()).append(" ").append(resultado.getAlumnoApellido()).append("\n");
+        csv.append("ID Alumno,").append(resultado.getAlumnoId()).append("\n");
+        csv.append("Tutor,").append(resultado.getTutorNombre()).append("\n");
+        csv.append("Fecha,").append(resultado.getFecha() != null ? resultado.getFecha().toString() : "").append("\n");
+
+        // Resultado
+        csv.append("Puntaje Total,").append(resultado.getPuntajeTotal()).append("\n");
+        csv.append("Nivel de Riesgo,").append(resultado.getNivelRiesgo()).append("\n");
+        csv.append("Recomendación,\"").append(resultado.getRecomendacion() != null ? resultado.getRecomendacion().replace("\"", "\"\"") : "").append("\"\n");
+        csv.append("Observaciones,\"").append(resultado.getObservaciones() != null ? resultado.getObservaciones().replace("\"", "\"\"") : "").append("\"\n");
+
+        return csv.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
     }
 
     private void validarAcceso(Entrevista entrevista, Usuario solicitante) {

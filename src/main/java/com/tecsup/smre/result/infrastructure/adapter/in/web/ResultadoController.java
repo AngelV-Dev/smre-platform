@@ -6,6 +6,8 @@ import com.tecsup.smre.result.domain.port.in.ExportarResultadoUseCase;
 import com.tecsup.smre.result.domain.port.in.GetHistorialEntrevistasUseCase;
 import com.tecsup.smre.result.domain.port.in.GetResultadoEntrevistaUseCase;
 import com.tecsup.smre.security.UserPrincipal;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -49,12 +51,23 @@ public class ResultadoController {
         return ResponseEntity.ok(ApiResponse.success(historial, "Historial obtenido correctamente"));
     }
 
-    @GetMapping(value = "/api/entrevistas/{id}/exportar", produces = MediaType.APPLICATION_PDF_VALUE)
+    @GetMapping("/api/entrevistas/{id}/exportar")
     @PreAuthorize("hasAnyRole('ADMIN', 'TUTOR')")
     public ResponseEntity<byte[]> exportar(
             @PathVariable Long id,
             @AuthenticationPrincipal UserPrincipal principal) {
-        byte[] pdf = exportarResultadoUseCase.exportar(id, principal.getUsuario());
-        return ResponseEntity.ok(pdf);
+        byte[] csv = exportarResultadoUseCase.exportar(id, principal.getUsuario());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("text/csv;charset=UTF-8"));
+        headers.setContentDisposition(
+            ContentDisposition.attachment()
+                .filename("resultado_entrevista_" + id + ".csv")
+                .build()
+        );
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(csv);
     }
 }
