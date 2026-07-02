@@ -78,7 +78,6 @@ export default function ResultadoEntrevista() {
 
   return (
     <div style={{ padding: "24px", maxWidth: "680px", margin: "0 auto" }}>
-      {/* Encabezado turquesa */}
       <div style={{
         backgroundColor: "var(--color-secondary)", color: "var(--color-white)",
         borderRadius: "8px 8px 0 0", padding: "12px 24px",
@@ -95,7 +94,6 @@ export default function ResultadoEntrevista() {
         backgroundColor: "var(--color-white)", padding: "24px",
         boxShadow: "0 1px 4px rgba(0,0,0,0.06)"
       }}>
-        {/* Resultado */}
         <p style={{ fontWeight: "700", fontSize: "13px", color: "var(--color-secondary)", marginBottom: "12px" }}>RESULTADO</p>
         <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "16px" }}>
           <Semaforo nivelRiesgo={resultado.nivelRiesgo} />
@@ -127,17 +125,15 @@ export default function ResultadoEntrevista() {
 
         <hr style={{ border: "none", borderTop: "1px solid var(--color-border)", margin: "20px 0" }} />
 
-        {/* Observaciones */}
         <p style={{ fontWeight: "700", fontSize: "13px", color: "var(--color-secondary)", marginBottom: "8px" }}>OBSERVACION</p>
         <p style={{ color: "var(--color-text-light)", fontSize: "11px", marginBottom: "6px" }}>{resultado.tutorNombre}:</p>
         <p style={{ color: "var(--color-text)", fontSize: "13px", lineHeight: "1.6", marginBottom: "28px" }}>
           {resultado.observaciones || "Sin observaciones registradas."}
         </p>
 
-        {/* Botones según rol */}
         <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate(`/tutor/entrevistas/ver/${id}`)}
             style={{ backgroundColor: "var(--color-secondary)", color: "white", padding: "10px 20px", borderRadius: "8px", fontSize: "13px", fontWeight: "600" }}
           >
             Revisar Formulario
@@ -158,7 +154,7 @@ export default function ResultadoEntrevista() {
             </button>
           ) : (
             <button
-              onClick={() => navigate("/admin/entrevistas")}
+              onClick={() => navigate(`/tutor/entrevistas/nueva/${resultado.alumnoId}`)}
               style={{ backgroundColor: "var(--color-success)", color: "white", padding: "10px 20px", borderRadius: "8px", fontSize: "13px", fontWeight: "600" }}
             >
               Nueva Entrevista
