@@ -6,11 +6,19 @@ public class AlumnoRiesgoDto {
     private Long id;
     private String nombre;
     private NivelRiesgo nivelRiesgo;
+    private Integer edad;
 
     public AlumnoRiesgoDto(Long id, String nombre, NivelRiesgo nivelRiesgo) {
         this.id = id;
         this.nombre = nombre;
         this.nivelRiesgo = nivelRiesgo;
+    }
+
+    public AlumnoRiesgoDto(Long id, String nombre, NivelRiesgo nivelRiesgo, Integer edad) {
+        this.id = id;
+        this.nombre = nombre;
+        this.nivelRiesgo = nivelRiesgo;
+        this.edad = edad;
     }
 
     public Long getId() { return id; }
@@ -21,4 +29,7 @@ public class AlumnoRiesgoDto {
 
     public NivelRiesgo getNivelRiesgo() { return nivelRiesgo; }
     public void setNivelRiesgo(NivelRiesgo nivelRiesgo) { this.nivelRiesgo = nivelRiesgo; }
+
+    public Integer getEdad() { return edad; }
+    public void setEdad(Integer edad) { this.edad = edad; }
 }

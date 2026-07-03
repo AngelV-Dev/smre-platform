@@ -30,6 +30,7 @@ public class EntrevistaRepositoryAdapter implements EntrevistaRepositoryPort {
         entity.setRecomendacion(domain.getRecomendacion());
         entity.setObservaciones(domain.getObservaciones());
         entity.setFecha(domain.getFecha());
+        entity.setEdad(domain.getEdad());
         return entity;
     }
 
@@ -46,6 +47,7 @@ public class EntrevistaRepositoryAdapter implements EntrevistaRepositoryPort {
                 .recomendacion(entity.getRecomendacion())
                 .observaciones(entity.getObservaciones())
                 .fecha(entity.getFecha())
+                .edad(entity.getEdad())
                 .build();
     }
 

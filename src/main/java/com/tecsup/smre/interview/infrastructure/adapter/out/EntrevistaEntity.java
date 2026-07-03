@@ -51,4 +51,7 @@ public class EntrevistaEntity {
 
     @Column(nullable = false)
     private LocalDateTime fecha;
+
+    @Column
+    private Integer edad;
 }

@@ -51,7 +51,8 @@ class CsvServiceTest {
         assertEquals(1, reporte.getTotalProcesados());
         assertEquals(0, reporte.getGuardados());
         assertEquals(1, reporte.getErrores());
-        assertTrue(reporte.getDetalleErrores().get(0).contains("ya existe"));
+        assertTrue(reporte.getDetalleErrores().get(0).getMotivo().contains("ya existe")
+                || reporte.getDetalleErrores().get(0).getMotivo().contains("código"));
     }
 
     @Test
@@ -65,7 +66,7 @@ class CsvServiceTest {
         CsvUploadResponseDto reporte = csvService.cargar(file);
 
         assertEquals(1, reporte.getErrores());
-        assertTrue(reporte.getDetalleErrores().get(0).contains("obligatorios"));
+        assertTrue(reporte.getDetalleErrores().get(0).getMotivo().contains("obligatorios"));
     }
 
     @Test

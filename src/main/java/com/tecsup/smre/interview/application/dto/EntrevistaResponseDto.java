@@ -22,4 +22,5 @@ public class EntrevistaResponseDto {
     private NivelRiesgo nivelRiesgo;
     private String recomendacion;
     private LocalDateTime fecha;
+    private Integer edad;
 }
