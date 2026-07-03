@@ -15,6 +15,7 @@ public class Usuario {
     private String email;
     private String password;
     private Role rol;
+    private boolean activo;
 
     public boolean hasTecsupDomain() {
         return email != null && email.endsWith("@tecsup.edu.pe");

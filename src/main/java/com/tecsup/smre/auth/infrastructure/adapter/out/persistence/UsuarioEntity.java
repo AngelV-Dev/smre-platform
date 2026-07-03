@@ -30,4 +30,7 @@ public class UsuarioEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role rol;
+
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private boolean activo;
 }
