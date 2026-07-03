@@ -43,6 +43,7 @@ public class StudentService implements ManageStudentUseCase {
                 .carrera(request.getCarrera())
                 .semestre(request.getSemestre())
                 .grupo(request.getGrupo())
+                .edad(request.getEdad())
                 .build();
 
         return toResponse(studentRepositoryPort.save(alumno));
@@ -148,6 +149,7 @@ public class StudentService implements ManageStudentUseCase {
                 .carrera(alumno.getCarrera())
                 .semestre(alumno.getSemestre())
                 .grupo(alumno.getGrupo())
+                .edad(alumno.getEdad())
                 .build();
     }
 }

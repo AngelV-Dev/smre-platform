@@ -18,4 +18,5 @@ public class StudentResponse {
     private String carrera;
     private String semestre;
     private String grupo;
+    private Integer edad;
 }

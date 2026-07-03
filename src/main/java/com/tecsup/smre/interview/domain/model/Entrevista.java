@@ -23,4 +23,5 @@ public class Entrevista {
     private String recomendacion;
     private String observaciones;
     private LocalDateTime fecha;
+    private Integer edad;
 }

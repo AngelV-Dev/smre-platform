@@ -32,4 +32,6 @@ public class StudentRequest {
 
     @NotBlank(message = "El grupo es obligatorio")
     private String grupo;
+
+    private Integer edad;
 }
