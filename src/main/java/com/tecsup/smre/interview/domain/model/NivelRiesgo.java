@@ -1,9 +1,20 @@
 package com.tecsup.smre.interview.domain.model;
 
-// ⚠️ STUB TEMPORAL — BORRAR cuando Angelo Ricasca suba la versión real a develop (orden 4°).
-// Mismo nombre y paquete para que el merge sea directo.
 public enum NivelRiesgo {
     ALTO,
     MEDIO,
-    BAJO
+    BAJO;
+
+    public String getRecomendacion() {
+        switch (this) {
+            case ALTO:
+                return "Derivar a soporte urgente";
+            case MEDIO:
+                return "Seguimiento quincenal";
+            case BAJO:
+                return "Próximo seguimiento en 30 días";
+            default:
+                throw new IllegalStateException("Nivel de riesgo no válido");
+        }
+    }
 }

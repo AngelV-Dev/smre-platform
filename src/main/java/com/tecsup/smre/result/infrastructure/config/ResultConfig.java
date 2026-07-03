@@ -1,6 +1,6 @@
 package com.tecsup.smre.result.infrastructure.config;
 
-import com.tecsup.smre.interview.infrastructure.adapter.out.persistence.JpaEntrevistaRepository;
+import com.tecsup.smre.interview.infrastructure.adapter.out.EntrevistaJpaRepository;
 import com.tecsup.smre.result.domain.port.out.ResultadoRepositoryPort;
 import com.tecsup.smre.result.domain.service.ResultadoService;
 import com.tecsup.smre.result.infrastructure.adapter.out.persistence.ResultadoRepositoryAdapter;
@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class ResultConfig {
 
     @Bean
-    public ResultadoRepositoryPort resultadoRepositoryPort(JpaEntrevistaRepository jpaEntrevistaRepository) {
+    public ResultadoRepositoryPort resultadoRepositoryPort(EntrevistaJpaRepository jpaEntrevistaRepository) {
         return new ResultadoRepositoryAdapter(jpaEntrevistaRepository);
     }
 

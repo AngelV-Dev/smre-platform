@@ -64,4 +64,13 @@ public class TutorController {
         return ResponseEntity.ok(ApiResponse.success(null,
                 activo ? "Tutor activado correctamente" : "Tutor desactivado correctamente"));
     }
+
+    @PutMapping("/{id}/rol")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<Void>> cambiarRol(
+            @PathVariable Long id,
+            @RequestParam com.tecsup.smre.auth.domain.model.Role rol) {
+        tutorUseCase.cambiarRol(id, rol);
+        return ResponseEntity.ok(ApiResponse.success(null, "Rol asignado correctamente"));
+    }
 }

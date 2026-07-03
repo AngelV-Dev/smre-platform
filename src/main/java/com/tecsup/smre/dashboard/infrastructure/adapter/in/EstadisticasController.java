@@ -43,4 +43,9 @@ public class EstadisticasController {
     public ResponseEntity<List<AlumnoAltoRiesgoResponse>> altoRiesgo() {
         return ResponseEntity.ok(getAlumnosAltoRiesgoUseCase.obtenerAlumnosAltoRiesgo());
     }
+
+    @GetMapping("/alumnos-riesgo")
+    public ResponseEntity<List<com.tecsup.smre.dashboard.application.dto.response.AlumnoRiesgoEstadistica>> alumnosRiesgo() {
+        return ResponseEntity.ok(getEstadisticasUseCase.obtenerAlumnosRiesgo());
+    }
 }

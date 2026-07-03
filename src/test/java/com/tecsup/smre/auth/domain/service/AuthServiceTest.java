@@ -41,6 +41,7 @@ public class AuthServiceTest {
                 .email("juan.perez@tecsup.edu.pe")
                 .password("encoded_pass")
                 .rol(Role.TUTOR)
+                .activo(true)
                 .build();
 
         when(usuarioRepositoryPort.findByEmail("juan.perez@tecsup.edu.pe")).thenReturn(Optional.of(usuario));
@@ -73,6 +74,7 @@ public class AuthServiceTest {
                 .email("juan@gmail.com")
                 .password("encoded_pass")
                 .rol(Role.TUTOR)
+                .activo(true)
                 .build();
 
         when(usuarioRepositoryPort.findByEmail("juan@gmail.com")).thenReturn(Optional.of(usuario));
@@ -90,6 +92,7 @@ public class AuthServiceTest {
                 .email("juan@tecsup.edu.pe")
                 .password("encoded_pass")
                 .rol(Role.TUTOR)
+                .activo(true)
                 .build();
 
         when(usuarioRepositoryPort.findByEmail("juan@tecsup.edu.pe")).thenReturn(Optional.of(usuario));
