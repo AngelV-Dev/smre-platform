@@ -71,7 +71,7 @@ public class EntrevistaService implements GetAlumnosTutorUseCase, IniciarEntrevi
         return alumnos.stream().map(alumno -> {
             List<Entrevista> entrevistas = entrevistaRepositoryPort.findByAlumnoId(alumno.getId().toString());
             NivelRiesgo riesgo = entrevistas.isEmpty() ? null : entrevistas.get(entrevistas.size() - 1).getNivelRiesgo();
-            return new AlumnoRiesgoDto(alumno.getId(), alumno.getNombre() + " " + alumno.getApellido(), riesgo);
+            return new AlumnoRiesgoDto(alumno.getId(), alumno.getNombre() + " " + alumno.getApellido(), riesgo, alumno.getEdad());
         }).collect(Collectors.toList());
     }
 
@@ -90,6 +90,11 @@ public class EntrevistaService implements GetAlumnosTutorUseCase, IniciarEntrevi
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Alumno no encontrado con el ID: " + dto.getAlumnoId()));
 
+        if (dto.getEdad() != null) {
+            alumno.setEdad(dto.getEdad());
+            studentRepositoryPort.save(alumno);
+        }
+
         int puntajeTotal = RiesgoCalculator.calcularPuntajeTotal(dto.getRespuestas());
         NivelRiesgo nivelRiesgo = RiesgoCalculator.determinarNivelRiesgo(puntajeTotal);
         Usuario tutor = getTutorAutenticado();
@@ -105,6 +110,7 @@ public class EntrevistaService implements GetAlumnosTutorUseCase, IniciarEntrevi
         entrevista.setRecomendacion(nivelRiesgo.getRecomendacion());
         entrevista.setObservaciones(dto.getObservaciones());
         entrevista.setFecha(LocalDateTime.now());
+        entrevista.setEdad(dto.getEdad());
 
         Entrevista guardada = entrevistaRepositoryPort.save(entrevista);
 
@@ -118,18 +124,19 @@ public class EntrevistaService implements GetAlumnosTutorUseCase, IniciarEntrevi
                 .nivelRiesgo(guardada.getNivelRiesgo())
                 .recomendacion(guardada.getRecomendacion())
                 .fecha(guardada.getFecha())
+                .edad(guardada.getEdad())
                 .build();
     }
 
     @Override
     public Map<String, String> getCriterios() {
         return Map.of(
-                "Pregunta 1", "¿Cómo calificaría su nivel de asistencia y puntualidad a las clases programadas?",
-                "Pregunta 2", "¿Con qué frecuencia participa activamente y entrega a tiempo sus tareas/proyectos?",
-                "Pregunta 3", "¿Cómo calificaría su rendimiento académico promedio en las evaluaciones?",
-                "Pregunta 4", "¿Dispone del equipamiento tecnológico y conectividad necesarios para sus estudios?",
-                "Pregunta 5", "¿Cómo calificaría su nivel de motivación y bienestar emocional respecto a la carrera?",
-                "Pregunta 6", "¿Considera que su entorno familiar o personal actual apoya adecuadamente su proceso de estudio?"
+                "Pregunta 1", "Rendimiento académico: ¿Qué tan satisfecho(a) estás con tus calificaciones y asistencia a clases en este semestre?",
+                "Pregunta 2", "Bienestar emocional: ¿Sientes que cuentas con apoyo emocional cuando enfrentas problemas?",
+                "Pregunta 3", "Trabajo en equipo: ¿Cómo describirías tu experiencia al trabajar en equipo?",
+                "Pregunta 4", "Comunicación efectiva: ¿Qué tan cómodo(a) te sientes al expresar tus ideas en público?",
+                "Pregunta 5", "Trabajo / Economía: ¿Actualmente trabajas o enfrentas dificultades económicas?",
+                "Pregunta 6", "Estrés - estado emocional: ¿Con qué frecuencia sientes que el estrés o la ansiedad afectan tu desempeño?"
         );
     }
 }

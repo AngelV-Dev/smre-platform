@@ -38,4 +38,7 @@ public class AlumnoEntity {
 
     @Column(nullable = false, length = 5)
     private String grupo;     // Ej: "A", "B", "C"
+
+    @Column
+    private Integer edad;
 }

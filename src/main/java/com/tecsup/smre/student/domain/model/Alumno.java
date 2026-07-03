@@ -18,5 +18,6 @@ public class Alumno {
     private String carrera;
     private String semestre;  
     private String grupo;     
+    private Integer edad;
 }
  

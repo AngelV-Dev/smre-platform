@@ -15,6 +15,7 @@ public class AlumnoMapper {
                 .carrera(entity.getCarrera())
                 .semestre(entity.getSemestre())
                 .grupo(entity.getGrupo())
+                .edad(entity.getEdad())
                 .build();
     }
 
@@ -29,6 +30,7 @@ public class AlumnoMapper {
                 .carrera(domain.getCarrera())
                 .semestre(domain.getSemestre())
                 .grupo(domain.getGrupo())
+                .edad(domain.getEdad())
                 .build();
     }
 }
