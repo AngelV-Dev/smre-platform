@@ -1,5 +1,6 @@
-package com.tecsup.smre.interview.domain.model;
+package com.tecsup.smre.interview.application.dto;
 
+import com.tecsup.smre.interview.domain.model.NivelRiesgo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,16 +12,14 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Entrevista {
+public class EntrevistaResponseDto {
     private Long id;
     private String alumnoId;
     private String alumnoNombre;
     private String alumnoApellido;
-    private String tutorId;
     private String tutorNombre;
-    private int puntajeTotal;
+    private int puntaje;
     private NivelRiesgo nivelRiesgo;
     private String recomendacion;
-    private String observaciones;
     private LocalDateTime fecha;
 }

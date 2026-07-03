@@ -1,4 +1,4 @@
-package com.tecsup.smre.interview.infrastructure.adapter.out.persistence;
+package com.tecsup.smre.interview.infrastructure.adapter.out;
 
 import com.tecsup.smre.interview.domain.model.NivelRiesgo;
 import jakarta.persistence.*;
@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-// ⚠️ STUB TEMPORAL — BORRAR cuando Angelo Ricasca suba la versión real a develop (orden 4°).
 @Entity
 @Table(name = "entrevistas")
 @Data
@@ -22,23 +21,23 @@ public class EntrevistaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long alumnoId;
+    @Column(name = "alumno_id", nullable = false)
+    private String alumnoId;
 
-    @Column(nullable = false)
+    @Column(name = "alumno_nombre", nullable = false)
     private String alumnoNombre;
 
-    @Column(nullable = false)
+    @Column(name = "alumno_apellido", nullable = false)
     private String alumnoApellido;
 
-    @Column(nullable = false)
-    private Long tutorId;
+    @Column(name = "tutor_id", nullable = false)
+    private String tutorId;
 
-    @Column(nullable = false)
+    @Column(name = "tutor_nombre", nullable = false)
     private String tutorNombre;
 
     @Column(nullable = false)
-    private Integer puntajeTotal;
+    private int puntajeTotal;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

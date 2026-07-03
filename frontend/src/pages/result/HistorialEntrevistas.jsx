@@ -33,11 +33,11 @@ export default function HistorialEntrevistas() {
   const filas = historial.map((e) => [
     e.fecha ? new Date(e.fecha).toLocaleDateString("es-PE", { day: "2-digit", month: "short", year: "numeric" }) : "—",
     e.puntajeTotal ?? "—",
-    <Semaforo key={`sem-${e.id}`} nivelRiesgo={e.nivelRiesgo} />,
+    <Semaforo key={`sem-${e.entrevistaId}`} nivelRiesgo={e.nivelRiesgo} />,
     e.tutorNombre ?? "—",
     <button
-      key={`btn-${e.id}`}
-      onClick={() => navigate(`/admin/entrevistas/${e.id}`)}
+      key={`btn-${e.entrevistaId}`}
+      onClick={() => navigate(`/admin/entrevistas/${e.entrevistaId}`)}
       style={{ backgroundColor: "var(--color-secondary)", color: "white", padding: "4px 12px", borderRadius: "4px", fontSize: "12px", fontWeight: "600" }}
     >
       Ver resultado

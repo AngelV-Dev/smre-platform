@@ -26,10 +26,10 @@ class ResultadoServiceTest {
     private Entrevista entrevistaDeEjemplo() {
         return Entrevista.builder()
                 .id(1L)
-                .alumnoId(10L)
+                .alumnoId("10")
                 .alumnoNombre("Juana")
                 .alumnoApellido("Perez")
-                .tutorId(99L)
+                .tutorId("99")
                 .tutorNombre("Karina Salas")
                 .puntajeTotal(45)
                 .nivelRiesgo(NivelRiesgo.ALTO)
