@@ -104,6 +104,20 @@ public class TutorService implements TutorUseCase {
                 });
     }
 
+    @Override
+    public void cambiarRol(Long id, Role rol) {
+        Tutor tutor = tutorRepositoryPort.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tutor no encontrado con id: " + id));
+        tutor.setRol(rol);
+        tutorRepositoryPort.save(tutor);
+
+        usuarioRepositoryPort.findByEmail(tutor.getEmail())
+                .ifPresent(usuario -> {
+                    usuario.setRol(rol);
+                    usuarioRepositoryPort.save(usuario);
+                });
+    }
+
     private TutorResponse toResponse(Tutor tutor) {
         return TutorResponse.builder()
                 .id(tutor.getId())

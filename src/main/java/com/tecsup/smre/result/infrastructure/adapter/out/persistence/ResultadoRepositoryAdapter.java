@@ -1,19 +1,18 @@
 package com.tecsup.smre.result.infrastructure.adapter.out.persistence;
 
 import com.tecsup.smre.interview.domain.model.Entrevista;
-import com.tecsup.smre.interview.infrastructure.adapter.out.persistence.EntrevistaEntity;
-import com.tecsup.smre.interview.infrastructure.adapter.out.persistence.JpaEntrevistaRepository;
+import com.tecsup.smre.interview.infrastructure.adapter.out.EntrevistaEntity;
+import com.tecsup.smre.interview.infrastructure.adapter.out.EntrevistaJpaRepository;
 import com.tecsup.smre.result.domain.port.out.ResultadoRepositoryPort;
 
 import java.util.List;
 import java.util.Optional;
 
-// No uses @Repository aquí — el bean se registra desde ResultConfig
 public class ResultadoRepositoryAdapter implements ResultadoRepositoryPort {
 
-    private final JpaEntrevistaRepository jpaEntrevistaRepository;
+    private final EntrevistaJpaRepository jpaEntrevistaRepository;
 
-    public ResultadoRepositoryAdapter(JpaEntrevistaRepository jpaEntrevistaRepository) {
+    public ResultadoRepositoryAdapter(EntrevistaJpaRepository jpaEntrevistaRepository) {
         this.jpaEntrevistaRepository = jpaEntrevistaRepository;
     }
 
@@ -25,7 +24,7 @@ public class ResultadoRepositoryAdapter implements ResultadoRepositoryPort {
 
     @Override
     public List<Entrevista> findHistorialByAlumnoId(Long alumnoId) {
-        return jpaEntrevistaRepository.findByAlumnoIdOrderByFechaDesc(alumnoId)
+        return jpaEntrevistaRepository.findByAlumnoIdOrderByFechaDesc(alumnoId.toString())
                 .stream()
                 .map(this::toDomain)
                 .toList();

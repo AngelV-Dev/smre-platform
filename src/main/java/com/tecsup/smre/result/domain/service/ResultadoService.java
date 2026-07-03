@@ -77,7 +77,7 @@ public class ResultadoService implements
         boolean esAdmin = solicitante.getRol() == Role.ADMIN;
         boolean esTutorAsignado = solicitante.getRol() == Role.TUTOR
                 && entrevista.getTutorId() != null
-                && entrevista.getTutorId().equals(solicitante.getId());
+                && entrevista.getTutorId().equals(solicitante.getId().toString());
 
         if (!esAdmin && !esTutorAsignado) {
             throw new UnauthorizedException(
@@ -88,7 +88,7 @@ public class ResultadoService implements
     private ResultadoResponseDto toResponse(Entrevista entrevista) {
         return ResultadoResponseDto.builder()
                 .entrevistaId(entrevista.getId())
-                .alumnoId(entrevista.getAlumnoId())
+                .alumnoId(entrevista.getAlumnoId() != null ? Long.valueOf(entrevista.getAlumnoId()) : null)
                 .alumnoNombre(entrevista.getAlumnoNombre())
                 .alumnoApellido(entrevista.getAlumnoApellido())
                 .tutorNombre(entrevista.getTutorNombre())

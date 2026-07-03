@@ -45,6 +45,7 @@ public class AuthControllerIntegrationTest {
                 .email("eduardo.tutor@tecsup.edu.pe")
                 .password(passwordEncoder.encode("secret123"))
                 .rol(Role.TUTOR)
+                .activo(true)
                 .build();
 
         jpaUsuarioRepository.save(entity);
