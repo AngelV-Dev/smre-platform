@@ -2,6 +2,9 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { loginApi } from '../../api/authApi'
+import logoTecsup from '../../assets/logo.png'
+import bgTecsup from '../../assets/tecsup.png'
+import './Login.css'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -37,7 +40,7 @@ export default function Login() {
       if (role.toUpperCase().trim() === 'ADMIN') {
         navigate('/admin/dashboard', { replace: true })
       } else {
-        navigate('/tutor/dashboard', { replace: true })
+        navigate('/admin/entrevistas', { replace: true })
       }
 
     } catch (err) {
@@ -49,73 +52,88 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex">
-      {/* Panel izquierdo */}
-      <div
-        className="hidden md:flex w-1/2 bg-cover bg-center flex-col items-center justify-center px-12 text-white"
+    <div className="login-wrapper">
+      
+      {/* Panel Izquierdo: Imagen de fondo con Overlay Azul */}
+      <div 
+        className="login-left-panel"
         style={{
-          backgroundImage: "linear-gradient(rgba(0,51,102,0.75), rgba(0,51,102,0.75)), url('/src/assets/tecsup.png')",
-          backgroundColor: '#003366',
+          backgroundImage: `linear-gradient(rgba(12, 110, 174, 0.88), rgba(12, 110, 174, 0.88)), url(${bgTecsup})`
         }}
       >
-        <h1 className="text-2xl font-bold text-center leading-tight mb-1">
-          SISTEMA DE MONITOREO<br />DE RIESGO ESTUDIANTIL
-        </h1>
-        <img src="/src/assets/logo.png" alt="Tecsup" className="h-60 mb-1" />
-        <p className="text-center text-sm opacity-80 max-w-xs">
-          Una herramienta institucional para el acompañamiento y bienestar de nuestra comunidad académica
+        <div>
+          <h1>Sistema de Monitoreo de Riesgo Estudiantil</h1>
+        </div>
+
+        {/* Logo Card de Tecsup */}
+        <div className="login-logo-container">
+          <div className="login-logo-card">
+            <img 
+              src={logoTecsup} 
+              alt="Tecsup Logo" 
+            />
+          </div>
+        </div>
+
+        <p className="login-left-footer">
+          Una herramienta institucional para el acompañamiento y bienestar de nuestra comunidad académica.
         </p>
       </div>
 
-      {/* Panel derecho — formulario */}
-      <div className="flex w-full md:w-1/2 items-center justify-center bg-gray-50 px-8">
-        <div className="w-full max-w-sm bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-          <div className="flex justify-center mb-4">
-            <div className="bg-gray-100 rounded-full p-4">
-              <svg className="w-10 h-10 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+      {/* Panel Derecho: Formulario de Inicio de Sesión */}
+      <div className="login-right-panel">
+        <div className="login-card">
+          
+          {/* Icono de Usuario */}
+          <div className="login-avatar-container">
+            <div className="login-avatar-circle">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
               </svg>
             </div>
           </div>
 
-          <h2 className="text-2xl font-bold text-center text-gray-800 mb-1">Iniciar Sesión</h2>
-          <p className="text-sm text-center text-gray-500 mb-6">
+          <h2>Iniciar Sesión</h2>
+          <p className="login-card-subtitle">
             Usa tu correo Institucional para ingresar
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Correo:</label>
+          <form onSubmit={handleSubmit} className="login-form">
+            <div className="login-form-group">
+              <label>Correo:</label>
               <input
                 type="email"
                 value={correo}
                 onChange={(e) => setCorreo(e.target.value)}
-                placeholder="usuario@tecsup.edu.pe"
+                placeholder="Value"
                 required
-                className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña:</label>
+            <div className="login-form-group">
+              <label>Contraseña:</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
+                placeholder="Value"
                 required
-                className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
-            <div className="text-right">
-              <a href="#" className="text-sm text-blue-700 hover:underline">
+            <div className="login-forgot-container">
+              <button 
+                type="button"
+                className="login-forgot-link"
+                onClick={() => alert('Por favor, contacte con soporte técnico o bienestar estudiantil para restablecer su contraseña.')}
+              >
                 ¿Olvidaste tu contraseña?
-              </a>
+              </button>
             </div>
 
             {error && (
-              <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2 font-medium">
+              <p className="login-error-msg">
                 {error}
               </p>
             )}
@@ -123,17 +141,18 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-900 hover:bg-blue-900 disabled:opacity-60 text-white font-semibold py-2 rounded transition-colors shadow-sm"
+              className="login-btn"
             >
               {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
             </button>
           </form>
 
-          <p className="text-xs text-center text-gray-400 mt-6">
+          <p className="login-card-footer">
             Para soporte, contacte con la Oficina de Bienestar Estudiantil
           </p>
         </div>
       </div>
+
     </div>
   )
 }
