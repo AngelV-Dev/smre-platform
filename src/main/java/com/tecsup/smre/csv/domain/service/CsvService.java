@@ -2,6 +2,7 @@ package com.tecsup.smre.csv.domain.service;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+import com.tecsup.smre.csv.application.dto.response.CsvErrorDto;
 import com.tecsup.smre.csv.application.dto.response.CsvUploadResponseDto;
 import com.tecsup.smre.csv.domain.port.in.CargaCsvUseCase;
 import com.tecsup.smre.csv.domain.port.in.DescargarPlantillaCsvUseCase;
@@ -10,15 +11,15 @@ import com.tecsup.smre.student.domain.model.Alumno;
 import com.tecsup.smre.student.domain.port.out.StudentRepositoryPort;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class CsvService implements CargaCsvUseCase, DescargarPlantillaCsvUseCase {
 
-    // Formato esperado: codigo,nombre,apellido,email,carrera,semestre,grupo
     private static final String[] CABECERA = {
             "codigo", "nombre", "apellido", "email", "carrera", "semestre", "grupo"
     };
@@ -36,13 +37,14 @@ public class CsvService implements CargaCsvUseCase, DescargarPlantillaCsvUseCase
         }
 
         List<Alumno> alumnosValidos = new ArrayList<>();
-        List<String> errores = new ArrayList<>();
+        List<CsvErrorDto> errores = new ArrayList<>();
+        Set<String> codigosEnArchivo = new HashSet<>();
         int totalFilas = 0;
 
         try (CSVReader reader = new CSVReader(
                 new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
 
-            String[] cabecera = reader.readNext(); // primera fila = encabezado, se descarta
+            String[] cabecera = reader.readNext();
             if (cabecera == null) {
                 throw new BadRequestException("El archivo CSV no tiene encabezado ni datos");
             }
@@ -53,34 +55,68 @@ public class CsvService implements CargaCsvUseCase, DescargarPlantillaCsvUseCase
             while ((fila = reader.readNext()) != null) {
                 numeroFila++;
                 totalFilas++;
+                String datosRaw = String.join(",", fila);
 
                 if (fila.length < CABECERA.length) {
-                    errores.add("Fila " + numeroFila + ": se esperaban " + CABECERA.length
-                            + " columnas (codigo,nombre,apellido,email,carrera,semestre,grupo), "
-                            + "se encontraron " + fila.length);
+                    errores.add(CsvErrorDto.builder()
+                            .fila(numeroFila)
+                            .motivo("Columnas insuficientes (se esperaban " + CABECERA.length + ")")
+                            .datos(datosRaw)
+                            .build());
                     continue;
                 }
 
-                String codigo = fila[0].trim();
-                String nombre = fila[1].trim();
+                String codigo   = fila[0].trim();
+                String nombre   = fila[1].trim();
                 String apellido = fila[2].trim();
-                String email = fila[3].trim();
-                String carrera = fila[4].trim();
+                String email    = fila[3].trim();
+                String carrera  = fila[4].trim();
                 String semestre = fila[5].trim();
-                String grupo = fila[6].trim();
+                String grupo    = fila[6].trim();
 
+                // Validar campos vacíos
                 if (codigo.isEmpty() || nombre.isEmpty() || apellido.isEmpty()
                         || email.isEmpty() || carrera.isEmpty()
                         || semestre.isEmpty() || grupo.isEmpty()) {
-                    errores.add("Fila " + numeroFila + ": todos los campos son obligatorios");
+                    errores.add(CsvErrorDto.builder()
+                            .fila(numeroFila)
+                            .motivo("Campos obligatorios vacíos")
+                            .datos(datosRaw)
+                            .build());
                     continue;
                 }
 
+                // Validar formato de email
+                if (!email.endsWith("@tecsup.edu.pe")) {
+                    errores.add(CsvErrorDto.builder()
+                            .fila(numeroFila)
+                            .motivo("Email inválido (debe ser @tecsup.edu.pe)")
+                            .datos(datosRaw)
+                            .build());
+                    continue;
+                }
+
+                // Validar duplicado dentro del mismo CSV
+                if (codigosEnArchivo.contains(codigo)) {
+                    errores.add(CsvErrorDto.builder()
+                            .fila(numeroFila)
+                            .motivo("Código duplicado en el archivo: " + codigo)
+                            .datos(datosRaw)
+                            .build());
+                    continue;
+                }
+
+                // Validar duplicado en base de datos
                 if (studentRepositoryPort.existsByCodigo(codigo)) {
-                    errores.add("Fila " + numeroFila + ": ya existe un alumno con código " + codigo);
+                    errores.add(CsvErrorDto.builder()
+                            .fila(numeroFila)
+                            .motivo("Ya existe un alumno con código " + codigo + " en el sistema")
+                            .datos(datosRaw)
+                            .build());
                     continue;
                 }
 
+                codigosEnArchivo.add(codigo);
                 alumnosValidos.add(Alumno.builder()
                         .codigo(codigo)
                         .nombre(nombre)
