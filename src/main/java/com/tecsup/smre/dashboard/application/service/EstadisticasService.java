@@ -33,11 +33,41 @@ public class EstadisticasService implements GetEstadisticasUseCase, GetEstadisti
     }
 
     @Override
-    public EstadisticasGeneralesResponse obtenerEstadisticasGenerales() {
+    public EstadisticasGeneralesResponse obtenerEstadisticasGenerales(String carrera, String ciclo) {
+        List<Alumno> alumnos = studentRepositoryPort.findByCarreraAndSemestre(carrera, ciclo);
+        
+        long totalAlumnos = alumnos.size();
+        long alto = 0;
+        long medio = 0;
+        long bajo = 0;
+
+        for (Alumno alumno : alumnos) {
+            List<EntrevistaEntity> entrevistas = entrevistaJpaRepository.findByAlumnoId(alumno.getId().toString());
+            String nivelRiesgo = "BAJO";
+            if (!entrevistas.isEmpty()) {
+                EntrevistaEntity latest = entrevistas.get(entrevistas.size() - 1);
+                nivelRiesgo = latest.getNivelRiesgo() != null ? latest.getNivelRiesgo().name() : "BAJO";
+            }
+            if ("ALTO".equalsIgnoreCase(nivelRiesgo)) {
+                alto++;
+            } else if ("MEDIO".equalsIgnoreCase(nivelRiesgo)) {
+                medio++;
+            } else {
+                bajo++;
+            }
+        }
+
+        double pctAlto = totalAlumnos > 0 ? (double) alto * 100 / totalAlumnos : 0.0;
+        double pctMedio = totalAlumnos > 0 ? (double) medio * 100 / totalAlumnos : 0.0;
+        double pctBajo = totalAlumnos > 0 ? (double) bajo * 100 / totalAlumnos : 0.0;
+
         return EstadisticasGeneralesResponse.builder()
                 .totalTutoresActivos(estadisticaRepositoryPort.contarTutoresActivos())
                 .totalAsignaciones(estadisticaRepositoryPort.contarAsignaciones())
                 .totalEntrevistasProgramadas(estadisticaRepositoryPort.contarEntrevistas())
+                .porcentajeAlto(pctAlto)
+                .porcentajeMedio(pctMedio)
+                .porcentajeBajo(pctBajo)
                 .build();
     }
 
