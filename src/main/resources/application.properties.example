@@ -16,3 +16,8 @@ spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
 # JWT Configurations
 jwt.secret=REEMPLAZAR_CON_CLAVE_SEGURA_EN_PRODUCCION
 jwt.expiration=86400000
+
+# Google OAuth2
+spring.security.oauth2.client.registration.google.client-id=REEMPLAZAR_CON_TU_CLIENT_ID
+spring.security.oauth2.client.registration.google.client-secret=REEMPLAZAR_CON_TU_CLIENT_SECRET
+spring.security.oauth2.client.registration.google.scope=openid,profile,email

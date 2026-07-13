@@ -9,12 +9,14 @@ import ResultadoEntrevista from './pages/result/ResultadoEntrevista';
 import HistorialEntrevistas from './pages/result/HistorialEntrevistas';
 import CargaCSV from './pages/csv/CargaCSV';
 import PrivateRoute from './routes/PrivateRoute';
+import OAuthCallback from './pages/auth/OAuthCallback';
 
 function App() {
   return (
     <Routes>
       {/* Ruta pública - Login */}
       <Route path="/login" element={<Login />} />
+      <Route path="/oauth-callback" element={<OAuthCallback />} />  {/* NUEVO */}
 
       {/* Rutas protegidas con Layout */}
       <Route path="/admin" element={<Layout />}>

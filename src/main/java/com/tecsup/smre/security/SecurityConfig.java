@@ -26,10 +26,14 @@ public class SecurityConfig {
 
     private final JwtTokenProvider tokenProvider;
     private final CustomUserDetailsService customUserDetailsService;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler; // NUEVO
 
-    public SecurityConfig(JwtTokenProvider tokenProvider, CustomUserDetailsService customUserDetailsService) {
+    public SecurityConfig(JwtTokenProvider tokenProvider,
+                           CustomUserDetailsService customUserDetailsService,
+                           OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler) { // NUEVO
         this.tokenProvider = tokenProvider;
         this.customUserDetailsService = customUserDetailsService;
+        this.oAuth2LoginSuccessHandler = oAuth2LoginSuccessHandler; // NUEVO
     }
 
     @Bean
@@ -55,7 +59,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // 🌟 NUEVO: Vincula de forma explícita tu servicio de usuarios con BCrypt
+    // 🌟 Vincula de forma explícita tu servicio de usuarios con BCrypt
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -90,12 +94,16 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configure(http))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            // 🌟 NUEVO: Añade el proveedor de autenticación configurado explicitamente
+            // 🌟 Añade el proveedor de autenticación configurado explicitamente
             .authenticationProvider(authenticationProvider())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/login").permitAll()
+                .requestMatchers("/oauth2/**", "/login/**").permitAll() // NUEVO
                 .anyRequest().authenticated()
-            );
+            )
+            .oauth2Login(oauth2 -> oauth2
+                .successHandler(oAuth2LoginSuccessHandler)
+            ); // NUEVO
 
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
