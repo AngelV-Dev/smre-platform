@@ -49,4 +49,9 @@ public class StudentRepositoryAdapter implements StudentRepositoryPort {
     public boolean existsByCodigo(String codigo) {
         return jpaAlumnoRepository.existsByCodigo(codigo);
     }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return jpaAlumnoRepository.existsByEmail(email);
+    }
 }

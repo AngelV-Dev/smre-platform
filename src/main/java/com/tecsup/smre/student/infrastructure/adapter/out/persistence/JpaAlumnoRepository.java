@@ -6,4 +6,5 @@ import java.util.Optional;
 public interface JpaAlumnoRepository extends JpaRepository<AlumnoEntity, Long> {
     Optional<AlumnoEntity> findByCodigo(String codigo);
     boolean existsByCodigo(String codigo);
+    boolean existsByEmail(String email);
 }
