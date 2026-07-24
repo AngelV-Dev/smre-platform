@@ -84,6 +84,7 @@ export default function NuevaEntrevista() {
   const [saving, setSaving] = useState(false)
   const [edad, setEdad] = useState('')
   const [hoveredPregunta, setHoveredPregunta] = useState(null)
+  const [mostrarGuia, setMostrarGuia] = useState(false)
 
   // Respuestas del formulario: 6 preguntas vacías inicialmente
   const [respuestas, setRespuestas] = useState({
@@ -240,8 +241,81 @@ export default function NuevaEntrevista() {
           )}
 
           {/* Header del Formulario (Banner celeste) */}
-          <div style={{ backgroundColor: '#38bdf8', color: '#ffffff', textAlign: 'center', fontWeight: 'bold', padding: '10px', borderRadius: '9999px', textTransform: 'uppercase', fontSize: '12px', letterSpacing: '1px', marginBottom: '24px' }}>
+          <div style={{ backgroundColor: '#38bdf8', color: '#ffffff', textAlign: 'center', fontWeight: 'bold', padding: '10px', borderRadius: '9999px', textTransform: 'uppercase', fontSize: '12px', letterSpacing: '1px', marginBottom: '16px' }}>
             FORMULARIO
+          </div>
+
+          {/* Guía de Calificación — colapsable */}
+          <div style={{ marginBottom: '24px' }}>
+            <button
+              type="button"
+              onClick={() => setMostrarGuia(v => !v)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                background: 'none',
+                border: '1px solid #cbd5e1',
+                borderRadius: '8px',
+                padding: '8px 16px',
+                cursor: 'pointer',
+                fontSize: '13px',
+                fontWeight: '600',
+                color: '#0C6EAE',
+                width: '100%',
+                justifyContent: 'space-between',
+              }}
+            >
+              <span>📋 Guía de Calificación — Indicadores por Nivel de Riesgo</span>
+              <span style={{ fontSize: '11px', color: '#64748b' }}>{mostrarGuia ? '▲ Cerrar' : '▼ Ver guía'}</span>
+            </button>
+
+            {mostrarGuia && (
+              <div style={{ marginTop: '10px', overflowX: 'auto', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', minWidth: '700px' }}>
+                  <thead>
+                    <tr style={{ backgroundColor: '#1e3a5f', color: '#ffffff' }}>
+                      <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '700', width: '120px', border: '1px solid #2d4f7a' }}>INDICADORES</th>
+                      {['RENDIMIENTO ACADÉMICO', 'BIENESTAR EMOCIONAL', 'TRABAJO EN EQUIPO', 'COMUNICACIÓN EFECTIVA', 'TRABAJO / ECONOMÍA', 'ESTRÉS - ESTADO EMOCIONAL'].map(col => (
+                        <th key={col} style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '700', border: '1px solid #2d4f7a' }}>{col}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* ALTO */}
+                    <tr>
+                      <td style={{ backgroundColor: '#fecaca', padding: '8px', fontWeight: '700', color: '#991b1b', textAlign: 'center', border: '1px solid #e2e8f0', verticalAlign: 'top' }}>🔴 ALTO</td>
+                      <td style={{ padding: '8px', fontSize: '11px', border: '1px solid #e2e8f0', verticalAlign: 'top', backgroundColor: '#fff5f5' }}>Insatisfecho(a), con dificultades en varias asignaturas y ausencias frecuentes.</td>
+                      <td style={{ padding: '8px', fontSize: '11px', border: '1px solid #e2e8f0', verticalAlign: 'top', backgroundColor: '#fff5f5' }}>No tengo redes de apoyo o me siento solo(a).</td>
+                      <td style={{ padding: '8px', fontSize: '11px', border: '1px solid #e2e8f0', verticalAlign: 'top', backgroundColor: '#fff5f5' }}>Frecuentes conflictos o dificultad para colaborar.</td>
+                      <td style={{ padding: '8px', fontSize: '11px', border: '1px solid #e2e8f0', verticalAlign: 'top', backgroundColor: '#fff5f5' }}>Muy incómodo(a) o evito hablar en público.</td>
+                      <td style={{ padding: '8px', fontSize: '11px', border: '1px solid #e2e8f0', verticalAlign: 'top', backgroundColor: '#fff5f5' }}>Trabajo muchas horas o enfrento serios problemas económicos que afectan mi estudio.</td>
+                      <td style={{ padding: '8px', fontSize: '11px', border: '1px solid #e2e8f0', verticalAlign: 'top', backgroundColor: '#fff5f5' }}>Frecuentemente o casi siempre.</td>
+                    </tr>
+                    {/* MEDIO */}
+                    <tr>
+                      <td style={{ backgroundColor: '#fef08a', padding: '8px', fontWeight: '700', color: '#92400e', textAlign: 'center', border: '1px solid #e2e8f0', verticalAlign: 'top' }}>🟡 MEDIO</td>
+                      <td style={{ padding: '8px', fontSize: '11px', border: '1px solid #e2e8f0', verticalAlign: 'top', backgroundColor: '#fffbeb' }}>Desempeño regular, con algunas ausencias y dificultades puntuales.</td>
+                      <td style={{ padding: '8px', fontSize: '11px', border: '1px solid #e2e8f0', verticalAlign: 'top', backgroundColor: '#fffbeb' }}>Tengo poco apoyo o no siempre lo busco.</td>
+                      <td style={{ padding: '8px', fontSize: '11px', border: '1px solid #e2e8f0', verticalAlign: 'top', backgroundColor: '#fffbeb' }}>Participación moderada, a veces con problemas de coordinación.</td>
+                      <td style={{ padding: '8px', fontSize: '11px', border: '1px solid #e2e8f0', verticalAlign: 'top', backgroundColor: '#fffbeb' }}>A veces inseguro(a), pero logro comunicarme.</td>
+                      <td style={{ padding: '8px', fontSize: '11px', border: '1px solid #e2e8f0', verticalAlign: 'top', backgroundColor: '#fffbeb' }}>Trabajo parcial o problemas económicos moderados.</td>
+                      <td style={{ padding: '8px', fontSize: '11px', border: '1px solid #e2e8f0', verticalAlign: 'top', backgroundColor: '#fffbeb' }}>Ocasionalmente.</td>
+                    </tr>
+                    {/* BAJO */}
+                    <tr>
+                      <td style={{ backgroundColor: '#bbf7d0', padding: '8px', fontWeight: '700', color: '#166534', textAlign: 'center', border: '1px solid #e2e8f0', verticalAlign: 'top' }}>🟢 BAJO</td>
+                      <td style={{ padding: '8px', fontSize: '11px', border: '1px solid #e2e8f0', verticalAlign: 'top', backgroundColor: '#f0fff4' }}>Buen desempeño y asistencia constante.</td>
+                      <td style={{ padding: '8px', fontSize: '11px', border: '1px solid #e2e8f0', verticalAlign: 'top', backgroundColor: '#f0fff4' }}>Cuento con buen apoyo y lo utilizo cuando lo necesito.</td>
+                      <td style={{ padding: '8px', fontSize: '11px', border: '1px solid #e2e8f0', verticalAlign: 'top', backgroundColor: '#f0fff4' }}>Buena colaboración y experiencia positiva en equipos.</td>
+                      <td style={{ padding: '8px', fontSize: '11px', border: '1px solid #e2e8f0', verticalAlign: 'top', backgroundColor: '#f0fff4' }}>Cómodo(a) y claro(a) al comunicarme.</td>
+                      <td style={{ padding: '8px', fontSize: '11px', border: '1px solid #e2e8f0', verticalAlign: 'top', backgroundColor: '#f0fff4' }}>No trabajo o mis finanzas no afectan mis estudios.</td>
+                      <td style={{ padding: '8px', fontSize: '11px', border: '1px solid #e2e8f0', verticalAlign: 'top', backgroundColor: '#f0fff4' }}>Rara vez o nunca.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
