@@ -187,7 +187,7 @@ export default function ListaEntrevistas() {
                       <td style={{ textAlign: 'right' }}>
                         <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
                           <button
-                            onClick={() => navigate(`/tutor/entrevistas/nueva/${alumno.id}`)}
+                            onClick={() => navigate(`/admin/entrevistas/nueva/${alumno.id}`)}
                             className="smre-btn-primary"
                             style={{ padding: '6px 12px', fontSize: '12px' }}
                           >

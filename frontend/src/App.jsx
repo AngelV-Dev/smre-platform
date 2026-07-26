@@ -5,6 +5,8 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import ListaTutores from './pages/admin/ListaTutores';
 import RegistroTutor from './pages/admin/RegistroTutor';
 import EditarTutor from './pages/admin/EditarTutor';
+import ListaEntrevistas from './pages/admin/ListaEntrevistas';
+import NuevaEntrevista from './pages/admin/NuevaEntrevista';
 import ResultadoEntrevista from './pages/result/ResultadoEntrevista';
 import HistorialEntrevistas from './pages/result/HistorialEntrevistas';
 import CargaCSV from './pages/csv/CargaCSV';
@@ -16,18 +18,24 @@ function App() {
     <Routes>
       {/* Ruta pública - Login */}
       <Route path="/login" element={<Login />} />
-      <Route path="/oauth-callback" element={<OAuthCallback />} />  {/* NUEVO */}
+      <Route path="/oauth-callback" element={<OAuthCallback />} />
 
       {/* Rutas protegidas con Layout */}
       <Route path="/admin" element={<Layout />}>
         <Route path="dashboard" element={<AdminDashboard />} />
         <Route path="tutores" element={<ListaTutores />} />
+        <Route path="tutores/nuevo" element={<RegistroTutor />} />
+        <Route path="tutores/editar/:id" element={<EditarTutor />} />
         <Route path="registrar-tutor" element={<RegistroTutor />} />
         <Route path="editar-tutor" element={<EditarTutor />} />
-        <Route path="entrevistas" element={<div><h2>Módulo de Entrevistas</h2></div>} />
-        <Route path="estadisticas" element={<div><h2>Módulo de Estadísticas</h2></div>} />
 
-        {/* Katherine - resultado e historial de entrevistas */}
+        {/* Módulo de Entrevistas */}
+        <Route path="entrevistas" element={<ListaEntrevistas />} />
+        <Route path="entrevistas/nueva/:alumnoId" element={
+          <PrivateRoute allowedRoles={["ADMIN", "TUTOR"]}>
+            <NuevaEntrevista />
+          </PrivateRoute>
+        } />
         <Route path="entrevistas/:id" element={
           <PrivateRoute allowedRoles={["ADMIN", "TUTOR"]}>
             <ResultadoEntrevista />
@@ -38,6 +46,8 @@ function App() {
             <HistorialEntrevistas />
           </PrivateRoute>
         } />
+
+        <Route path="estadisticas" element={<div><h2>Módulo de Estadísticas</h2></div>} />
 
         {/* Katherine - carga CSV */}
         <Route path="csv" element={

@@ -19,7 +19,7 @@ const CARRERAS = [
 ];
 
 const CICLOS = ["1", "2", "3", "4", "5", "6"];
-const GRUPOS = ["A", "B", "C"];
+const GRUPOS = ["A", "B", "C", "D", "E", "F", "G"];
 
 const AsignacionTutorModal = ({ isOpen, onClose, onSaved }) => {
   const [tutores, setTutores] = useState([]);

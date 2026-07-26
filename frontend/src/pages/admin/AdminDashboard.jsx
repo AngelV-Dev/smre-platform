@@ -1,42 +1,84 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../../components/layout/Layout.css';
-import TablaGenerica from '../../components/shared/TablaGenerica';
 import AsignacionTutorModal from '../../components/shared/AsignacionTutorModal';
-import GraficosDashboard from '../../components/shared/GraficosDashboard'; // 👈 NUEVO
+import GraficosDashboard from '../../components/shared/GraficosDashboard';
+import api from '../../api/axiosInstance';
 
 const AdminDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [asignaciones, setAsignaciones] = useState([]);
+  const [periodo, setPeriodo] = useState('2026-1');
+
+  const cargarAsignaciones = async () => {
+    try {
+      const res = await api.get(`/api/v1/admin/asignaciones?periodo=${periodo}`);
+      setAsignaciones(res.data || []);
+    } catch (err) {
+      console.error('Error cargando asignaciones:', err);
+    }
+  };
+
+  useEffect(() => {
+    cargarAsignaciones();
+  }, [periodo]);
 
   const headers = ['N°', 'Especialidad', 'Ciclo', 'Tutor', 'Grupo', 'Secciones'];
-  const data = [
-    ['1', 'Diseño y Desarrollo de Software', 'IV', 'Carlos Pérez', '1', 'A, B'],
-    ['2', 'Electrónica Industrial', 'II', 'María López', '2', 'C'],
-  ];
 
   return (
     <div className="dashboard-container">
-      
-      {/* Tarjetas de Estadísticas */}
-      <div className="stats-container">
-        {/* ... (tus 4 tarjetas con SVG aquí, no las borres) ... */}
-      </div>
 
       {/* Tabla de Tutores */}
       <div className="dashboard-header">
         <h2>Tutores de Periodo</h2>
         <div className="filter-bar">
-          <input type="text" className="filter-input" placeholder="2026-1" defaultValue="2026-1" />
+          <input
+            type="text"
+            className="filter-input"
+            placeholder="2026-1"
+            value={periodo}
+            onChange={(e) => setPeriodo(e.target.value)}
+          />
           <button className="add-button" onClick={() => setIsModalOpen(true)}>+</button>
         </div>
       </div>
 
-      <TablaGenerica headers={headers} data={data} />
+      <table className="data-table">
+        <thead>
+          <tr>
+            {headers.map((h, i) => <th key={i}>{h}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {asignaciones.length === 0 ? (
+            <tr>
+              <td colSpan={6} style={{ textAlign: 'center', color: 'var(--color-text-light)', padding: '20px' }}>
+                No hay asignaciones para el período {periodo}
+              </td>
+            </tr>
+          ) : (
+            asignaciones.map((a, i) => (
+              <tr key={a.id}>
+                <td>{i + 1}</td>
+                <td>{a.especialidad}</td>
+                <td>{a.ciclo}</td>
+                <td>{a.tutorNombre}</td>
+                <td>{a.grupo}</td>
+                <td>{a.secciones}</td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
 
-      {/* 👉 NUEVO: Gráficos de Chart.js */}
+      {/* Gráficos */}
       <GraficosDashboard />
 
-      <AsignacionTutorModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-      
+      <AsignacionTutorModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSaved={cargarAsignaciones}
+      />
+
     </div>
   );
 };
