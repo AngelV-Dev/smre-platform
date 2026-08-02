@@ -106,11 +106,21 @@ public class CsvService implements CargaCsvUseCase, DescargarPlantillaCsvUseCase
                     continue;
                 }
 
-                // Validar duplicado en base de datos
+                // Validar duplicado en base de datos (código)
                 if (studentRepositoryPort.existsByCodigo(codigo)) {
                     errores.add(CsvErrorDto.builder()
                             .fila(numeroFila)
                             .motivo("Ya existe un alumno con código " + codigo + " en el sistema")
+                            .datos(datosRaw)
+                            .build());
+                    continue;
+                }
+
+                // Validar duplicado en base de datos (email)
+                if (studentRepositoryPort.existsByEmail(email)) {
+                    errores.add(CsvErrorDto.builder()
+                            .fila(numeroFila)
+                            .motivo("Ya existe un alumno con email " + email + " en el sistema")
                             .datos(datosRaw)
                             .build());
                     continue;
@@ -144,6 +154,7 @@ public class CsvService implements CargaCsvUseCase, DescargarPlantillaCsvUseCase
                 .guardados(guardados)
                 .errores(errores.size())
                 .detalleErrores(errores)
+                .exitoso(guardados > 0 && errores.isEmpty())
                 .build();
     }
 

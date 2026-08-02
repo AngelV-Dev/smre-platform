@@ -244,10 +244,77 @@ export default function CargaCSV() {
         {/* Resultado */}
         {resultado && (
           <div>
+            {/* Banner de estado principal */}
+            {resultado.exitoso ? (
+              <div style={{
+                backgroundColor: "#f0fff4",
+                border: "1px solid #c6f6d5",
+                borderRadius: "8px",
+                padding: "16px 20px",
+                marginBottom: "20px",
+                display: "flex",
+                alignItems: "center",
+                gap: "12px"
+              }}>
+                <span style={{ fontSize: "1.8rem" }}>✅</span>
+                <div>
+                  <p style={{ fontWeight: "700", color: "#15803d", fontSize: "14px", margin: "0 0 2px" }}>
+                    Carga exitosa
+                  </p>
+                  <p style={{ color: "#166534", fontSize: "13px", margin: 0 }}>
+                    Todos los {resultado.guardados} alumno(s) fueron registrados correctamente.
+                  </p>
+                </div>
+              </div>
+            ) : resultado.guardados > 0 ? (
+              <div style={{
+                backgroundColor: "#fffbeb",
+                border: "1px solid #fde68a",
+                borderRadius: "8px",
+                padding: "16px 20px",
+                marginBottom: "20px",
+                display: "flex",
+                alignItems: "center",
+                gap: "12px"
+              }}>
+                <span style={{ fontSize: "1.8rem" }}>⚠️</span>
+                <div>
+                  <p style={{ fontWeight: "700", color: "#92400e", fontSize: "14px", margin: "0 0 2px" }}>
+                    Carga parcial
+                  </p>
+                  <p style={{ color: "#78350f", fontSize: "13px", margin: 0 }}>
+                    Se guardaron {resultado.guardados} alumno(s), pero {resultado.errores} fila(s) tuvieron errores.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div style={{
+                backgroundColor: "#fff5f5",
+                border: "1px solid #fed7d7",
+                borderRadius: "8px",
+                padding: "16px 20px",
+                marginBottom: "20px",
+                display: "flex",
+                alignItems: "center",
+                gap: "12px"
+              }}>
+                <span style={{ fontSize: "1.8rem" }}>❌</span>
+                <div>
+                  <p style={{ fontWeight: "700", color: "#b91c1c", fontSize: "14px", margin: "0 0 2px" }}>
+                    Carga fallida
+                  </p>
+                  <p style={{ color: "#991b1b", fontSize: "13px", margin: 0 }}>
+                    No se pudo registrar ningún alumno. Revisa los errores y corrige el archivo.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Tarjetas de resumen */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", marginBottom: "20px" }}>
               {[
                 { label: "Total", value: resultado.totalProcesados ?? 0, color: "var(--color-text)" },
-                { label: "Guardados", value: resultado.guardados ?? 0, color: "var(--color-success)" },
+                { label: "Guardados", value: resultado.guardados ?? 0, color: "var(--color-success, #15803d)" },
                 { label: "Errores", value: resultado.errores ?? 0, color: "var(--color-danger)" },
               ].map(({ label, value, color }) => (
                 <div key={label} style={{ backgroundColor: "var(--color-bg)", borderRadius: "8px", padding: "16px", textAlign: "center" }}>
@@ -282,19 +349,6 @@ export default function CargaCSV() {
                     ))}
                   </tbody>
                 </table>
-              </div>
-            )}
-
-            {(!resultado.detalleErrores || resultado.detalleErrores.length === 0) && (
-              <div style={{
-                backgroundColor: "#f0fff4",
-                border: "1px solid #c6f6d5",
-                color: "var(--color-success)",
-                borderRadius: "6px",
-                padding: "12px 16px",
-                fontSize: "13px"
-              }}>
-                ✅ Todos los alumnos fueron registrados correctamente.
               </div>
             )}
 

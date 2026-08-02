@@ -11,4 +11,5 @@ public interface StudentRepositoryPort {
     List<Alumno> saveAll(List<Alumno> alumnos);
     boolean existsByCodigo(String codigo);
     List<Alumno> findByCarreraAndSemestre(String carrera, String semestre);
+    boolean existsByEmail(String email);
 }

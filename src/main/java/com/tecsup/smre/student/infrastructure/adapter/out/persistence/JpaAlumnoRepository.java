@@ -9,11 +9,12 @@ import java.util.List;
 public interface JpaAlumnoRepository extends JpaRepository<AlumnoEntity, Long> {
     Optional<AlumnoEntity> findByCodigo(String codigo);
     boolean existsByCodigo(String codigo);
+    boolean existsByEmail(String email);
 
     @Query("SELECT a FROM AlumnoEntity a WHERE " +
            "(:carrera IS NULL OR :carrera = '' OR a.carrera = :carrera) AND " +
            "(:semestre IS NULL OR :semestre = '' OR a.semestre = :semestre)")
     List<AlumnoEntity> findByCarreraAndSemestre(
-            @Param("carrera") String carrera, 
+            @Param("carrera") String carrera,
             @Param("semestre") String semestre);
 }

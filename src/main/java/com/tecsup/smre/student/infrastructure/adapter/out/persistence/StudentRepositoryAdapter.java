@@ -59,4 +59,9 @@ public class StudentRepositoryAdapter implements StudentRepositoryPort {
                 .map(AlumnoMapper::toDomain)
                 .toList();
     }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return jpaAlumnoRepository.existsByEmail(email);
+    }
 }
