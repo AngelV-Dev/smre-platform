@@ -48,7 +48,7 @@ export default function Login() {
       if (role.toUpperCase().trim() === 'ADMIN') {
         navigate('/admin/dashboard', { replace: true })
       } else {
-        navigate('/admin/dashboard', { replace: true })
+        navigate('/admin/entrevistas', { replace: true })
       }
     } catch (err) {
       const msg = err.response?.data?.message || 'Error al iniciar sesión. Intenta nuevamente.'

@@ -65,7 +65,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         String destino = switch (usuario.getRol()) {
             case ADMIN -> "/admin/dashboard";
-            case TUTOR -> "/tutor/dashboard";
+            case TUTOR -> "/admin/entrevistas";
         };
 
         String redirectUrl = frontendUrl + "/oauth-callback"

@@ -10,6 +10,8 @@ import NuevaEntrevista from './pages/admin/NuevaEntrevista';
 import ResultadoEntrevista from './pages/result/ResultadoEntrevista';
 import HistorialEntrevistas from './pages/result/HistorialEntrevistas';
 import CargaCSV from './pages/csv/CargaCSV';
+import Estadisticas from './pages/admin/Estadisticas';
+import RegistroAdmin from './pages/admin/RegistroAdmin';
 import PrivateRoute from './routes/PrivateRoute';
 import OAuthCallback from './pages/auth/OAuthCallback';
 
@@ -22,17 +24,46 @@ function App() {
 
       {/* Rutas protegidas con Layout */}
       <Route path="/admin" element={<Layout />}>
-        <Route path="dashboard" element={<AdminDashboard />} />
-        <Route path="tutores" element={<ListaTutores />} />
-        <Route path="tutores/nuevo" element={<RegistroTutor />} />
-        <Route path="tutores/editar/:id" element={<EditarTutor />} />
-        <Route path="registrar-tutor" element={<RegistroTutor />} />
-        <Route path="editar-tutor" element={<EditarTutor />} />
+        <Route path="dashboard" element={
+          <PrivateRoute allowedRoles={["ADMIN"]}>
+            <AdminDashboard />
+          </PrivateRoute>
+        } />
+        <Route path="tutores" element={
+          <PrivateRoute allowedRoles={["ADMIN"]}>
+            <ListaTutores />
+          </PrivateRoute>
+        } />
+        <Route path="tutores/nuevo" element={
+          <PrivateRoute allowedRoles={["ADMIN"]}>
+            <RegistroTutor />
+          </PrivateRoute>
+        } />
+        <Route path="tutores/editar/:id" element={
+          <PrivateRoute allowedRoles={["ADMIN"]}>
+            <EditarTutor />
+          </PrivateRoute>
+        } />
+        <Route path="registrar-tutor" element={
+          <PrivateRoute allowedRoles={["ADMIN"]}>
+            <RegistroTutor />
+          </PrivateRoute>
+        } />
+        <Route path="editar-tutor" element={
+          <PrivateRoute allowedRoles={["ADMIN"]}>
+            <EditarTutor />
+          </PrivateRoute>
+        } />
+        <Route path="registrar-admin" element={
+          <PrivateRoute allowedRoles={["ADMIN"]}>
+            <RegistroAdmin />
+          </PrivateRoute>
+        } />
 
-        {/* Módulo de Entrevistas */}
+        {/* Módulo de Entrevistas (compartido: cada rol ve sus propios datos) */}
         <Route path="entrevistas" element={<ListaEntrevistas />} />
         <Route path="entrevistas/nueva/:alumnoId" element={
-          <PrivateRoute allowedRoles={["ADMIN", "TUTOR"]}>
+          <PrivateRoute allowedRoles={["TUTOR"]}>
             <NuevaEntrevista />
           </PrivateRoute>
         } />
@@ -47,7 +78,11 @@ function App() {
           </PrivateRoute>
         } />
 
-        <Route path="estadisticas" element={<div><h2>Módulo de Estadísticas</h2></div>} />
+        <Route path="estadisticas" element={
+          <PrivateRoute allowedRoles={["ADMIN"]}>
+            <Estadisticas />
+          </PrivateRoute>
+        } />
 
         {/* Katherine - carga CSV */}
         <Route path="csv" element={
@@ -56,6 +91,13 @@ function App() {
           </PrivateRoute>
         } />
       </Route>
+
+      <Route path="/acceso-denegado" element={
+        <div style={{ padding: 40, textAlign: 'center' }}>
+          <h2>Acceso denegado</h2>
+          <p>No tienes permisos para ver esta sección.</p>
+        </div>
+      } />
 
       {/* Redirección por defecto → login */}
       <Route path="*" element={<Navigate to="/login" replace />} />

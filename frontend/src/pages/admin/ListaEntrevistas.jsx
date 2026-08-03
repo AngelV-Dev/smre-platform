@@ -186,13 +186,15 @@ export default function ListaEntrevistas() {
                       </td>
                       <td style={{ textAlign: 'right' }}>
                         <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                          <button
-                            onClick={() => navigate(`/admin/entrevistas/nueva/${alumno.id}`)}
-                            className="smre-btn-primary"
-                            style={{ padding: '6px 12px', fontSize: '12px' }}
-                          >
-                            Evaluar
-                          </button>
+                          {!isAdmin && (
+                            <button
+                              onClick={() => navigate(`/admin/entrevistas/nueva/${alumno.id}`)}
+                              className="smre-btn-primary"
+                              style={{ padding: '6px 12px', fontSize: '12px' }}
+                            >
+                              Evaluar
+                            </button>
+                          )}
                           <button
                             onClick={() => navigate(`/admin/historial/${alumno.id}`)}
                             className="smre-btn-primary"
