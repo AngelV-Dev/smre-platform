@@ -28,6 +28,18 @@ export default function ListaTutores() {
     }
   }
 
+  const eliminarTutor = async (id) => {
+    if (window.confirm('¿Está seguro de eliminar definitivamente a este tutor?')) {
+      try {
+        await api.delete(`/api/v1/admin/tutores/${id}`)
+        cargarTutores()
+      } catch (err) {
+        console.error(err)
+        alert('Error al eliminar tutor');
+      }
+    }
+  }
+
   const cambiarRol = async (id, nuevoRol) => {
     try {
       await api.put(`/api/v1/admin/tutores/${id}/rol?rol=${nuevoRol}`)
@@ -131,6 +143,13 @@ export default function ListaTutores() {
                           style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#343A40' }}
                         >
                           Cambiar Rol
+                        </button>
+                        <button
+                          onClick={() => eliminarTutor(tutor.id)}
+                          className="smre-btn-primary"
+                          style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#dc2626' }}
+                        >
+                          Eliminar
                         </button>
                       </div>
                     </td>

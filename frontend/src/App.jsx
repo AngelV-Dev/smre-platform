@@ -14,6 +14,8 @@ import Estadisticas from './pages/admin/Estadisticas';
 import RegistroAdmin from './pages/admin/RegistroAdmin';
 import PrivateRoute from './routes/PrivateRoute';
 import OAuthCallback from './pages/auth/OAuthCallback';
+import Perfil from './pages/profile/Perfil';
+import Configuracion from './pages/profile/Configuracion';
 
 function App() {
   return (
@@ -90,6 +92,10 @@ function App() {
             <CargaCSV />
           </PrivateRoute>
         } />
+
+        {/* Perfil y Configuración */}
+        <Route path="perfil" element={<Perfil />} />
+        <Route path="configuracion" element={<Configuracion />} />
       </Route>
 
       <Route path="/acceso-denegado" element={

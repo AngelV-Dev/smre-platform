@@ -13,4 +13,5 @@ public interface TutorUseCase {
     TutorResponse actualizar(Long id, EditarTutorRequest request);
     void cambiarEstado(Long id, boolean activo);
     void cambiarRol(Long id, com.tecsup.smre.auth.domain.model.Role rol);
+    void eliminar(Long id);
 }

@@ -24,7 +24,7 @@ public class StudentController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TUTOR')")
     public ResponseEntity<ApiResponse<List<StudentResponse>>> findAll() {
         List<StudentResponse> alumnos = manageStudentUseCase.findAll();
         return ResponseEntity.ok(

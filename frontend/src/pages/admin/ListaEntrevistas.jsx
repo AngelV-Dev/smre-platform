@@ -31,7 +31,7 @@ export default function ListaEntrevistas() {
     const fetchAlumnos = async () => {
       try {
         setLoading(true)
-        const endpoint = isAdmin ? '/api/v1/students' : '/api/v1/tutor/alumnos'
+        const endpoint = '/api/v1/students'
         const res = await api.get(endpoint)
         
         let data = res.data.data || res.data
@@ -70,21 +70,16 @@ export default function ListaEntrevistas() {
       )}
 
       {/* Tab structure */}
-      <div className="flex border-b border-gray-200 mb-6 bg-white p-2 rounded-lg shadow-sm">
+      <div className="flex space-x-2 border-b border-gray-200 mb-6 bg-white p-2 rounded-lg shadow-sm">
         {['Resumen', 'Asistencias', 'Evaluaciones', 'Detalle'].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`py-2.5 px-5 font-bold text-xs uppercase tracking-wider transition-all border-b-2 ${
+            className={`py-2.5 px-5 font-bold text-xs uppercase tracking-wider transition-all rounded-md ${
               activeTab === tab
-                ? 'text-indigo-850 border-indigo-850'
-                : 'text-gray-400 border-transparent hover:text-gray-600'
+                ? 'bg-blue-900 text-white shadow-md'
+                : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
             }`}
-            style={{
-              color: activeTab === tab ? '#003366' : '#9ca3af',
-              borderBottomColor: activeTab === tab ? '#003366' : 'transparent',
-              cursor: 'pointer'
-            }}
           >
             {tab}
           </button>
@@ -100,22 +95,22 @@ export default function ListaEntrevistas() {
       ) : (
         <>
           {activeTab === 'Resumen' && (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '20px', marginBottom: '24px' }}>
-              <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between" style={{ padding: '20px', borderRadius: '12px', border: '1px solid #eaeaea', backgroundColor: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                <span style={{ fontSize: '10px', color: '#9ca3af', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Alumnos</span>
-                <span style={{ fontSize: '28px', fontWeight: '900', color: '#1f2937', marginTop: '4px', display: 'block' }}>{totalAlumnos}</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Alumnos</span>
+                <span className="text-4xl font-black text-gray-800 mt-2">{totalAlumnos}</span>
               </div>
-              <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between" style={{ padding: '20px', borderRadius: '12px', border: '1px solid #eaeaea', backgroundColor: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                <span style={{ fontSize: '10px', color: '#9ca3af', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Evaluados</span>
-                <span style={{ fontSize: '28px', fontWeight: '900', color: '#059669', marginTop: '4px', display: 'block' }}>{evaluadosCount}</span>
+              <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Evaluados</span>
+                <span className="text-4xl font-black text-emerald-600 mt-2">{evaluadosCount}</span>
               </div>
-              <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between" style={{ padding: '20px', borderRadius: '12px', border: '1px solid #eaeaea', backgroundColor: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                <span style={{ fontSize: '10px', color: '#9ca3af', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Riesgo Alto</span>
-                <span style={{ fontSize: '28px', fontWeight: '900', color: '#dc2626', marginTop: '4px', display: 'block' }}>{altoRiesgoCount}</span>
+              <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Riesgo Alto</span>
+                <span className="text-4xl font-black text-red-600 mt-2">{altoRiesgoCount}</span>
               </div>
-              <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between" style={{ padding: '20px', borderRadius: '12px', border: '1px solid #eaeaea', backgroundColor: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                <span style={{ fontSize: '10px', color: '#9ca3af', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Riesgo Medio</span>
-                <span style={{ fontSize: '28px', fontWeight: '900', color: '#d97706', marginTop: '4px', display: 'block' }}>{medioRiesgoCount}</span>
+              <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Riesgo Medio</span>
+                <span className="text-4xl font-black text-amber-500 mt-2">{medioRiesgoCount}</span>
               </div>
             </div>
           )}
@@ -212,29 +207,29 @@ export default function ListaEntrevistas() {
           )}
 
           {activeTab === 'Detalle' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {alumnos.map((alumno) => (
-                <div key={alumno.id} className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-3" style={{ padding: '20px', borderRadius: '12px', border: '1px solid #eaeaea', backgroundColor: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                  <div className="flex justify-between items-center border-b pb-2" style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f3f4f6', paddingBottom: '8px', marginBottom: '12px' }}>
-                    <span className="font-bold text-gray-800 text-sm" style={{ fontWeight: '700', color: '#1f2937', fontSize: '14px' }}>{alumno.nombre} {alumno.apellido || ''}</span>
-                    <span className="text-xs text-gray-400 font-bold" style={{ fontSize: '12px', color: '#9ca3af', fontWeight: '700' }}>{alumno.codigo || 'S/C'}</span>
+                <div key={alumno.id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                  <div className="flex justify-between items-center border-b border-gray-50 pb-4 mb-4">
+                    <span className="font-bold text-gray-900 text-lg">{alumno.nombre} {alumno.apellido || ''}</span>
+                    <span className="text-xs text-gray-400 font-bold bg-gray-50 px-2 py-1 rounded">{alumno.codigo || 'S/C'}</span>
                   </div>
-                  <div className="grid grid-cols-2 gap-3 text-xs text-gray-600" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 flex-grow">
                     <div>
-                      <span className="text-gray-400 block uppercase font-bold text-[9px] tracking-wider mb-0.5" style={{ fontSize: '9px', color: '#9ca3af', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>Especialidad / Carrera</span>
-                      <span className="font-medium text-gray-700" style={{ fontSize: '13px', color: '#4b5563', fontWeight: '500' }}>{alumno.carrera || 'N/A'}</span>
+                      <span className="text-gray-400 block uppercase font-bold text-[10px] tracking-wider mb-1">Especialidad</span>
+                      <span className="font-medium text-gray-800">{alumno.carrera || 'N/A'}</span>
                     </div>
                     <div>
-                      <span className="text-gray-400 block uppercase font-bold text-[9px] tracking-wider mb-0.5" style={{ fontSize: '9px', color: '#9ca3af', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>Semestre</span>
-                      <span className="font-medium text-gray-700" style={{ fontSize: '13px', color: '#4b5563', fontWeight: '500' }}>{alumno.semestre || 'N/A'}</span>
+                      <span className="text-gray-400 block uppercase font-bold text-[10px] tracking-wider mb-1">Semestre</span>
+                      <span className="font-medium text-gray-800">{alumno.semestre || 'N/A'}</span>
                     </div>
                     <div>
-                      <span className="text-gray-400 block uppercase font-bold text-[9px] tracking-wider mb-0.5" style={{ fontSize: '9px', color: '#9ca3af', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>Grupo</span>
-                      <span className="font-medium text-gray-700" style={{ fontSize: '13px', color: '#4b5563', fontWeight: '500' }}>Sección {alumno.grupo || 'N/A'}</span>
+                      <span className="text-gray-400 block uppercase font-bold text-[10px] tracking-wider mb-1">Grupo</span>
+                      <span className="font-medium text-gray-800">Sección {alumno.grupo || 'N/A'}</span>
                     </div>
                     <div>
-                      <span className="text-gray-400 block uppercase font-bold text-[9px] tracking-wider mb-0.5" style={{ fontSize: '9px', color: '#9ca3af', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>Edad</span>
-                      <span className="font-medium text-gray-700" style={{ fontSize: '13px', color: '#4b5563', fontWeight: '500' }}>{alumno.edad ? `${alumno.edad} años` : 'No registrada'}</span>
+                      <span className="text-gray-400 block uppercase font-bold text-[10px] tracking-wider mb-1">Edad</span>
+                      <span className="font-medium text-gray-800">{alumno.edad ? `${alumno.edad} años` : 'N/R'}</span>
                     </div>
                   </div>
                 </div>
