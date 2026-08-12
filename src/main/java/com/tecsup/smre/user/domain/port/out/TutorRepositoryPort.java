@@ -10,4 +10,5 @@ public interface TutorRepositoryPort {
     List<Tutor> findAll();
     Optional<Tutor> findById(Long id);
     boolean existsByEmail(String email);
+    void deleteById(Long id);
 }
