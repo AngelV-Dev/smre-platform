@@ -23,7 +23,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final UsuarioRepositoryPort usuarioRepositoryPort;
     private final JwtTokenProvider jwtTokenProvider;
 
-    @Value("${app.frontend-url}")
+    @Value("${app.frontend-url:http://localhost:5173}")
     private String frontendUrl;
 
     public OAuth2LoginSuccessHandler(UsuarioRepositoryPort usuarioRepositoryPort,

@@ -22,8 +22,8 @@ public class JwtTokenProvider implements TokenServicePort {
     private final long jwtExpirationInMs;
 
     public JwtTokenProvider(
-            @Value("${jwt.secret}") String jwtSecret,
-            @Value("${jwt.expiration}") long jwtExpirationInMs) {
+            @Value("${jwt.secret:default_jwt_secret_key_at_least_32_bytes_long_for_smre_app_security}") String jwtSecret,
+            @Value("${jwt.expiration:86400000}") long jwtExpirationInMs) {
         byte[] secretBytes = jwtSecret.getBytes(StandardCharsets.UTF_8);
         if (secretBytes.length < 32) {
             byte[] padded = new byte[32];
