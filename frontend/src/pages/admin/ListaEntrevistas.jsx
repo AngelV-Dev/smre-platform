@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import api from '../../api/axiosInstance'
 import { useAuth } from '../../context/AuthContext'
+import { useDarkMode } from '../../context/DarkModeContext'
 
 export default function ListaEntrevistas() {
   const [alumnos, setAlumnos] = useState([])
@@ -10,6 +11,7 @@ export default function ListaEntrevistas() {
   const navigate = useNavigate()
   const { auth } = useAuth()
   const location = useLocation()
+  const { darkMode } = useDarkMode()
 
   const queryParams = new URLSearchParams(location.search)
   const initialTab = queryParams.get('tab') || 'Evaluaciones'
@@ -72,7 +74,16 @@ export default function ListaEntrevistas() {
       )}
 
       {/* Menú de Pestañas con espaciado claro */}
-      <div style={{ display: 'flex', gap: '12px', padding: '8px', backgroundColor: '#ffffff', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', border: '1px solid #e2e8f0', marginBottom: '24px' }}>
+      <div style={{
+        display: 'flex',
+        gap: '12px',
+        padding: '8px',
+        backgroundColor: darkMode ? '#18233c' : '#ffffff',
+        borderRadius: '10px',
+        boxShadow: darkMode ? '0 4px 16px rgba(0,0,0,0.4)' : '0 1px 3px rgba(0,0,0,0.1)',
+        border: `1px solid ${darkMode ? '#253652' : '#e2e8f0'}`,
+        marginBottom: '24px'
+      }}>
         {['Resumen', 'Asistencias', 'Evaluaciones', 'Detalle'].map((tab) => {
           const isActive = activeTab === tab;
           return (
@@ -89,8 +100,8 @@ export default function ListaEntrevistas() {
                 cursor: 'pointer',
                 border: 'none',
                 transition: 'all 0.2s ease',
-                backgroundColor: isActive ? '#003366' : 'transparent',
-                color: isActive ? '#ffffff' : '#64748b',
+                backgroundColor: isActive ? (darkMode ? '#0284c7' : '#003366') : 'transparent',
+                color: isActive ? '#ffffff' : (darkMode ? '#cbd5e1' : '#64748b'),
                 boxShadow: isActive ? '0 2px 6px rgba(0, 51, 102, 0.25)' : 'none'
               }}
             >
@@ -101,9 +112,9 @@ export default function ListaEntrevistas() {
       </div>
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '48px 0', color: '#64748b', fontWeight: '600' }}>Cargando alumnos...</div>
+        <div style={{ textAlign: 'center', padding: '48px 0', color: darkMode ? '#cbd5e1' : '#64748b', fontWeight: '600' }}>Cargando alumnos...</div>
       ) : alumnos.length === 0 ? (
-        <div style={{ textAlign: 'center', color: '#64748b', padding: '48px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+        <div style={{ textAlign: 'center', color: darkMode ? '#cbd5e1' : '#64748b', padding: '48px', backgroundColor: darkMode ? '#18233c' : '#ffffff', borderRadius: '12px', border: `1px solid ${darkMode ? '#253652' : '#e2e8f0'}` }}>
           No tiene alumnos asignados en el periodo actual o no se han cargado las asignaciones.
         </div>
       ) : (
@@ -111,20 +122,20 @@ export default function ListaEntrevistas() {
           {/* VISTA RESUMEN (KPIs bien espaciados) */}
           {activeTab === 'Resumen' && (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '32px' }}>
-              <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
-                <span style={{ fontSize: '11px', fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Total Alumnos</span>
-                <div style={{ fontSize: '36px', fontWeight: '900', color: '#0f172a', marginTop: '8px' }}>{totalAlumnos}</div>
+              <div style={{ padding: '24px', backgroundColor: darkMode ? '#18233c' : '#ffffff', borderRadius: '16px', border: `1px solid ${darkMode ? '#253652' : '#e2e8f0'}`, boxShadow: darkMode ? '0 4px 16px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.03)' }}>
+                <span style={{ fontSize: '11px', fontWeight: '800', color: darkMode ? '#cbd5e1' : '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Total Alumnos</span>
+                <div style={{ fontSize: '36px', fontWeight: '900', color: darkMode ? '#ffffff' : '#0f172a', marginTop: '8px' }}>{totalAlumnos}</div>
               </div>
-              <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
-                <span style={{ fontSize: '11px', fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Evaluados</span>
+              <div style={{ padding: '24px', backgroundColor: darkMode ? '#18233c' : '#ffffff', borderRadius: '16px', border: `1px solid ${darkMode ? '#253652' : '#e2e8f0'}`, boxShadow: darkMode ? '0 4px 16px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.03)' }}>
+                <span style={{ fontSize: '11px', fontWeight: '800', color: darkMode ? '#cbd5e1' : '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Evaluados</span>
                 <div style={{ fontSize: '36px', fontWeight: '900', color: '#16a34a', marginTop: '8px' }}>{evaluadosCount}</div>
               </div>
-              <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
-                <span style={{ fontSize: '11px', fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Riesgo Alto</span>
+              <div style={{ padding: '24px', backgroundColor: darkMode ? '#18233c' : '#ffffff', borderRadius: '16px', border: `1px solid ${darkMode ? '#253652' : '#e2e8f0'}`, boxShadow: darkMode ? '0 4px 16px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.03)' }}>
+                <span style={{ fontSize: '11px', fontWeight: '800', color: darkMode ? '#cbd5e1' : '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Riesgo Alto</span>
                 <div style={{ fontSize: '36px', fontWeight: '900', color: '#dc2626', marginTop: '8px' }}>{altoRiesgoCount}</div>
               </div>
-              <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
-                <span style={{ fontSize: '11px', fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Riesgo Medio</span>
+              <div style={{ padding: '24px', backgroundColor: darkMode ? '#18233c' : '#ffffff', borderRadius: '16px', border: `1px solid ${darkMode ? '#253652' : '#e2e8f0'}`, boxShadow: darkMode ? '0 4px 16px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.03)' }}>
+                <span style={{ fontSize: '11px', fontWeight: '800', color: darkMode ? '#cbd5e1' : '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Riesgo Medio</span>
                 <div style={{ fontSize: '36px', fontWeight: '900', color: '#d97706', marginTop: '8px' }}>{medioRiesgoCount}</div>
               </div>
             </div>
@@ -132,7 +143,7 @@ export default function ListaEntrevistas() {
 
           {/* VISTA ASISTENCIAS */}
           {activeTab === 'Asistencias' && (
-            <div style={{ backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', overflow: 'hidden', marginBottom: '24px' }}>
+            <div style={{ backgroundColor: darkMode ? '#18233c' : '#ffffff', borderRadius: '12px', border: `1px solid ${darkMode ? '#253652' : '#e2e8f0'}`, boxShadow: darkMode ? '0 4px 16px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.04)', overflow: 'hidden', marginBottom: '24px' }}>
               <table className="data-table">
                 <thead>
                   <tr>
@@ -147,7 +158,7 @@ export default function ListaEntrevistas() {
                     const isLow = asistencia < 90;
                     return (
                       <tr key={alumno.id}>
-                        <td style={{ fontWeight: '600', color: '#1e293b' }}>{alumno.nombre} {alumno.apellido || ''}</td>
+                        <td style={{ fontWeight: '600', color: darkMode ? '#ffffff' : '#1e293b' }}>{alumno.nombre} {alumno.apellido || ''}</td>
                         <td style={{ fontWeight: '700' }}>{asistencia}%</td>
                         <td>
                           <span style={{
@@ -172,7 +183,7 @@ export default function ListaEntrevistas() {
 
           {/* VISTA EVALUACIONES */}
           {activeTab === 'Evaluaciones' && (
-            <div style={{ backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', overflow: 'hidden', marginBottom: '24px' }}>
+            <div style={{ backgroundColor: darkMode ? '#18233c' : '#ffffff', borderRadius: '12px', border: `1px solid ${darkMode ? '#253652' : '#e2e8f0'}`, boxShadow: darkMode ? '0 4px 16px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.04)', overflow: 'hidden', marginBottom: '24px' }}>
               <table className="data-table">
                 <thead>
                   <tr>
@@ -184,7 +195,7 @@ export default function ListaEntrevistas() {
                 <tbody>
                   {alumnos.map((alumno) => (
                     <tr key={alumno.id}>
-                      <td style={{ fontWeight: '600', color: '#1e293b' }}>
+                      <td style={{ fontWeight: '600', color: darkMode ? '#ffffff' : '#1e293b' }}>
                         {alumno.nombre} {alumno.apellido ? alumno.apellido : ''}
                       </td>
                       <td>
@@ -201,7 +212,7 @@ export default function ListaEntrevistas() {
                             {alumno.nivelRiesgo}
                           </span>
                         ) : (
-                          <span style={{ backgroundColor: '#f1f5f9', color: '#64748b', padding: '4px 12px', borderRadius: '20px', fontSize: '11px', fontWeight: '700', border: '1px solid #cbd5e1' }}>
+                          <span style={{ backgroundColor: darkMode ? '#10182b' : '#f1f5f9', color: darkMode ? '#cbd5e1' : '#64748b', padding: '4px 12px', borderRadius: '20px', fontSize: '11px', fontWeight: '700', border: `1px solid ${darkMode ? '#253652' : '#cbd5e1'}` }}>
                             SIN EVALUAR
                           </span>
                         )}
@@ -237,13 +248,13 @@ export default function ListaEntrevistas() {
           {activeTab === 'Detalle' && (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', marginBottom: '32px' }}>
               {alumnos.map((alumno) => (
-                <div key={alumno.id} style={{ backgroundColor: '#ffffff', padding: '20px', borderRadius: '14px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                <div key={alumno.id} style={{ backgroundColor: darkMode ? '#18233c' : '#ffffff', padding: '20px', borderRadius: '14px', border: `1px solid ${darkMode ? '#253652' : '#e2e8f0'}`, boxShadow: darkMode ? '0 4px 16px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.04)' }}>
                   {/* Cabecera de la Tarjeta */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px', marginBottom: '16px' }}>
-                    <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#0f172a', margin: 0 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${darkMode ? '#253652' : '#f1f5f9'}`, paddingBottom: '12px', marginBottom: '16px' }}>
+                    <h3 style={{ fontSize: '16px', fontWeight: '700', color: darkMode ? '#ffffff' : '#0f172a', margin: 0 }}>
                       {alumno.nombre} {alumno.apellido || ''}
                     </h3>
-                    <span style={{ backgroundColor: '#f1f5f9', color: '#475569', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '700', border: '1px solid #cbd5e1' }}>
+                    <span style={{ backgroundColor: darkMode ? '#10182b' : '#f1f5f9', color: darkMode ? '#cbd5e1' : '#475569', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '700', border: `1px solid ${darkMode ? '#253652' : '#cbd5e1'}` }}>
                       {alumno.codigo || 'S/C'}
                     </span>
                   </div>
@@ -251,37 +262,37 @@ export default function ListaEntrevistas() {
                   {/* Campos estructurados en 2 columnas */}
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                     <div>
-                      <span style={{ fontSize: '10px', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.6px', display: 'block', marginBottom: '4px' }}>
+                      <span style={{ fontSize: '10px', color: darkMode ? '#cbd5e1' : '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.6px', display: 'block', marginBottom: '4px' }}>
                         Especialidad / Carrera
                       </span>
-                      <span style={{ fontSize: '13px', color: '#1e293b', fontWeight: '600', display: 'block' }}>
+                      <span style={{ fontSize: '13px', color: darkMode ? '#ffffff' : '#1e293b', fontWeight: '600', display: 'block' }}>
                         {alumno.carrera || 'N/A'}
                       </span>
                     </div>
 
                     <div>
-                      <span style={{ fontSize: '10px', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.6px', display: 'block', marginBottom: '4px' }}>
+                      <span style={{ fontSize: '10px', color: darkMode ? '#cbd5e1' : '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.6px', display: 'block', marginBottom: '4px' }}>
                         Semestre
                       </span>
-                      <span style={{ fontSize: '13px', color: '#1e293b', fontWeight: '600', display: 'block' }}>
+                      <span style={{ fontSize: '13px', color: darkMode ? '#ffffff' : '#1e293b', fontWeight: '600', display: 'block' }}>
                         {alumno.semestre || 'N/A'}
                       </span>
                     </div>
 
                     <div>
-                      <span style={{ fontSize: '10px', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.6px', display: 'block', marginBottom: '4px' }}>
+                      <span style={{ fontSize: '10px', color: darkMode ? '#cbd5e1' : '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.6px', display: 'block', marginBottom: '4px' }}>
                         Grupo
                       </span>
-                      <span style={{ fontSize: '13px', color: '#1e293b', fontWeight: '600', display: 'block' }}>
+                      <span style={{ fontSize: '13px', color: darkMode ? '#ffffff' : '#1e293b', fontWeight: '600', display: 'block' }}>
                         Sección {alumno.grupo || 'N/A'}
                       </span>
                     </div>
 
                     <div>
-                      <span style={{ fontSize: '10px', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.6px', display: 'block', marginBottom: '4px' }}>
+                      <span style={{ fontSize: '10px', color: darkMode ? '#cbd5e1' : '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.6px', display: 'block', marginBottom: '4px' }}>
                         Edad
                       </span>
-                      <span style={{ fontSize: '13px', color: '#1e293b', fontWeight: '600', display: 'block' }}>
+                      <span style={{ fontSize: '13px', color: darkMode ? '#ffffff' : '#1e293b', fontWeight: '600', display: 'block' }}>
                         {alumno.edad ? `${alumno.edad} años` : 'N/R'}
                       </span>
                     </div>

@@ -1,10 +1,13 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useDarkMode } from '../../context/DarkModeContext';
 import './Layout.css';
 import logoTecsup from '../../assets/logo-tecsup.jpg';
+import logoWhite from '../../assets/logo-white.png';
 
 const SideBar = () => {
   const { auth } = useAuth();
+  const { darkMode } = useDarkMode();
   const user = auth?.user;
   const role = user?.role || user?.rol || '';
   const isAdmin = role.toUpperCase() === 'ADMIN';
@@ -13,10 +16,13 @@ const SideBar = () => {
 
   return (
     <aside className="sidebar">
-      {/* Logo Tecsup */}
+      {/* Logo Tecsup — colored en light mode, blanco en dark mode */}
       <div className="sidebar-logo">
-        <div className="sidebar-logo-card">
-          <img src={logoTecsup} alt="Logo Tecsup" />
+        <div className={`sidebar-logo-card ${darkMode ? 'sidebar-logo-card--dark' : ''}`}>
+          <img
+            src={darkMode ? logoWhite : logoTecsup}
+            alt="Logo Tecsup"
+          />
         </div>
       </div>
 
@@ -111,9 +117,9 @@ const SideBar = () => {
           <>
             <NavLink
               to="/admin/entrevistas?tab=Resumen"
-              className={() => 
+              className={() =>
                 (location.pathname === '/admin/entrevistas' && (location.search === '?tab=Resumen' || location.search === '?tab=Asistencias' || location.search === '?tab=Detalle' || !location.search))
-                  ? 'sidebar-link active' 
+                  ? 'sidebar-link active'
                   : 'sidebar-link'
               }
             >
@@ -126,9 +132,9 @@ const SideBar = () => {
 
             <NavLink
               to="/admin/entrevistas?tab=Evaluaciones"
-              className={() => 
+              className={() =>
                 (location.pathname === '/admin/entrevistas' && location.search === '?tab=Evaluaciones')
-                  ? 'sidebar-link active' 
+                  ? 'sidebar-link active'
                   : 'sidebar-link'
               }
             >

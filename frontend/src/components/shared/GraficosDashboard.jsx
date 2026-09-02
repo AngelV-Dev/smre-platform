@@ -72,16 +72,16 @@ const GraficosDashboard = () => {
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginTop: '24px' }}>
-      <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
-        <h3 style={{ color: '#003B49', marginBottom: '16px', textTransform: 'uppercase', fontSize: '14px' }}>Entrevistas por Tutor</h3>
+      <div style={{ backgroundColor: 'var(--color-white)', padding: '20px', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', border: '1px solid var(--color-border)' }}>
+        <h3 style={{ color: 'var(--color-primary)', marginBottom: '16px', textTransform: 'uppercase', fontSize: '14px' }}>Entrevistas por Tutor</h3>
         {porTutor.length === 0 ? (
           <p style={{ color: 'var(--color-text-light)', fontSize: '13px' }}>Aún no hay entrevistas registradas.</p>
         ) : (
           <Bar data={dataBar} options={optionsBar} />
         )}
       </div>
-      <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
-        <h3 style={{ color: '#003B49', marginBottom: '16px', textTransform: 'uppercase', fontSize: '14px' }}>Alumnos por Nivel de Riesgo</h3>
+      <div style={{ backgroundColor: 'var(--color-white)', padding: '20px', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', border: '1px solid var(--color-border)' }}>
+        <h3 style={{ color: 'var(--color-primary)', marginBottom: '16px', textTransform: 'uppercase', fontSize: '14px' }}>Alumnos por Nivel de Riesgo</h3>
         {alumnosRiesgo.length === 0 ? (
           <p style={{ color: 'var(--color-text-light)', fontSize: '13px' }}>Aún no hay evaluaciones registradas.</p>
         ) : (

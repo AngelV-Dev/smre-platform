@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import api from '../../api/axiosInstance'
+import { useDarkMode } from '../../context/DarkModeContext'
 
 const preguntasList = [
   {
@@ -77,6 +78,7 @@ const criterioExplicaciones = {
 export default function NuevaEntrevista() {
   const { alumnoId } = useParams()
   const navigate = useNavigate()
+  const { darkMode } = useDarkMode()
 
   const [alumno, setAlumno] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -187,7 +189,14 @@ export default function NuevaEntrevista() {
 
       {/* Formulario */}
       <form onSubmit={handleSubmit}>
-        <div style={{ backgroundColor: '#ffffff', borderRadius: '12px', padding: '24px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0', boxSizing: 'border-box' }}>
+        <div style={{
+          backgroundColor: darkMode ? '#18233c' : '#ffffff',
+          borderRadius: '12px',
+          padding: '24px',
+          boxShadow: darkMode ? '0 4px 16px rgba(0,0,0,0.4)' : '0 4px 6px rgba(0,0,0,0.05)',
+          border: `1px solid ${darkMode ? '#253652' : '#e2e8f0'}`,
+          boxSizing: 'border-box'
+        }}>
           
           {/* Figma Mockup Header */}
           {alumno && (
@@ -196,13 +205,22 @@ export default function NuevaEntrevista() {
                 <select 
                   disabled
                   value={alumno.semestre || '2026-1'} 
-                  style={{ backgroundColor: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '8px 12px', fontSize: '13px', fontWeight: 'bold', color: '#334155', cursor: 'not-allowed' }}
+                  style={{
+                    backgroundColor: darkMode ? '#10182b' : '#ffffff',
+                    border: `1px solid ${darkMode ? '#253652' : '#cbd5e1'}`,
+                    borderRadius: '8px',
+                    padding: '8px 12px',
+                    fontSize: '13px',
+                    fontWeight: 'bold',
+                    color: darkMode ? '#ffffff' : '#334155',
+                    cursor: 'not-allowed'
+                  }}
                 >
                   <option>{alumno.semestre || '2026-1'}</option>
                 </select>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <label htmlFor="edadInput" style={{ fontSize: '14px', fontWeight: 'bold', color: '#1e293b' }}>Edad del Alumno:</label>
+                  <label htmlFor="edadInput" style={{ fontSize: '14px', fontWeight: 'bold', color: darkMode ? '#ffffff' : '#1e293b' }}>Edad del Alumno:</label>
                   <input
                     id="edadInput"
                     type="number"
@@ -216,10 +234,10 @@ export default function NuevaEntrevista() {
                       padding: '10px', 
                       fontSize: '16px', 
                       fontWeight: 'bold', 
-                      border: '2px solid #0C6EAE', 
+                      border: `2px solid ${darkMode ? '#38bdf8' : '#0C6EAE'}`, 
                       borderRadius: '8px',
-                      backgroundColor: '#ffffff',
-                      color: '#1e293b',
+                      backgroundColor: darkMode ? '#10182b' : '#ffffff',
+                      color: darkMode ? '#ffffff' : '#1e293b',
                       outline: 'none',
                       boxSizing: 'border-box'
                     }}
@@ -228,11 +246,11 @@ export default function NuevaEntrevista() {
               </div>
               
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <span style={{ fontSize: '14px', fontWeight: '800', color: '#1e293b' }}>
+                <span style={{ fontSize: '14px', fontWeight: '800', color: darkMode ? '#ffffff' : '#1e293b' }}>
                   {alumno.nombre} {alumno.apellido}
                 </span>
-                <div style={{ width: '45px', height: '45px', borderRadius: '50%', backgroundColor: '#cbd5e1', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '1px solid #94a3b8', flexShrink: 0 }}>
-                  <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#475569' }}>
+                <div style={{ width: '45px', height: '45px', borderRadius: '50%', backgroundColor: darkMode ? '#253652' : '#cbd5e1', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: `1px solid ${darkMode ? '#38bdf8' : '#94a3b8'}`, flexShrink: 0 }}>
+                  <span style={{ fontSize: '16px', fontWeight: 'bold', color: darkMode ? '#ffffff' : '#475569' }}>
                     {alumno.nombre ? alumno.nombre.charAt(0).toUpperCase() : 'P'}
                   </span>
                 </div>
@@ -319,13 +337,13 @@ export default function NuevaEntrevista() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#1e293b', borderBottom: '1px solid #f1f5f9', paddingBottom: '8px', margin: '0 0 10px 0' }}>Preguntas</h3>
+            <h3 style={{ fontSize: '16px', fontWeight: '800', color: darkMode ? '#ffffff' : '#1e293b', borderBottom: `1px solid ${darkMode ? '#253652' : '#f1f5f9'}`, paddingBottom: '8px', margin: '0 0 10px 0' }}>Preguntas</h3>
 
             {/* 6 Preguntas */}
             {preguntasList.map((pregunta, idx) => (
               <div key={pregunta.id} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  <span style={{ fontSize: '10px', fontWeight: 'bold', color: darkMode ? '#cbd5e1' : '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     {pregunta.titulo}
                   </span>
                   
@@ -363,24 +381,24 @@ export default function NuevaEntrevista() {
                         left: '0',
                         zIndex: 100,
                         width: '280px',
-                        backgroundColor: '#d1fae5',
+                        backgroundColor: darkMode ? '#1e293b' : '#d1fae5',
                         borderRadius: '16px',
                         padding: '16px',
-                        boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
-                        border: '1px solid #a7f3d0',
+                        boxShadow: '0 10px 15px -3px rgba(0,0,0,0.3)',
+                        border: `1px solid ${darkMode ? '#334155' : '#a7f3d0'}`,
                         boxSizing: 'border-box'
                       }}>
                         <div style={{
-                          backgroundColor: '#ffffff',
+                          backgroundColor: darkMode ? '#0f172a' : '#ffffff',
                           borderRadius: '12px',
                           padding: '14px',
-                          color: '#1e293b',
+                          color: darkMode ? '#ffffff' : '#1e293b',
                           fontSize: '12px',
                           lineHeight: '1.5',
                           fontWeight: '500',
                           boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.05)'
                         }}>
-                          <strong style={{ display: 'block', color: '#065f46', marginBottom: '6px', fontSize: '11px', textTransform: 'uppercase' }}>Guía de Criterio</strong>
+                          <strong style={{ display: 'block', color: darkMode ? '#38bdf8' : '#065f46', marginBottom: '6px', fontSize: '11px', textTransform: 'uppercase' }}>Guía de Criterio</strong>
                           {criterioExplicaciones[pregunta.id]}
                         </div>
                       </div>
@@ -388,7 +406,7 @@ export default function NuevaEntrevista() {
                   </div>
                 </div>
 
-                <p style={{ fontSize: '13px', fontWeight: '700', color: '#334155', margin: '0' }}>
+                <p style={{ fontSize: '13px', fontWeight: '700', color: darkMode ? '#ffffff' : '#334155', margin: '0' }}>
                   {pregunta.label}
                 </p>
 
@@ -396,53 +414,48 @@ export default function NuevaEntrevista() {
                   {['ALTO', 'MEDIO', 'BAJO'].map(nivel => {
                     const isSelected = respuestas[pregunta.id] === nivel;
                     
-                    // Configuración de colores estrictos según requerimiento:
-                    let bgColor = '#f8fafc'
-                    let textColor = '#64748b'
-                    let borderColor = '#e2e8f0'
-                    let dotColor = '#cbd5e1'
+                    // Configuración de colores con soporte dark mode:
+                    let bgColor = darkMode ? '#121b2d' : '#f8fafc'
+                    let textColor = darkMode ? '#ffffff' : '#64748b'
+                    let borderColor = darkMode ? '#253652' : '#e2e8f0'
+                    let dotColor = darkMode ? '#64748b' : '#cbd5e1'
 
                     if (isSelected) {
-                      // Determinar impacto real del semáforo:
                       const isPositiveAspect = (pregunta.id === 'p1' || pregunta.id === 'p2' || pregunta.id === 'p3' || pregunta.id === 'p4')
                       
                       if (isPositiveAspect) {
-                        // Para Rendimiento, Apoyo Emocional, Comunicación, Trabajo en Equipo:
-                        // ALTO -> VERDE, MEDIO -> AMARILLO, BAJO -> ROJO
                         if (nivel === 'ALTO') {
-                          bgColor = '#bbf7d0'      // Fondo verde claro
-                          textColor = '#166534'    // Texto verde oscuro
-                          borderColor = '#86efac'  // Borde verde
-                          dotColor = '#166534'
+                          bgColor = darkMode ? '#064e3b' : '#bbf7d0'
+                          textColor = darkMode ? '#6ee7b7' : '#166534'
+                          borderColor = darkMode ? '#059669' : '#86efac'
+                          dotColor = darkMode ? '#6ee7b7' : '#166534'
                         } else if (nivel === 'MEDIO') {
-                          bgColor = '#fef08a'      // Fondo amarillo claro
-                          textColor = '#92400e'    // Texto ámbar oscuro
-                          borderColor = '#fde047'  // Borde amarillo
-                          dotColor = '#92400e'
+                          bgColor = darkMode ? '#713f12' : '#fef08a'
+                          textColor = darkMode ? '#fde047' : '#92400e'
+                          borderColor = darkMode ? '#ca8a04' : '#fde047'
+                          dotColor = darkMode ? '#fde047' : '#92400e'
                         } else if (nivel === 'BAJO') {
-                          bgColor = '#fecaca'      // Fondo rojo/rosado claro
-                          textColor = '#991b1b'    // Texto rojo oscuro
-                          borderColor = '#fca5a5'  // Borde rojo
-                          dotColor = '#991b1b'
+                          bgColor = darkMode ? '#7f1d1d' : '#fecaca'
+                          textColor = darkMode ? '#fca5a5' : '#991b1b'
+                          borderColor = darkMode ? '#dc2626' : '#fca5a5'
+                          dotColor = darkMode ? '#fca5a5' : '#991b1b'
                         }
                       } else {
-                        // Para Factores de Riesgo Directo (Estrés y Economía):
-                        // ALTO -> ROJO, MEDIO -> AMARILLO, BAJO -> VERDE
                         if (nivel === 'ALTO') {
-                          bgColor = '#fecaca'      // Fondo rojo/rosado claro
-                          textColor = '#991b1b'    // Texto rojo oscuro
-                          borderColor = '#fca5a5'  // Borde rojo
-                          dotColor = '#991b1b'
+                          bgColor = darkMode ? '#7f1d1d' : '#fecaca'
+                          textColor = darkMode ? '#fca5a5' : '#991b1b'
+                          borderColor = darkMode ? '#dc2626' : '#fca5a5'
+                          dotColor = darkMode ? '#fca5a5' : '#991b1b'
                         } else if (nivel === 'MEDIO') {
-                          bgColor = '#fef08a'      // Fondo amarillo claro
-                          textColor = '#92400e'    // Texto ámbar oscuro
-                          borderColor = '#fde047'  // Borde amarillo
-                          dotColor = '#92400e'
+                          bgColor = darkMode ? '#713f12' : '#fef08a'
+                          textColor = darkMode ? '#fde047' : '#92400e'
+                          borderColor = darkMode ? '#ca8a04' : '#fde047'
+                          dotColor = darkMode ? '#fde047' : '#92400e'
                         } else if (nivel === 'BAJO') {
-                          bgColor = '#bbf7d0'      // Fondo verde claro
-                          textColor = '#166534'    // Texto verde oscuro
-                          borderColor = '#86efac'  // Borde verde
-                          dotColor = '#166534'
+                          bgColor = darkMode ? '#064e3b' : '#bbf7d0'
+                          textColor = darkMode ? '#6ee7b7' : '#166534'
+                          borderColor = darkMode ? '#059669' : '#86efac'
+                          dotColor = darkMode ? '#6ee7b7' : '#166534'
                         }
                       }
                     }
@@ -482,8 +495,8 @@ export default function NuevaEntrevista() {
                           width: '16px', 
                           height: '16px', 
                           borderRadius: '50%', 
-                          border: `2px solid ${isSelected ? textColor : '#94a3b8'}`,
-                          backgroundColor: '#ffffff',
+                          border: `2px solid ${isSelected ? textColor : (darkMode ? '#475569' : '#94a3b8')}`,
+                          backgroundColor: darkMode ? '#10182b' : '#ffffff',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -514,7 +527,7 @@ export default function NuevaEntrevista() {
 
             {/* Recuadro de Observaciones */}
             <div style={{ marginTop: '24px' }}>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', color: '#475569', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', color: darkMode ? '#ffffff' : '#475569', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                 Observaciones del tutor:
               </label>
               <textarea
@@ -524,7 +537,7 @@ export default function NuevaEntrevista() {
                 rows={4}
                 style={{ 
                   width: '100%', 
-                  border: '1px solid #cbd5e1', 
+                  border: `1px solid ${darkMode ? '#253652' : '#cbd5e1'}`, 
                   borderRadius: '12px', 
                   padding: '12px', 
                   minHeight: '100px', 
@@ -532,14 +545,14 @@ export default function NuevaEntrevista() {
                   fontSize: '13px',
                   fontFamily: 'inherit',
                   boxSizing: 'border-box',
-                  backgroundColor: '#ffffff',
-                  color: '#1e293b'
+                  backgroundColor: darkMode ? '#10182b' : '#ffffff',
+                  color: darkMode ? '#ffffff' : '#1e293b'
                 }}
               />
             </div>
 
             {/* Botones Inferiores */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', borderTop: '1px solid #e2e8f0', paddingTop: '20px', marginTop: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', borderTop: `1px solid ${darkMode ? '#253652' : '#e2e8f0'}`, paddingTop: '20px', marginTop: '24px' }}>
               <button
                 type="button"
                 onClick={() => navigate('/admin/entrevistas')}

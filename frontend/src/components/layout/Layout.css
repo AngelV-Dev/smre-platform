@@ -9,7 +9,8 @@
 /* Sidebar */
 .sidebar {
   width: 250px;
-  background-color: var(--color-sidebar); /* 👈 CAMBIO AQUÍ: antes era var(--color-secondary) */
+  background-color: var(--color-sidebar); /* ðŸ‘ˆ CAMBIO AQUÃ: antes era var(--color-secondary) */
+  background-color: var(--color-sidebar); /* ðŸ‘ˆ CAMBIO AQUÃ : antes era var(--color-secondary) */
   color: var(--color-white);
   display: flex;
   flex-direction: column;
@@ -19,15 +20,15 @@
 .sidebar-logo {
   display: flex;
   justify-content: flex-start;
-  padding: 0; /* antes: padding: 16px; */
+  padding: 0;
 }
 
 .sidebar-logo-card {
   background-color: #ffffff;
-  padding: 14px 30px;          /* 14px arriba/abajo, 30px izquierda/derecha */
+  padding: 14px 30px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
   box-sizing: border-box;
-  width: calc(100% + 82px);    /* 50px (desborde original) + 32px extra (16px x 2 lados) */
+  width: calc(100% + 82px);
   flex-shrink: 0;
   position: relative;
   z-index: 20;
@@ -42,7 +43,7 @@
 
 .sidebar-header {
   padding: 20px;
-  margin-top: 60px; /* 👈 nuevo: espacio extra entre el logo y esta sección */
+  margin-top: 60px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -89,7 +90,7 @@
   gap: 12px;
   padding: 14px 16px;
   color: #ffffff; /* Texto blanco */
-  background-color: rgba(0, 0, 0, 0.1); /* Un sutil tono más oscuro que el sidebar */
+  background-color: rgba(0, 0, 0, 0.1); /* Un sutil tono mÃ¡s oscuro que el sidebar */
   text-decoration: none;
   font-size: 13px;
   font-weight: 600;
@@ -100,11 +101,11 @@
 }
 
 .sidebar-link:hover {
-  background-color: rgba(0, 0, 0, 0.2); /* Se oscurece un poquito más al pasar el mouse */
+  background-color: rgba(0, 0, 0, 0.2); /* Se oscurece un poquito mÃ¡s al pasar el mouse */
 }
 
 .sidebar-link.active {
-  background-color: rgba(255, 255, 255, 0.2); /* Un sutil tono más claro para el activo */
+  background-color: rgba(255, 255, 255, 0.2); /* Un sutil tono mÃ¡s claro para el activo */
   color: #ffffff;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3); /* Un borde cristalino sutil */
 }
@@ -119,7 +120,7 @@
 
 .navbar {
   height: 60px;
-  background-color: #3DC9D9;
+  background-color: var(--color-navbar, #3DC9D9);
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -281,11 +282,11 @@
 }
 
 .stat-card.danger .stat-icon { 
-  color: var(--color-danger); /* Ícono rojo */
+  color: var(--color-danger); /* Ãcono rojo */
 }
 
 .stat-card.warning .stat-icon { 
-  color: var(--color-warning); /* Ícono amarillo */
+  color: var(--color-warning); /* Ãcono amarillo */
 }
 
 .stat-info h3 {
@@ -650,4 +651,227 @@
   padding: 12px;
   margin-bottom: 20px;
 }
-
+
+
+/* ===================================================
+   MODO OSCURO - ENFOCADO EN PROTEGER LA VISTA
+   =================================================== */
+
+/* -- 1. Fondo de la Aplicacion -------------------- */
+html.dark,
+html.dark body,
+html.dark .layout-container,
+html.dark .main-content,
+html.dark .page-content {
+  background-color: #0a101d !important;
+  color: #ffffff !important;
+}
+
+/* -- 2. Encabezado / Navbar ----------------------- */
+html.dark .navbar {
+  background-color: #10182b !important;
+  border-bottom: 1px solid #1f2e47 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* -- 3. Sidebar y Logo ---------------------------- */
+html.dark .sidebar {
+  background-color: #0b1220 !important;
+  border-right: 1px solid #1a273e !important;
+}
+
+html.dark .sidebar-logo {
+  padding: 0;
+}
+
+html.dark .sidebar-logo-card,
+.sidebar-logo-card--dark {
+  background-color: #10182b !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5) !important;
+  border-right: 1px solid #1f2e47 !important;
+  border-bottom: 1px solid #1f2e47 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+html.dark .sidebar-logo-card img {
+  height: 56px !important;
+  width: auto !important;
+  max-width: 100% !important;
+  display: block !important;
+  object-fit: contain !important;
+}
+
+/* -- 4. Rectangulos / Contenedores / Tarjetas ----- */
+/* Color oscuro medio (#18233c), claramente diferente del fondo (#0a101d) */
+html.dark .bg-white,
+html.dark .smre-card,
+html.dark [style*="background-color: #ffffff"],
+html.dark [style*="background-color: #fff"],
+html.dark [style*="background-color: white"],
+html.dark [style*="background-color: rgb(255, 255, 255)"],
+html.dark [style*="background-color: rgb(255,255,255)"],
+html.dark [style*="backgroundColor: '#ffffff'"],
+html.dark [style*="backgroundColor: '#fff'"],
+html.dark [style*="backgroundColor: 'white'"],
+html.dark [style*="background: #ffffff"],
+html.dark [style*="background: #fff"],
+html.dark [style*="background: white"],
+html.dark [style*="background: rgb(255, 255, 255)"] {
+  background-color: #18233c !important;
+  border-color: #253652 !important;
+  color: #ffffff !important;
+}
+
+/* Sub-contenedores / Opciones no seleccionadas */
+html.dark [style*="background-color: #f8fafc"],
+html.dark [style*="background-color: #f1f5f9"],
+html.dark [style*="background-color: #f3f4f6"],
+html.dark [style*="background-color: #f0f0f0"],
+html.dark [style*="background-color: rgb(248, 250, 252)"],
+html.dark [style*="background-color: rgb(241, 245, 249)"],
+html.dark [style*="background-color: rgb(243, 244, 246)"] {
+  background-color: #121b2d !important;
+  border-color: #253652 !important;
+  color: #ffffff !important;
+}
+
+/* -- 5. Todo el Texto en Blanco Puro / Claro ------ */
+html.dark h1,
+html.dark h2,
+html.dark h3,
+html.dark h4,
+html.dark h5,
+html.dark h6,
+html.dark .smre-title-container h1,
+html.dark [style*="color: #1e293b"],
+html.dark [style*="color: #0f172a"],
+html.dark [style*="color: #1f2937"],
+html.dark [style*="color: #334155"],
+html.dark [style*="color: #374151"],
+html.dark [style*="color: #111827"],
+html.dark [style*="color: #333333"],
+html.dark [style*="color: #333"],
+html.dark [style*="color: rgb(30, 41, 59)"],
+html.dark [style*="color: rgb(15, 23, 42)"],
+html.dark [style*="color: rgb(31, 41, 55)"],
+html.dark [style*="color: rgb(51, 65, 85)"],
+html.dark [style*="color: rgb(55, 65, 81)"],
+html.dark [style*="color: rgb(17, 24, 39)"] {
+  color: #ffffff !important;
+}
+
+/* Textos secundarios / subtitulos / descripciones: gris suave legible */
+html.dark .smre-title-container p,
+html.dark [style*="color: #64748b"],
+html.dark [style*="color: #6b7280"],
+html.dark [style*="color: #94a3b8"],
+html.dark [style*="color: rgb(100, 116, 139)"],
+html.dark [style*="color: rgb(107, 114, 128)"],
+html.dark [style*="color: rgb(148, 163, 184)"] {
+  color: #cbd5e1 !important;
+}
+
+/* -- 6. Tablas y Filas ---------------------------- */
+html.dark .data-table {
+  background-color: #18233c !important;
+  border: 1px solid #253652 !important;
+}
+html.dark .data-table th {
+  background-color: #10182b !important;
+  color: #ffffff !important;
+  border-bottom: 1px solid #253652 !important;
+}
+html.dark .data-table td {
+  color: #ffffff !important;
+  border-bottom: 1px solid #1f2e47 !important;
+}
+html.dark .data-table tr:nth-child(even) {
+  background-color: #121b2d !important;
+}
+html.dark .data-table tr:hover {
+  background-color: #1e2f4f !important;
+}
+
+/* -- 7. Inputs, Selects y Textareas --------------- */
+html.dark input:not([type="checkbox"]):not([type="radio"]),
+html.dark select,
+html.dark textarea,
+html.dark .smre-input,
+html.dark .smre-select,
+html.dark .filter-input {
+  background-color: #10182b !important;
+  color: #ffffff !important;
+  border-color: #2a3d5e !important;
+}
+html.dark input:disabled,
+html.dark select:disabled,
+html.dark textarea:disabled {
+  background-color: #121b2d !important;
+  color: #94a3b8 !important;
+  border-color: #1f2e47 !important;
+}
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #64748b !important;
+}
+
+/* -- 8. Bordes y Divisores en Modo Oscuro --------- */
+html.dark [style*="border: 1px solid #e2e8f0"],
+html.dark [style*="border: 1px solid #e5e7eb"],
+html.dark [style*="border: 1px solid #d1d5db"],
+html.dark [style*="border: 1px solid #eaeaea"],
+html.dark [style*="border: 1px solid #cbd5e1"],
+html.dark [style*="border-bottom: 1px solid #f3f4f6"],
+html.dark [style*="border-bottom: 1px solid #f1f5f9"],
+html.dark hr {
+  border-color: #253652 !important;
+}
+
+/* -- 9. Dropdown del Navbar ----------------------- */
+html.dark .navbar-dropdown {
+  background-color: #18233c !important;
+  border: 1px solid #253652 !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
+}
+html.dark .dropdown-header {
+  border-bottom: 1px solid #253652 !important;
+}
+html.dark .dropdown-user-details h4 { color: #ffffff !important; }
+html.dark .dropdown-user-details p  { color: #cbd5e1 !important; }
+html.dark .dropdown-role-label      { color: #94a3b8 !important; }
+html.dark .dropdown-item            { color: #ffffff !important; }
+html.dark .dropdown-item:hover      { background-color: #121b2d !important; }
+html.dark .dropdown-divider         { background-color: #253652 !important; }
+html.dark .dropdown-item.logout     { color: #f87171 !important; }
+html.dark .dropdown-item.logout:hover { background-color: #450a0a !important; }
+
+/* -- 10. Modal ------------------------------------ */
+html.dark .modal-content {
+  background-color: #18233c !important;
+  border: 1px solid #253652 !important;
+  color: #ffffff !important;
+}
+html.dark .modal-content h2 {
+  color: #ffffff !important;
+}
+
+/* -- 11. Alertas ---------------------------------- */
+html.dark .smre-alert-success {
+  background-color: #14532d; color: #86efac; border-color: #16a34a;
+}
+html.dark .smre-alert-danger {
+  background-color: #450a0a; color: #fca5a5; border-color: #dc2626;
+}
+
+/* -- 12. Sidebar usuario info --------------------- */
+html.dark .sidebar-user-info h3,
+html.dark .sidebar-user-info span {
+  color: #ffffff !important;
+}
+
+/* -- 13. Scrollbar suave para no cansar la vista -- */
+html.dark * {
+  scrollbar-color: #253652 #0a101d;
+}
