@@ -54,4 +54,7 @@ public class EntrevistaEntity {
 
     @Column
     private Integer edad;
+
+    @Column(name = "respuestas", length = 100)
+    private String respuestas; // Severidades separadas por coma, en el orden de las 6 preguntas
 }

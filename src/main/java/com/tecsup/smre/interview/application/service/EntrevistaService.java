@@ -111,6 +111,9 @@ public class EntrevistaService implements GetAlumnosTutorUseCase, IniciarEntrevi
         entrevista.setObservaciones(dto.getObservaciones());
         entrevista.setFecha(LocalDateTime.now());
         entrevista.setEdad(dto.getEdad());
+        entrevista.setRespuestas(dto.getRespuestas().stream()
+                .map(Enum::name)
+                .collect(Collectors.joining(",")));
 
         Entrevista guardada = entrevistaRepositoryPort.save(entrevista);
 

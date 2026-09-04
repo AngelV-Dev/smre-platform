@@ -26,4 +26,12 @@ public class UsuarioRepositoryAdapter implements UsuarioRepositoryPort {
         UsuarioEntity saved = jpaUsuarioRepository.save(entity);
         return UsuarioMapper.toDomain(saved);
     }
+
+    @Override
+    public void delete(Usuario usuario) {
+        UsuarioEntity entity = UsuarioMapper.toEntity(usuario);
+        if (entity.getId() != null) {
+            jpaUsuarioRepository.deleteById(entity.getId());
+        }
+    }
 }

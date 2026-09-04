@@ -2,7 +2,10 @@ import { NavLink } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 export default function Sidebar() {
-  const { user } = useAuth()
+  const { auth } = useAuth()
+  const user = auth?.user
+  const role = user?.role || user?.rol || ''
+  const isAdmin = role.toUpperCase() === 'ADMIN'
 
   return (
     <aside
@@ -25,26 +28,70 @@ export default function Sidebar() {
               {user?.nombre || 'Usuario'}
             </p>
             <p className="text-white/70 text-xs">
-              {user?.role || 'Admin'}
+              {isAdmin ? 'Administrador' : 'Tutor'}
             </p>
           </div>
         </div>
 
         <div className="space-y-3">
-          <NavLink
-            to="/admin/tutores"
-            className="block text-center py-3 text-white text-xs font-bold uppercase tracking-widest rounded shadow"
-            style={{ backgroundColor: '#38a3af' }}
-          >
-            Lista de Tutores
-          </NavLink>
+          {isAdmin && (
+            <>
+              <NavLink
+                to="/admin/dashboard"
+                className="block text-center py-3 text-white text-xs font-bold uppercase tracking-widest rounded shadow"
+                style={{ backgroundColor: '#38a3af' }}
+              >
+                Asignación
+              </NavLink>
+
+              <NavLink
+                to="/admin/tutores"
+                className="block text-center py-3 text-white text-xs font-bold uppercase tracking-widest rounded shadow"
+                style={{ backgroundColor: '#38a3af' }}
+              >
+                Lista de Tutores
+              </NavLink>
+
+              <NavLink
+                to="/admin/tutores/nuevo"
+                className="block text-center py-3 text-white text-xs font-bold uppercase tracking-widest rounded shadow"
+                style={{ backgroundColor: '#38a3af' }}
+              >
+                Registrar Tutor
+              </NavLink>
+
+              <NavLink
+                to="/admin/registrar-admin"
+                className="block text-center py-3 text-white text-xs font-bold uppercase tracking-widest rounded shadow"
+                style={{ backgroundColor: '#38a3af' }}
+              >
+                Registrar Admin
+              </NavLink>
+
+              <NavLink
+                to="/admin/estadisticas"
+                className="block text-center py-3 text-white text-xs font-bold uppercase tracking-widest rounded shadow"
+                style={{ backgroundColor: '#38a3af' }}
+              >
+                Estadísticas
+              </NavLink>
+
+              <NavLink
+                to="/admin/csv"
+                className="block text-center py-3 text-white text-xs font-bold uppercase tracking-widest rounded shadow"
+                style={{ backgroundColor: '#38a3af' }}
+              >
+                Carga CSV
+              </NavLink>
+            </>
+          )}
 
           <NavLink
-            to="/admin/tutores/nuevo"
+            to="/admin/entrevistas"
             className="block text-center py-3 text-white text-xs font-bold uppercase tracking-widest rounded shadow"
             style={{ backgroundColor: '#38a3af' }}
           >
-            Registro de Tutoras
+            Entrevistas
           </NavLink>
         </div>
       </div>

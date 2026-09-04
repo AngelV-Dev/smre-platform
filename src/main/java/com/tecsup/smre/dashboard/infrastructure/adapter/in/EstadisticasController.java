@@ -9,6 +9,7 @@ import com.tecsup.smre.dashboard.domain.port.in.GetEstadisticasUseCase;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -30,8 +31,10 @@ public class EstadisticasController {
     }
 
     @GetMapping
-    public ResponseEntity<EstadisticasGeneralesResponse> generales() {
-        return ResponseEntity.ok(getEstadisticasUseCase.obtenerEstadisticasGenerales());
+    public ResponseEntity<EstadisticasGeneralesResponse> generales(
+            @RequestParam(required = false) String carrera,
+            @RequestParam(required = false) String ciclo) {
+        return ResponseEntity.ok(getEstadisticasUseCase.obtenerEstadisticasGenerales(carrera, ciclo));
     }
 
     @GetMapping("/por-tutor")

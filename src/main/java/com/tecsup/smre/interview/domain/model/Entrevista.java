@@ -24,4 +24,5 @@ public class Entrevista {
     private String observaciones;
     private LocalDateTime fecha;
     private Integer edad;
+    private String respuestas; // Severidades separadas por coma, en el orden de las 6 preguntas
 }

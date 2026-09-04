@@ -3,27 +3,56 @@
    ======================================== */
 
 :root {
-  /* Paleta Corporativa Tecsup (Ajustada al Mockup Real) */
-  --color-primary: #003B49; /* Azul oscuro institucional (Tabla) */
+  /* Paleta Corporativa Tecsup (Light Mode) */
+  --color-primary: #003B49; /* Azul oscuro institucional (Tabla/Títulos) */
   --color-sidebar: #2a8a96; /* Turquesa oscuro exclusivo para el Sidebar */
   --color-secondary: #3DC9D9; /* Turquesa vibrante (Navbar / Botones principales) */
   --color-accent: #2fb0bf; /* Turquesa intermedio (Hovers / Detalles) */
   --color-accent-light: #e0f7fa; /* Celeste pastel (Fondos suaves) */
   
-  /* Colores del Semáforo (Para Semaforo.jsx) */
+  /* Colores del Semáforo */
   --color-danger: #dc3545; /* Rojo - ALTO */
   --color-warning: #ffc107; /* Amarillo - MEDIO */
   --color-success: #28a745; /* Verde - BAJO */
 
-  /* Colores de Interfaz */
-  --color-bg: #f4f6f9; /* Fondo gris claro de la app */
+  /* Colores de Interfaz Light */
+  --color-bg: #f4f6f9;
   --color-white: #ffffff;
-  --color-text: #333333;
-  --color-text-light: #6c757d;
-  --color-border: #dee2e6;
+  --color-card: #ffffff;
+  --color-card-sub: #f8fafc;
+  --color-text: #1e293b;
+  --color-text-light: #64748b;
+  --color-border: #e2e8f0;
+  --color-navbar: #3DC9D9;
 
   /* Tipografía */
   --font-family: 'Poppins', sans-serif;
+}
+
+/* ── MODO OSCURO (ENFOCADO EN PROTEGER LA VISTA) ───────────────────────────────── */
+html.dark {
+  /* Títulos y textos principales: BLANCO Puro y Claro */
+  --color-primary:      #ffffff;
+  --color-sidebar:      #0b1220;   /* Sidebar oscuro integrado */
+  --color-navbar:       #10182b;   /* Encabezado elegante no invasivo */
+  --color-secondary:    #0284c7;   /* Azul sobrio para acciones principales */
+  --color-accent:       #38bdf8;
+  --color-accent-light: #164e63;
+
+  /* Fondo de pantalla general: oscuro profundo y descansado */
+  --color-bg:           #0a101d;
+
+  /* Rectángulos contenedores (Cards): color oscuro pero no tan oscuro como el fondo */
+  --color-white:        #18233c;   /* Slate/navy medio */
+  --color-card:         #18233c;
+  --color-card-sub:     #121b2d;   /* Sub-recuadros y opciones */
+
+  /* Todas las letras en BLANCO */
+  --color-text:         #ffffff;
+  --color-text-light:   #cbd5e1;   /* Textos secundarios claros */
+  --color-border:       #253652;   /* Bordes sutiles que delimitan sin deslumbrar */
+
+  color-scheme: dark;
 }
 
 /* Reseteo básico */

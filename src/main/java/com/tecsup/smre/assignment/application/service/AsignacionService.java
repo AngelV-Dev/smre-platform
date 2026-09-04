@@ -7,6 +7,9 @@ import com.tecsup.smre.assignment.domain.port.in.CrearAsignacionUseCase;
 import com.tecsup.smre.assignment.domain.port.in.EliminarAsignacionUseCase;
 import com.tecsup.smre.assignment.domain.port.in.ListarAsignacionesUseCase;
 import com.tecsup.smre.assignment.domain.port.out.AssignmentRepositoryPort;
+import com.tecsup.smre.exception.ResourceNotFoundException;
+import com.tecsup.smre.user.domain.model.Tutor;
+import com.tecsup.smre.user.domain.port.out.TutorRepositoryPort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,16 +19,23 @@ import java.util.stream.Collectors;
 public class AsignacionService implements CrearAsignacionUseCase, ListarAsignacionesUseCase, EliminarAsignacionUseCase {
 
     private final AssignmentRepositoryPort repositoryPort;
+    private final TutorRepositoryPort tutorRepositoryPort;
 
     // Inyección por constructor (Buena práctica)
-    public AsignacionService(AssignmentRepositoryPort repositoryPort) {
+    public AsignacionService(AssignmentRepositoryPort repositoryPort, TutorRepositoryPort tutorRepositoryPort) {
         this.repositoryPort = repositoryPort;
+        this.tutorRepositoryPort = tutorRepositoryPort;
     }
 
     @Override
     public AssignmentResponse crear(AssignmentRequest request) {
+        Tutor tutor = tutorRepositoryPort.findById(request.getTutorId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "No existe el tutor con id: " + request.getTutorId()));
+
         Assignment assignment = Assignment.builder()
                 .tutorId(request.getTutorId())
+                .tutorNombre(tutor.getNombre() + " " + tutor.getApellido()) // 👈 FIX: antes nunca se seteaba
                 .periodo(request.getPeriodo())
                 .especialidad(request.getEspecialidad())
                 .ciclo(request.getCiclo())

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -22,4 +23,5 @@ public class ResultadoResponseDto {
     private String recomendacion;
     private String observaciones;
     private LocalDateTime fecha;
+    private List<String> respuestas; // Severidad de cada una de las 6 preguntas, en orden
 }

@@ -49,4 +49,19 @@ public class StudentRepositoryAdapter implements StudentRepositoryPort {
     public boolean existsByCodigo(String codigo) {
         return jpaAlumnoRepository.existsByCodigo(codigo);
     }
+
+    @Override
+    public List<Alumno> findByCarreraAndSemestre(String carrera, String semestre) {
+        String c = (carrera == null || carrera.trim().isEmpty()) ? null : carrera.trim();
+        String s = (semestre == null || semestre.trim().isEmpty()) ? null : semestre.trim();
+        return jpaAlumnoRepository.findByCarreraAndSemestre(c, s)
+                .stream()
+                .map(AlumnoMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return jpaAlumnoRepository.existsByEmail(email);
+    }
 }

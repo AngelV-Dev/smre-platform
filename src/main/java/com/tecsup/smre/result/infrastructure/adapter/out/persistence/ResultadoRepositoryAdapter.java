@@ -43,6 +43,7 @@ public class ResultadoRepositoryAdapter implements ResultadoRepositoryPort {
                 .recomendacion(entity.getRecomendacion())
                 .observaciones(entity.getObservaciones())
                 .fecha(entity.getFecha())
+                .respuestas(entity.getRespuestas())
                 .build();
     }
 }

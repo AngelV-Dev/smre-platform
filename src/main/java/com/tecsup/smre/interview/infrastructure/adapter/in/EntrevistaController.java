@@ -43,12 +43,14 @@ public class EntrevistaController {
     }
 
     @GetMapping("/entrevistas/nueva/{alumnoId}")
+    @PreAuthorize("hasRole('TUTOR')")
     public ResponseEntity<ApiResponse<Alumno>> iniciarEntrevista(@PathVariable Long alumnoId) {
         Alumno alumno = iniciarEntrevistaUseCase.iniciarEntrevista(alumnoId);
         return ResponseEntity.ok(ApiResponse.success(alumno, "Alumno encontrado"));
     }
 
     @PostMapping("/entrevistas")
+    @PreAuthorize("hasRole('TUTOR')")
     public ResponseEntity<ApiResponse<EntrevistaResponseDto>> guardarEntrevista(@RequestBody GuardarEntrevistaDto dto) {
         EntrevistaResponseDto response = guardarEntrevistaUseCase.guardarEntrevista(dto);
         return ResponseEntity.ok(ApiResponse.success(response, "Entrevista guardada exitosamente"));

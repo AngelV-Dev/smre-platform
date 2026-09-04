@@ -118,6 +118,19 @@ public class TutorService implements TutorUseCase {
                 });
     }
 
+    @Override
+    public void eliminar(Long id) {
+        Tutor tutor = tutorRepositoryPort.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tutor no encontrado con id: " + id));
+        
+        usuarioRepositoryPort.findByEmail(tutor.getEmail())
+                .ifPresent(usuario -> {
+                    usuarioRepositoryPort.delete(usuario);
+                });
+                
+        tutorRepositoryPort.deleteById(id);
+    }
+
     private TutorResponse toResponse(Tutor tutor) {
         return TutorResponse.builder()
                 .id(tutor.getId())

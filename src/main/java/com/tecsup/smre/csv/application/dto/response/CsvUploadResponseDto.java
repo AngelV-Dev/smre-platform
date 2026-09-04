@@ -16,4 +16,5 @@ public class CsvUploadResponseDto {
     private int guardados;
     private int errores;
     private List<CsvErrorDto> detalleErrores;
+    private boolean exitoso; // true si guardados > 0 && errores == 0
 }

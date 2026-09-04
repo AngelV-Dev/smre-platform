@@ -38,4 +38,9 @@ public class TutorRepositoryAdapter implements TutorRepositoryPort {
     public boolean existsByEmail(String email) {
         return jpaTutorRepository.existsByEmail(email);
     }
+
+    @Override
+    public void deleteById(Long id) {
+        jpaTutorRepository.deleteById(id);
+    }
 }

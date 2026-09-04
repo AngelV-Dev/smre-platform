@@ -5,6 +5,6 @@ import com.tecsup.smre.dashboard.application.dto.response.AlumnoRiesgoEstadistic
 import java.util.List;
 
 public interface GetEstadisticasUseCase {
-    EstadisticasGeneralesResponse obtenerEstadisticasGenerales();
+    EstadisticasGeneralesResponse obtenerEstadisticasGenerales(String carrera, String ciclo);
     List<AlumnoRiesgoEstadistica> obtenerAlumnosRiesgo();
 }

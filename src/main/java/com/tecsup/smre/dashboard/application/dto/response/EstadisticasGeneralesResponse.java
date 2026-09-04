@@ -13,4 +13,7 @@ public class EstadisticasGeneralesResponse {
     private Long totalTutoresActivos;
     private Long totalAsignaciones;
     private Long totalEntrevistasProgramadas;
+    private Double porcentajeAlto;
+    private Double porcentajeMedio;
+    private Double porcentajeBajo;
 }

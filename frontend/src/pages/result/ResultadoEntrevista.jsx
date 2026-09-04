@@ -15,6 +15,16 @@ export default function ResultadoEntrevista() {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
   const [descargando, setDescargando] = useState(false);
+  const [mostrarFormulario, setMostrarFormulario] = useState(false);
+
+  const PREGUNTAS = [
+    "Rendimiento académico",
+    "Bienestar emocional",
+    "Trabajo en equipo",
+    "Comunicación efectiva",
+    "Trabajo / Economía",
+    "Estrés - estado emocional",
+  ];
 
   useEffect(() => {
     api
@@ -133,10 +143,10 @@ export default function ResultadoEntrevista() {
 
         <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
           <button
-            onClick={() => navigate(`/tutor/entrevistas/ver/${id}`)}
+            onClick={() => setMostrarFormulario((v) => !v)}
             style={{ backgroundColor: "var(--color-secondary)", color: "white", padding: "10px 20px", borderRadius: "8px", fontSize: "13px", fontWeight: "600" }}
           >
-            Revisar Formulario
+            {mostrarFormulario ? "Ocultar Formulario" : "Revisar Formulario"}
           </button>
           <button
             onClick={() => navigate("/admin/entrevistas")}
@@ -154,13 +164,38 @@ export default function ResultadoEntrevista() {
             </button>
           ) : (
             <button
-              onClick={() => navigate(`/tutor/entrevistas/nueva/${resultado.alumnoId}`)}
+              onClick={() => navigate(`/admin/entrevistas/nueva/${resultado.alumnoId}`)}
               style={{ backgroundColor: "var(--color-success)", color: "white", padding: "10px 20px", borderRadius: "8px", fontSize: "13px", fontWeight: "600" }}
             >
               Nueva Entrevista
             </button>
           )}
         </div>
+
+        {mostrarFormulario && (
+          <div style={{ marginTop: "20px", borderTop: "1px solid var(--color-border)", paddingTop: "16px" }}>
+            <p style={{ fontWeight: "700", fontSize: "13px", color: "var(--color-secondary)", marginBottom: "10px" }}>
+              RESPUESTAS DEL FORMULARIO
+            </p>
+            {resultado.respuestas && resultado.respuestas.length > 0 ? (
+              <ul style={{ listStyle: "none", padding: 0, display: "flex", flexDirection: "column", gap: "8px" }}>
+                {resultado.respuestas.map((respuesta, i) => (
+                  <li key={i} style={{
+                    display: "flex", justifyContent: "space-between", gap: "12px",
+                    backgroundColor: "var(--color-bg)", borderRadius: "6px", padding: "8px 12px", fontSize: "13px"
+                  }}>
+                    <span>{PREGUNTAS[i] || `Pregunta ${i + 1}`}</span>
+                    <strong>{respuesta}</strong>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p style={{ color: "var(--color-text-light)", fontSize: "13px" }}>
+                Esta entrevista no tiene respuestas individuales guardadas (fue registrada antes de esta actualización).
+              </p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

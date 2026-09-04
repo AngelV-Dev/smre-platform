@@ -65,6 +65,13 @@ public class TutorController {
                 activo ? "Tutor activado correctamente" : "Tutor desactivado correctamente"));
     }
 
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<Void>> eliminar(@PathVariable Long id) {
+        tutorUseCase.eliminar(id);
+        return ResponseEntity.ok(ApiResponse.success(null, "Tutor eliminado correctamente"));
+    }
+
     @PutMapping("/{id}/rol")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> cambiarRol(

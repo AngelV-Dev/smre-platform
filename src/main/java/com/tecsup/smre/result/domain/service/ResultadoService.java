@@ -11,12 +11,23 @@ import com.tecsup.smre.result.domain.port.in.GetHistorialEntrevistasUseCase;
 import com.tecsup.smre.result.domain.port.in.GetResultadoEntrevistaUseCase;
 import com.tecsup.smre.result.domain.port.out.ResultadoRepositoryPort;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class ResultadoService implements
         GetResultadoEntrevistaUseCase,
         GetHistorialEntrevistasUseCase,
         ExportarResultadoUseCase {
+
+    // Mismo orden que EntrevistaService.getCriterios() — usado para nombrar cada respuesta en el export
+    private static final String[] PREGUNTAS = {
+            "Rendimiento académico",
+            "Bienestar emocional",
+            "Trabajo en equipo",
+            "Comunicación efectiva",
+            "Trabajo / Economía",
+            "Estrés - estado emocional"
+    };
 
     private final ResultadoRepositoryPort resultadoRepositoryPort;
 
@@ -70,6 +81,14 @@ public class ResultadoService implements
         csv.append("Recomendación,\"").append(resultado.getRecomendacion() != null ? resultado.getRecomendacion().replace("\"", "\"\"") : "").append("\"\n");
         csv.append("Observaciones,\"").append(resultado.getObservaciones() != null ? resultado.getObservaciones().replace("\"", "\"\"") : "").append("\"\n");
 
+        // Respuestas individuales del formulario (antes se calculaban y se descartaban, nunca se guardaban)
+        if (resultado.getRespuestas() != null) {
+            List<String> respuestas = resultado.getRespuestas();
+            for (int i = 0; i < respuestas.size() && i < PREGUNTAS.length; i++) {
+                csv.append("\"").append(PREGUNTAS[i]).append("\",").append(respuestas.get(i)).append("\n");
+            }
+        }
+
         return csv.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
     }
 
@@ -97,6 +116,9 @@ public class ResultadoService implements
                 .recomendacion(entrevista.getRecomendacion())
                 .observaciones(entrevista.getObservaciones())
                 .fecha(entrevista.getFecha())
+                .respuestas(entrevista.getRespuestas() != null
+                        ? Arrays.asList(entrevista.getRespuestas().split(","))
+                        : List.of())
                 .build();
     }
 }
