@@ -1,10 +1,24 @@
 package com.tecsup.smre.interview.application.dto;
 
 import com.tecsup.smre.interview.domain.model.NivelRiesgo;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AlumnoRiesgoDto {
     private Long id;
+    private String codigo;
     private String nombre;
+    private String apellido;
+    private String email;
+    private String carrera;
+    private String semestre;
+    private String grupo;
     private NivelRiesgo nivelRiesgo;
     private Integer edad;
 
@@ -20,16 +34,4 @@ public class AlumnoRiesgoDto {
         this.nivelRiesgo = nivelRiesgo;
         this.edad = edad;
     }
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
-
-    public NivelRiesgo getNivelRiesgo() { return nivelRiesgo; }
-    public void setNivelRiesgo(NivelRiesgo nivelRiesgo) { this.nivelRiesgo = nivelRiesgo; }
-
-    public Integer getEdad() { return edad; }
-    public void setEdad(Integer edad) { this.edad = edad; }
 }

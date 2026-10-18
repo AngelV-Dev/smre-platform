@@ -4,8 +4,9 @@ import { useAuth } from '../context/AuthContext'
 export default function Sidebar() {
   const { auth } = useAuth()
   const user = auth?.user
-  const role = user?.role || user?.rol || ''
-  const isAdmin = role.toUpperCase() === 'ADMIN'
+  const rawRole = (user?.role || user?.rol || '').toUpperCase().trim();
+  const isAdmin = rawRole === 'ADMIN' || rawRole === 'ADMIN_TUTOR';
+  const roleLabel = rawRole === 'ADMIN_TUTOR' ? 'Administrador y Tutor' : isAdmin ? 'Administrador' : 'Tutor';
 
   return (
     <aside
@@ -28,7 +29,7 @@ export default function Sidebar() {
               {user?.nombre || 'Usuario'}
             </p>
             <p className="text-white/70 text-xs">
-              {isAdmin ? 'Administrador' : 'Tutor'}
+              {roleLabel}
             </p>
           </div>
         </div>

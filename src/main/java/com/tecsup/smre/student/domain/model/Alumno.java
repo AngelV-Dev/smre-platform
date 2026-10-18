@@ -19,5 +19,6 @@ public class Alumno {
     private String semestre;  
     private String grupo;     
     private Integer edad;
+    private Long tutorId;
 }
  

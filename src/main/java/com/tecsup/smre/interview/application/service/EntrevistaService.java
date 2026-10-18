@@ -17,6 +17,8 @@ import com.tecsup.smre.interview.domain.model.NivelRiesgo;
 import com.tecsup.smre.interview.domain.model.RiesgoCalculator;
 import com.tecsup.smre.student.domain.model.Alumno;
 import com.tecsup.smre.student.domain.port.out.StudentRepositoryPort;
+import com.tecsup.smre.user.domain.model.Tutor;
+import com.tecsup.smre.user.domain.port.out.TutorRepositoryPort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -32,15 +34,18 @@ public class EntrevistaService implements GetAlumnosTutorUseCase, IniciarEntrevi
     private final StudentRepositoryPort studentRepositoryPort;
     private final UsuarioRepositoryPort usuarioRepositoryPort;
     private final AssignmentRepositoryPort assignmentRepositoryPort;
+    private final TutorRepositoryPort tutorRepositoryPort;
 
     public EntrevistaService(EntrevistaRepositoryPort entrevistaRepositoryPort,
                              StudentRepositoryPort studentRepositoryPort,
                              UsuarioRepositoryPort usuarioRepositoryPort,
-                             AssignmentRepositoryPort assignmentRepositoryPort) {
+                             AssignmentRepositoryPort assignmentRepositoryPort,
+                             TutorRepositoryPort tutorRepositoryPort) {
         this.entrevistaRepositoryPort = entrevistaRepositoryPort;
         this.studentRepositoryPort = studentRepositoryPort;
         this.usuarioRepositoryPort = usuarioRepositoryPort;
         this.assignmentRepositoryPort = assignmentRepositoryPort;
+        this.tutorRepositoryPort = tutorRepositoryPort;
     }
 
     private String getTutorEmailAutenticado() {
@@ -55,23 +60,52 @@ public class EntrevistaService implements GetAlumnosTutorUseCase, IniciarEntrevi
 
     @Override
     public List<AlumnoRiesgoDto> getAlumnosTutor() {
-        Usuario tutor = getTutorAutenticado();
+        Usuario usuario = getTutorAutenticado();
+        String email = usuario.getEmail();
+
+        Long tutorEntityId = null;
+        if (tutorRepositoryPort != null) {
+            tutorEntityId = tutorRepositoryPort.findAll().stream()
+                    .filter(t -> t.getEmail() != null && t.getEmail().equalsIgnoreCase(email))
+                    .map(Tutor::getId)
+                    .findFirst()
+                    .orElse(null);
+        }
+        final Long entityId = tutorEntityId;
+        final Long usuarioId = usuario.getId();
+
         List<Assignment> assignments = assignmentRepositoryPort.findAll().stream()
-                .filter(asg -> asg.getTutorId() != null && asg.getTutorId().equals(tutor.getId()))
+                .filter(asg -> asg.getTutorId() != null &&
+                        (asg.getTutorId().equals(usuarioId) || (entityId != null && asg.getTutorId().equals(entityId))))
                 .collect(Collectors.toList());
 
         List<Alumno> alumnos = studentRepositoryPort.findAll().stream()
-                .filter(alumno -> assignments.stream().anyMatch(asg ->
-                        (alumno.getSemestre() != null && alumno.getSemestre().equalsIgnoreCase(asg.getPeriodo())) &&
-                        (alumno.getCarrera() != null && alumno.getCarrera().equalsIgnoreCase(asg.getEspecialidad())) &&
-                        (alumno.getGrupo() != null && alumno.getGrupo().equalsIgnoreCase(asg.getGrupo()))
-                ))
+                .filter(alumno ->
+                        (alumno.getTutorId() != null &&
+                                (alumno.getTutorId().equals(usuarioId) || (entityId != null && alumno.getTutorId().equals(entityId))))
+                        || assignments.stream().anyMatch(asg ->
+                                (alumno.getSemestre() != null && alumno.getSemestre().equalsIgnoreCase(asg.getPeriodo())) &&
+                                (alumno.getCarrera() != null && alumno.getCarrera().equalsIgnoreCase(asg.getEspecialidad())) &&
+                                (alumno.getGrupo() != null && alumno.getGrupo().equalsIgnoreCase(asg.getGrupo()))
+                        )
+                )
                 .collect(Collectors.toList());
 
         return alumnos.stream().map(alumno -> {
             List<Entrevista> entrevistas = entrevistaRepositoryPort.findByAlumnoId(alumno.getId().toString());
             NivelRiesgo riesgo = entrevistas.isEmpty() ? null : entrevistas.get(entrevistas.size() - 1).getNivelRiesgo();
-            return new AlumnoRiesgoDto(alumno.getId(), alumno.getNombre() + " " + alumno.getApellido(), riesgo, alumno.getEdad());
+            return AlumnoRiesgoDto.builder()
+                    .id(alumno.getId())
+                    .codigo(alumno.getCodigo())
+                    .nombre(alumno.getNombre())
+                    .apellido(alumno.getApellido())
+                    .email(alumno.getEmail())
+                    .carrera(alumno.getCarrera())
+                    .semestre(alumno.getSemestre())
+                    .grupo(alumno.getGrupo())
+                    .nivelRiesgo(riesgo)
+                    .edad(alumno.getEdad())
+                    .build();
         }).collect(Collectors.toList());
     }
 

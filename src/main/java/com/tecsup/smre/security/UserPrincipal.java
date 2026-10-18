@@ -22,6 +22,12 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (usuario.getRol() == com.tecsup.smre.auth.domain.model.Role.ADMIN_TUTOR) {
+            return java.util.List.of(
+                    new SimpleGrantedAuthority("ROLE_ADMIN"),
+                    new SimpleGrantedAuthority("ROLE_TUTOR")
+            );
+        }
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + usuario.getRol().name()));
     }
 

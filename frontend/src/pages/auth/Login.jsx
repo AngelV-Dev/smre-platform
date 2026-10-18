@@ -123,20 +123,17 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    if (!correo.endsWith('@tecsup.edu.pe')) {
-      setError('Debes usar tu correo institucional (@tecsup.edu.pe)');
-      return;
-    }
     try {
       setLoading(true);
-      const res = await loginApi(correo, password);
+      const res = await loginApi(correo.trim(), password);
       const rawData = res.data?.data ? res.data.data : res.data;
       const token = rawData.token;
       const role = rawData.role || rawData.rol || '';
       const nombre = rawData.nombre || '';
       const email = rawData.email || rawData.correo || '';
       login(token, { role, nombre, email });
-      if (role.toUpperCase().trim() === 'ADMIN') {
+      const upperRole = role.toUpperCase().trim();
+      if (upperRole === 'ADMIN' || upperRole === 'ADMIN_TUTOR') {
         navigate('/admin/dashboard', { replace: true });
       } else {
         navigate('/admin/entrevistas', { replace: true });

@@ -44,6 +44,7 @@ public class StudentService implements ManageStudentUseCase {
                 .semestre(request.getSemestre())
                 .grupo(request.getGrupo())
                 .edad(request.getEdad())
+                .tutorId(request.getTutorId())
                 .build();
 
         return toResponse(studentRepositoryPort.save(alumno));
@@ -107,20 +108,27 @@ public class StudentService implements ManageStudentUseCase {
                     continue;
                 }
 
-                if (studentRepositoryPort.existsByCodigo(codigo)) {
-                    errores.add("Línea " + lineNumber + ": ya existe un alumno con código " + codigo);
-                    continue;
+                java.util.Optional<Alumno> alumnoExistente = studentRepositoryPort.findByCodigo(codigo);
+                if (alumnoExistente.isPresent()) {
+                    Alumno al = alumnoExistente.get();
+                    al.setNombre(nombre);
+                    al.setApellido(apellido);
+                    al.setEmail(email);
+                    al.setCarrera(carrera);
+                    al.setSemestre(semestre);
+                    al.setGrupo(grupo);
+                    alumnos.add(al);
+                } else {
+                    alumnos.add(Alumno.builder()
+                            .codigo(codigo)
+                            .nombre(nombre)
+                            .apellido(apellido)
+                            .email(email)
+                            .carrera(carrera)
+                            .semestre(semestre)
+                            .grupo(grupo)
+                            .build());
                 }
-
-                alumnos.add(Alumno.builder()
-                        .codigo(codigo)
-                        .nombre(nombre)
-                        .apellido(apellido)
-                        .email(email)
-                        .carrera(carrera)
-                        .semestre(semestre)
-                        .grupo(grupo)
-                        .build());
             }
 
         } catch (BadRequestException e) {
@@ -150,6 +158,7 @@ public class StudentService implements ManageStudentUseCase {
                 .semestre(alumno.getSemestre())
                 .grupo(alumno.getGrupo())
                 .edad(alumno.getEdad())
+                .tutorId(alumno.getTutorId())
                 .build();
     }
 }

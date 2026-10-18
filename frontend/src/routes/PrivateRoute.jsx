@@ -21,9 +21,15 @@ export default function PrivateRoute({ children, allowedRoles }) {
   console.log("📋 Roles permitidos para esta pantalla:", allowedRoles);
 
   // 4. Verificar si el rol está en la lista permitida
-  if (allowedRoles && !allowedRoles.includes(currentRole)) {
-    console.warn("🚫 Acceso denegado: El rol no coincide con los permitidos.");
-    return <Navigate to="/acceso-denegado" replace />
+  if (allowedRoles) {
+    const isAllowed =
+      allowedRoles.includes(currentRole) ||
+      (currentRole === 'ADMIN_TUTOR' && (allowedRoles.includes('ADMIN') || allowedRoles.includes('TUTOR')));
+
+    if (!isAllowed) {
+      console.warn("🚫 Acceso denegado: El rol no coincide con los permitidos.");
+      return <Navigate to="/acceso-denegado" replace />;
+    }
   }
 
   return children

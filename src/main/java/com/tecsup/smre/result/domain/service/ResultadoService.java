@@ -93,8 +93,8 @@ public class ResultadoService implements
     }
 
     private void validarAcceso(Entrevista entrevista, Usuario solicitante) {
-        boolean esAdmin = solicitante.getRol() == Role.ADMIN;
-        boolean esTutorAsignado = solicitante.getRol() == Role.TUTOR
+        boolean esAdmin = solicitante.getRol() == Role.ADMIN || solicitante.getRol() == Role.ADMIN_TUTOR;
+        boolean esTutorAsignado = (solicitante.getRol() == Role.TUTOR || solicitante.getRol() == Role.ADMIN_TUTOR)
                 && entrevista.getTutorId() != null
                 && entrevista.getTutorId().equals(solicitante.getId().toString());
 
