@@ -16,6 +16,7 @@ public class AlumnoMapper {
                 .semestre(entity.getSemestre())
                 .grupo(entity.getGrupo())
                 .edad(entity.getEdad())
+                .tutorId(entity.getTutorId())
                 .build();
     }
 
@@ -31,6 +32,7 @@ public class AlumnoMapper {
                 .semestre(domain.getSemestre())
                 .grupo(domain.getGrupo())
                 .edad(domain.getEdad())
+                .tutorId(domain.getTutorId())
                 .build();
     }
 }

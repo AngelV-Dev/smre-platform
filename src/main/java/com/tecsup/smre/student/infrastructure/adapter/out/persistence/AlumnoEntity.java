@@ -36,9 +36,12 @@ public class AlumnoEntity {
     @Column(nullable = false)
     private String semestre;  // Ej: "2026-1"
 
-    @Column(nullable = false, length = 5)
-    private String grupo;     // Ej: "A", "B", "C"
+    @Column(nullable = false, length = 50)
+    private String grupo;     // Ej: "A", "B", "C", "Especial"
 
     @Column
     private Integer edad;
+
+    @Column(name = "tutor_id")
+    private Long tutorId;
 }

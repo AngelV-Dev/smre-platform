@@ -64,7 +64,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         String token = jwtTokenProvider.generateToken(usuario);
 
         String destino = switch (usuario.getRol()) {
-            case ADMIN -> "/admin/dashboard";
+            case ADMIN, ADMIN_TUTOR -> "/admin/dashboard";
             case TUTOR -> "/admin/entrevistas";
         };
 

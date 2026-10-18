@@ -19,4 +19,7 @@ public class StudentResponse {
     private String semestre;
     private String grupo;
     private Integer edad;
+    private Long tutorId;
+    private String tutorNombre;
+    private String nivelRiesgo;
 }

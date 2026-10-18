@@ -12,6 +12,8 @@ import HistorialEntrevistas from './pages/result/HistorialEntrevistas';
 import CargaCSV from './pages/csv/CargaCSV';
 import Estadisticas from './pages/admin/Estadisticas';
 import RegistroAdmin from './pages/admin/RegistroAdmin';
+import MatriculaEmails from './pages/admin/MatriculaEmails';
+import RegistroAlumnoEspecial from './pages/admin/RegistroAlumnoEspecial';
 import PrivateRoute from './routes/PrivateRoute';
 import OAuthCallback from './pages/auth/OAuthCallback';
 import Perfil from './pages/profile/Perfil';
@@ -62,6 +64,20 @@ function App() {
           </PrivateRoute>
         } />
 
+        {/* Matrícula de Correos (Task 2) */}
+        <Route path="matricula" element={
+          <PrivateRoute allowedRoles={["ADMIN"]}>
+            <MatriculaEmails />
+          </PrivateRoute>
+        } />
+
+        {/* Registro Manual de Alumno Especial (Task 5) */}
+        <Route path="alumnos/especial" element={
+          <PrivateRoute allowedRoles={["ADMIN", "TUTOR"]}>
+            <RegistroAlumnoEspecial />
+          </PrivateRoute>
+        } />
+
         {/* Módulo de Entrevistas (compartido: cada rol ve sus propios datos) */}
         <Route path="entrevistas" element={<ListaEntrevistas />} />
         <Route path="entrevistas/nueva/:alumnoId" element={
@@ -86,7 +102,7 @@ function App() {
           </PrivateRoute>
         } />
 
-        {/* Katherine - carga CSV */}
+        {/* Carga CSV (Task 4) */}
         <Route path="csv" element={
           <PrivateRoute allowedRoles={["ADMIN"]}>
             <CargaCSV />

@@ -68,54 +68,39 @@ class CsvServiceTest {
     }
 
     // ------------------------------------------------------------------ //
-    //  Caso: ÉXITO PARCIAL — algunos guardados, algunos con error         //
+    //  Caso: ACTUALIZACIÓN — Alumno existente se actualiza (upsert)      //
     // ------------------------------------------------------------------ //
 
     @Test
-    void cargaParcialRetornaExitosoFalse() {
+    void actualizaAlumnoExistenteConservandoDatos() {
         String contenido = "codigo,nombre,apellido,email,carrera,semestre,grupo\n"
-                + "2024001,Juana,Perez,jperez@tecsup.edu.pe,Software,2024-1,A\n"
-                + "2024002,Pedro,Lopez,plopez@tecsup.edu.pe,Software,2024-1,B\n";
+                + "2024001,Juana,Perez,jperez@tecsup.edu.pe,Software,Ciclo 3,A\n";
 
         MockMultipartFile file = new MockMultipartFile(
                 "file", "alumnos.csv", "text/csv", contenido.getBytes(StandardCharsets.UTF_8));
 
-        // Solo el primer codigo ya existe
-        when(studentRepositoryPort.existsByCodigo("2024001")).thenReturn(true);
-        when(studentRepositoryPort.existsByCodigo("2024002")).thenReturn(false);
-        when(studentRepositoryPort.existsByEmail(anyString())).thenReturn(false);
+        Alumno alumnoExistente = Alumno.builder()
+                .id(10L)
+                .codigo("2024001")
+                .nombre("Juana")
+                .apellido("Perez")
+                .email("jperez@tecsup.edu.pe")
+                .carrera("Software")
+                .semestre("Ciclo 2")
+                .grupo("A")
+                .build();
+
+        when(studentRepositoryPort.findByCodigo("2024001")).thenReturn(java.util.Optional.of(alumnoExistente));
         when(studentRepositoryPort.saveAll(any())).thenAnswer(inv -> inv.getArgument(0));
 
         CsvUploadResponseDto reporte = csvService.cargar(file);
 
-        assertEquals(2, reporte.getTotalProcesados());
-        assertEquals(1, reporte.getGuardados());
-        assertEquals(1, reporte.getErrores());
-        assertFalse(reporte.isExitoso(), "Carga parcial no debe marcarse como exitosa");
-    }
-
-    // ------------------------------------------------------------------ //
-    //  Caso: FALLO — codigo duplicado en BD                               //
-    // ------------------------------------------------------------------ //
-
-    @Test
-    void detectaCodigoDuplicadoEnBD() {
-        String contenido = "codigo,nombre,apellido,email,carrera,semestre,grupo\n"
-                + "2024001,Juana,Perez,jperez@tecsup.edu.pe,Software,2024-1,A\n";
-
-        MockMultipartFile file = new MockMultipartFile(
-                "file", "alumnos.csv", "text/csv", contenido.getBytes(StandardCharsets.UTF_8));
-
-        when(studentRepositoryPort.existsByCodigo("2024001")).thenReturn(true);
-
-        CsvUploadResponseDto reporte = csvService.cargar(file);
-
         assertEquals(1, reporte.getTotalProcesados());
-        assertEquals(0, reporte.getGuardados());
-        assertEquals(1, reporte.getErrores());
-        assertFalse(reporte.isExitoso());
-        assertTrue(reporte.getDetalleErrores().get(0).getMotivo().contains("ya existe")
-                || reporte.getDetalleErrores().get(0).getMotivo().contains("código"));
+        assertEquals(1, reporte.getGuardados());
+        assertEquals(0, reporte.getErrores());
+        assertTrue(reporte.isExitoso());
+        assertEquals("Ciclo 3", alumnoExistente.getSemestre());
+        assertEquals(10L, alumnoExistente.getId());
     }
 
     // ------------------------------------------------------------------ //
@@ -149,20 +134,22 @@ class CsvServiceTest {
     @Test
     void detectaCodigoDuplicado() {
         String contenido = "codigo,nombre,apellido,email,carrera,semestre,grupo\n"
+                + "2024001,Juana,Perez,jperez@tecsup.edu.pe,Software,2024-1,A\n"
                 + "2024001,Juana,Perez,jperez@tecsup.edu.pe,Software,2024-1,A\n";
 
         MockMultipartFile file = new MockMultipartFile(
                 "file", "alumnos.csv", "text/csv", contenido.getBytes(StandardCharsets.UTF_8));
 
-        when(studentRepositoryPort.existsByCodigo("2024001")).thenReturn(true);
+        when(studentRepositoryPort.findByCodigo(anyString())).thenReturn(java.util.Optional.empty());
+        when(studentRepositoryPort.existsByEmail(anyString())).thenReturn(false);
+        when(studentRepositoryPort.saveAll(any())).thenAnswer(inv -> inv.getArgument(0));
 
         CsvUploadResponseDto reporte = csvService.cargar(file);
 
-        assertEquals(1, reporte.getTotalProcesados());
-        assertEquals(0, reporte.getGuardados());
+        assertEquals(2, reporte.getTotalProcesados());
+        assertEquals(1, reporte.getGuardados());
         assertEquals(1, reporte.getErrores());
-        assertTrue(reporte.getDetalleErrores().get(0).getMotivo().contains("ya existe")
-                || reporte.getDetalleErrores().get(0).getMotivo().contains("código"));
+        assertTrue(reporte.getDetalleErrores().get(0).getMotivo().contains("duplicado en el archivo"));
     }
 
     // ------------------------------------------------------------------ //

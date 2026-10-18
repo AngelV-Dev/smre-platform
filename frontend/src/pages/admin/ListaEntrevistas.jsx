@@ -26,14 +26,21 @@ export default function ListaEntrevistas() {
   }, [location.search])
 
   const user = auth?.user
-  const role = user?.role || user?.rol || ''
-  const isAdmin = role.toUpperCase() === 'ADMIN'
+  const rawRole = (user?.role || user?.rol || '').toUpperCase().trim();
+  const isAdmin = rawRole === 'ADMIN' || rawRole === 'ADMIN_TUTOR';
+  const isTutor = rawRole === 'TUTOR' || rawRole === 'ADMIN_TUTOR';
+  const isDual = rawRole === 'ADMIN_TUTOR';
+
+  const [filtroVista, setFiltroVista] = useState(rawRole === 'ADMIN' ? 'todos' : 'mis_alumnos');
 
   useEffect(() => {
     const fetchAlumnos = async () => {
       try {
         setLoading(true)
-        const endpoint = '/api/v1/students'
+        setError('')
+        const endpoint = (filtroVista === 'mis_alumnos' && isTutor)
+          ? '/api/v1/tutor/alumnos'
+          : '/api/v1/students'
         const res = await api.get(endpoint)
         
         let data = res.data.data || res.data
@@ -49,7 +56,7 @@ export default function ListaEntrevistas() {
       }
     }
     fetchAlumnos()
-  }, [isAdmin])
+  }, [filtroVista, isTutor])
 
   const totalAlumnos = alumnos.length
   const evaluadosCount = alumnos.filter(a => a.nivelRiesgo).length
@@ -58,12 +65,50 @@ export default function ListaEntrevistas() {
 
   return (
     <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '16px' }}>
-      <div className="smre-title-container" style={{ marginBottom: '24px' }}>
+      <div className="smre-title-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
         <div>
-          <h1 style={{ fontSize: '24px', fontWeight: '800', color: '#0f172a', margin: '0 0 4px 0' }}>Evaluaciones de Tutoría</h1>
-          <p style={{ color: '#64748b', fontSize: '14px', margin: 0 }}>
-            {isAdmin ? 'Listado general de alumnos registrados en el sistema.' : 'Lista de alumnos bajo su tutoría para la evaluación de riesgo.'}
+          <h1 style={{ fontSize: '24px', fontWeight: '800', color: darkMode ? '#ffffff' : '#0f172a', margin: '0 0 4px 0' }}>Evaluaciones de Tutoría</h1>
+          <p style={{ color: darkMode ? '#94a3b8' : '#64748b', fontSize: '14px', margin: 0 }}>
+            {filtroVista === 'todos' ? 'Listado general de alumnos registrados en el sistema.' : 'Lista de alumnos bajo su tutoría para la evaluación de riesgo.'}
           </p>
+        </div>
+
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          {isDual && (
+            <select
+              value={filtroVista}
+              onChange={(e) => setFiltroVista(e.target.value)}
+              style={{
+                padding: '8px 12px',
+                borderRadius: '6px',
+                border: `1px solid ${darkMode ? '#334155' : '#cbd5e1'}`,
+                backgroundColor: darkMode ? '#0f172a' : '#ffffff',
+                color: darkMode ? '#ffffff' : '#0f172a',
+                fontSize: '13px',
+                fontWeight: '600'
+              }}
+            >
+              <option value="mis_alumnos">Mis Alumnos (Tutor)</option>
+              <option value="todos">Todos los Alumnos (Admin)</option>
+            </select>
+          )}
+
+          <button
+            onClick={() => navigate('/admin/alumnos/especial')}
+            style={{
+              backgroundColor: '#0284c7',
+              color: '#ffffff',
+              border: 'none',
+              padding: '9px 16px',
+              borderRadius: '8px',
+              fontSize: '13px',
+              fontWeight: '700',
+              cursor: 'pointer',
+              boxShadow: '0 2px 6px rgba(2, 132, 199, 0.3)'
+            }}
+          >
+            + Registrar Alumno Especial
+          </button>
         </div>
       </div>
 
@@ -219,7 +264,7 @@ export default function ListaEntrevistas() {
                       </td>
                       <td style={{ textAlign: 'right' }}>
                         <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                          {!isAdmin && (
+                          {isTutor && (
                             <button
                               onClick={() => navigate(`/admin/entrevistas/nueva/${alumno.id}`)}
                               className="smre-btn-primary"

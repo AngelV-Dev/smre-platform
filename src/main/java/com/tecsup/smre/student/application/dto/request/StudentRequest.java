@@ -34,4 +34,5 @@ public class StudentRequest {
     private String grupo;
 
     private Integer edad;
+    private Long tutorId;
 }

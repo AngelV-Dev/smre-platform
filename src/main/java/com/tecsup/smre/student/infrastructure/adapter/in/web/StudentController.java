@@ -32,12 +32,21 @@ public class StudentController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TUTOR')")
     public ResponseEntity<ApiResponse<StudentResponse>> create(@Valid @RequestBody StudentRequest request) {
         StudentResponse response = manageStudentUseCase.create(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.success(response, "Alumno registrado correctamente"));
+    }
+
+    @PostMapping("/especial")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TUTOR')")
+    public ResponseEntity<ApiResponse<StudentResponse>> createEspecial(@Valid @RequestBody StudentRequest request) {
+        StudentResponse response = manageStudentUseCase.create(request);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.success(response, "Alumno especial registrado correctamente"));
     }
 
     @PostMapping("/csv")

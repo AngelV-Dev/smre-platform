@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public class CsvService implements CargaCsvUseCase, DescargarPlantillaCsvUseCase {
@@ -106,36 +107,41 @@ public class CsvService implements CargaCsvUseCase, DescargarPlantillaCsvUseCase
                     continue;
                 }
 
-                // Validar duplicado en base de datos (código)
-                if (studentRepositoryPort.existsByCodigo(codigo)) {
-                    errores.add(CsvErrorDto.builder()
-                            .fila(numeroFila)
-                            .motivo("Ya existe un alumno con código " + codigo + " en el sistema")
-                            .datos(datosRaw)
-                            .build());
-                    continue;
-                }
+                // Si ya existe en base de datos, actualizar sus datos conservando el ID y su historial
+                Optional<Alumno> alumnoExistente = studentRepositoryPort.findByCodigo(codigo);
+                Alumno alumno;
+                if (alumnoExistente.isPresent()) {
+                    alumno = alumnoExistente.get();
+                    alumno.setNombre(nombre);
+                    alumno.setApellido(apellido);
+                    alumno.setEmail(email);
+                    alumno.setCarrera(carrera);
+                    alumno.setSemestre(semestre);
+                    alumno.setGrupo(grupo);
+                } else {
+                    // Validar duplicado en base de datos (email) solo si es un alumno nuevo
+                    if (studentRepositoryPort.existsByEmail(email)) {
+                        errores.add(CsvErrorDto.builder()
+                                .fila(numeroFila)
+                                .motivo("Ya existe un alumno con email " + email + " en el sistema")
+                                .datos(datosRaw)
+                                .build());
+                        continue;
+                    }
 
-                // Validar duplicado en base de datos (email)
-                if (studentRepositoryPort.existsByEmail(email)) {
-                    errores.add(CsvErrorDto.builder()
-                            .fila(numeroFila)
-                            .motivo("Ya existe un alumno con email " + email + " en el sistema")
-                            .datos(datosRaw)
-                            .build());
-                    continue;
+                    alumno = Alumno.builder()
+                            .codigo(codigo)
+                            .nombre(nombre)
+                            .apellido(apellido)
+                            .email(email)
+                            .carrera(carrera)
+                            .semestre(semestre)
+                            .grupo(grupo)
+                            .build();
                 }
 
                 codigosEnArchivo.add(codigo);
-                alumnosValidos.add(Alumno.builder()
-                        .codigo(codigo)
-                        .nombre(nombre)
-                        .apellido(apellido)
-                        .email(email)
-                        .carrera(carrera)
-                        .semestre(semestre)
-                        .grupo(grupo)
-                        .build());
+                alumnosValidos.add(alumno);
             }
 
         } catch (BadRequestException e) {

@@ -7,6 +7,7 @@ import com.tecsup.smre.auth.domain.model.Usuario;
 import com.tecsup.smre.auth.domain.port.in.GetUsuarioActualUseCase;
 import com.tecsup.smre.auth.domain.port.in.LoginUseCase;
 import com.tecsup.smre.auth.domain.port.in.LogoutUseCase;
+import com.tecsup.smre.auth.domain.port.out.EmailMatriculadoRepositoryPort;
 import com.tecsup.smre.auth.domain.port.out.PasswordEncoderPort;
 import com.tecsup.smre.auth.domain.port.out.TokenServicePort;
 import com.tecsup.smre.auth.domain.port.out.UsuarioRepositoryPort;
@@ -18,23 +19,40 @@ public class AuthService implements LoginUseCase, LogoutUseCase, GetUsuarioActua
     private final UsuarioRepositoryPort usuarioRepositoryPort;
     private final PasswordEncoderPort passwordEncoderPort;
     private final TokenServicePort tokenServicePort;
+    private final EmailMatriculadoRepositoryPort emailMatriculadoRepositoryPort;
+
+    public AuthService(UsuarioRepositoryPort usuarioRepositoryPort,
+                       PasswordEncoderPort passwordEncoderPort,
+                       TokenServicePort tokenServicePort,
+                       EmailMatriculadoRepositoryPort emailMatriculadoRepositoryPort) {
+        this.usuarioRepositoryPort = usuarioRepositoryPort;
+        this.passwordEncoderPort = passwordEncoderPort;
+        this.tokenServicePort = tokenServicePort;
+        this.emailMatriculadoRepositoryPort = emailMatriculadoRepositoryPort;
+    }
 
     public AuthService(UsuarioRepositoryPort usuarioRepositoryPort,
                        PasswordEncoderPort passwordEncoderPort,
                        TokenServicePort tokenServicePort) {
-        this.usuarioRepositoryPort = usuarioRepositoryPort;
-        this.passwordEncoderPort = passwordEncoderPort;
-        this.tokenServicePort = tokenServicePort;
+        this(usuarioRepositoryPort, passwordEncoderPort, tokenServicePort, null);
     }
 
     @Override
     public LoginResponse login(LoginRequest request) {
-        Usuario usuario = usuarioRepositoryPort.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UnauthorizedException("Credenciales incorrectas"));
+        String email = request.getEmail() != null ? request.getEmail().trim() : "";
 
-        if (!usuario.hasTecsupDomain()) {
+        // 1. Dominio Tecsup obligatorio
+        if (!email.toLowerCase().endsWith("@tecsup.edu.pe")) {
             throw new BadRequestException("Solo se permiten correos de Tecsup (@tecsup.edu.pe)");
         }
+
+        // 2. Correo debe estar matriculado en el sistema
+        if (emailMatriculadoRepositoryPort != null && !emailMatriculadoRepositoryPort.existsByEmail(email)) {
+            throw new UnauthorizedException("El correo no se encuentra matriculado en el sistema. Contacte al administrador.");
+        }
+
+        Usuario usuario = usuarioRepositoryPort.findByEmail(email)
+                .orElseThrow(() -> new UnauthorizedException("Credenciales incorrectas"));
 
         if (!passwordEncoderPort.matches(request.getPassword(), usuario.getPassword())) {
             throw new UnauthorizedException("Credenciales incorrectas");
@@ -53,7 +71,6 @@ public class AuthService implements LoginUseCase, LogoutUseCase, GetUsuarioActua
                 .role(usuario.getRol().name())
                 .build();
     }
-
 
     @Override
     public void logout(String token) {

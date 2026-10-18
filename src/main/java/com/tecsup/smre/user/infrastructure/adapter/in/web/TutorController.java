@@ -33,7 +33,7 @@ public class TutorController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TUTOR')")
     public ResponseEntity<ApiResponse<List<TutorResponse>>> listar() {
         List<TutorResponse> tutores = tutorUseCase.listar();
         return ResponseEntity.ok(ApiResponse.success(tutores, "Tutores obtenidos correctamente"));

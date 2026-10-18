@@ -1,6 +1,8 @@
 package com.tecsup.smre.auth.infrastructure.adapter.in.web;
 
 import com.tecsup.smre.auth.domain.model.Role;
+import com.tecsup.smre.auth.infrastructure.adapter.out.persistence.EmailMatriculadoEntity;
+import com.tecsup.smre.auth.infrastructure.adapter.out.persistence.JpaEmailMatriculadoRepository;
 import com.tecsup.smre.auth.infrastructure.adapter.out.persistence.JpaUsuarioRepository;
 import com.tecsup.smre.auth.infrastructure.adapter.out.persistence.UsuarioEntity;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.LocalDateTime;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -34,11 +38,21 @@ public class AuthControllerIntegrationTest {
     private JpaUsuarioRepository jpaUsuarioRepository;
 
     @Autowired
+    private JpaEmailMatriculadoRepository jpaEmailMatriculadoRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @BeforeEach
     public void setUp() {
         jpaUsuarioRepository.deleteAll();
+        jpaEmailMatriculadoRepository.deleteAll();
+
+        // Matricular el email del tutor para pruebas
+        jpaEmailMatriculadoRepository.save(EmailMatriculadoEntity.builder()
+                .email("eduardo.tutor@tecsup.edu.pe")
+                .fechaRegistro(LocalDateTime.now())
+                .build());
 
         UsuarioEntity entity = UsuarioEntity.builder()
                 .nombre("Eduardo Tutor")
@@ -77,5 +91,29 @@ public class AuthControllerIntegrationTest {
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.message").value("Credenciales incorrectas"));
+    }
+
+    @Test
+    public void whenEmailNotMatriculated_thenReturn401() throws Exception {
+        String loginJson = "{\"email\":\"desconocido@tecsup.edu.pe\",\"password\":\"cualquiera\"}";
+
+        mockMvc.perform(post("/api/v1/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(loginJson))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value("El correo no se encuentra matriculado en el sistema. Contacte al administrador."));
+    }
+
+    @Test
+    public void whenEmailNotTecsupDomain_thenReturn400() throws Exception {
+        String loginJson = "{\"email\":\"usuario@gmail.com\",\"password\":\"cualquiera\"}";
+
+        mockMvc.perform(post("/api/v1/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(loginJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value("Solo se permiten correos de Tecsup (@tecsup.edu.pe)"));
     }
 }
