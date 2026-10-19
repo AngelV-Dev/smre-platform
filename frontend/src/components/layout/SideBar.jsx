@@ -12,6 +12,7 @@ const SideBar = () => {
   const rawRole = (user?.role || user?.rol || '').toUpperCase().trim();
   const isAdmin = rawRole === 'ADMIN' || rawRole === 'ADMIN_TUTOR';
   const isTutor = rawRole === 'TUTOR' || rawRole === 'ADMIN_TUTOR';
+  const isKsalas = user?.email?.toLowerCase() === 'ksalas@tecsup.edu.pe';
   const name = user?.nombre || 'Usuario';
   const location = useLocation();
 
@@ -95,6 +96,21 @@ const SideBar = () => {
               </svg>
               Matrícula de Correos
             </NavLink>
+
+            {/* Asignación de roles: visible solo para ksalas@tecsup.edu.pe */}
+            {isKsalas && (
+              <NavLink
+                to="/admin/roles"
+                className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                Asignación de Roles
+              </NavLink>
+            )}
 
             <NavLink
               to="/admin/estadisticas"

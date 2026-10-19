@@ -14,6 +14,7 @@ import Estadisticas from './pages/admin/Estadisticas';
 import RegistroAdmin from './pages/admin/RegistroAdmin';
 import MatriculaEmails from './pages/admin/MatriculaEmails';
 import RegistroAlumnoEspecial from './pages/admin/RegistroAlumnoEspecial';
+import AsignacionRoles from './pages/admin/AsignacionRoles';
 import PrivateRoute from './routes/PrivateRoute';
 import OAuthCallback from './pages/auth/OAuthCallback';
 import Perfil from './pages/profile/Perfil';
@@ -78,6 +79,13 @@ function App() {
         <Route path="alumnos/especial" element={
           <PrivateRoute allowedRoles={["ADMIN", "TUTOR"]}>
             <RegistroAlumnoEspecial />
+          </PrivateRoute>
+        } />
+
+        {/* Asignación de Roles (solo ksalas@tecsup.edu.pe) */}
+        <Route path="roles" element={
+          <PrivateRoute allowedRoles={["ADMIN"]}>
+            <AsignacionRoles />
           </PrivateRoute>
         } />
 
