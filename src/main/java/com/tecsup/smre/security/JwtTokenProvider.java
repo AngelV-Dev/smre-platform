@@ -74,4 +74,40 @@ public class JwtTokenProvider implements TokenServicePort {
         }
         return false;
     }
+
+    @Override
+    public String generateResetToken(Usuario usuario) {
+        Date now = new Date();
+        long resetExpiryMs = 15 * 60 * 1000; // 15 minutos
+        Date expiryDate = new Date(now.getTime() + resetExpiryMs);
+
+        return Jwts.builder()
+                .subject(usuario.getEmail())
+                .claim("purpose", "RESET_PASSWORD")
+                .issuedAt(now)
+                .expiration(expiryDate)
+                .signWith(key)
+                .compact();
+    }
+
+    @Override
+    public String validateAndExtractResetEmail(String token) {
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+
+            String purpose = claims.get("purpose", String.class);
+            if (!"RESET_PASSWORD".equals(purpose)) {
+                log.error("Token no corresponde a propósito de restablecimiento de contraseña");
+                return null;
+            }
+            return claims.getSubject();
+        } catch (JwtException | IllegalArgumentException ex) {
+            log.error("Token de restablecimiento inválido o expirado: {}", ex.getMessage());
+            return null;
+        }
+    }
 }

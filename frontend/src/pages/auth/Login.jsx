@@ -2,22 +2,32 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { loginApi } from '../../api/authApi';
+import api from '../../api/axiosInstance';
 
 // Modal de recuperación de contraseña
 function ForgotPasswordModal({ onClose }) {
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSend = async (e) => {
     e.preventDefault();
-    if (!email.endsWith('@tecsup.edu.pe')) return;
+    setError('');
+    if (!email.endsWith('@tecsup.edu.pe')) {
+      setError('Debes ingresar tu correo institucional (@tecsup.edu.pe)');
+      return;
+    }
     setLoading(true);
-    // Simula el envío — cuando el backend tenga el endpoint, aquí va api.post('/api/auth/forgot-password', { email })
-    setTimeout(() => {
+    try {
+      await api.post('/api/v1/auth/forgot-password', { email });
       setSent(true);
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Error al solicitar la recuperación. Verifica tu correo.';
+      setError(msg);
+    } finally {
       setLoading(false);
-    }, 1200);
+    }
   };
 
   return (
@@ -72,6 +82,11 @@ function ForgotPasswordModal({ onClose }) {
             {email && !email.endsWith('@tecsup.edu.pe') && (
               <p style={{ color: '#dc2626', fontSize: '11px', marginBottom: '8px' }}>
                 Debes usar tu correo institucional (@tecsup.edu.pe)
+              </p>
+            )}
+            {error && (
+              <p style={{ color: '#dc2626', fontSize: '12px', marginBottom: '8px', backgroundColor: '#fee2e2', padding: '8px 10px', borderRadius: '6px' }}>
+                ⚠️ {error}
               </p>
             )}
             <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
