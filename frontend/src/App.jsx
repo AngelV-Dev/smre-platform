@@ -17,11 +17,14 @@ import OAuthCallback from './pages/auth/OAuthCallback';
 import Perfil from './pages/profile/Perfil';
 import Configuracion from './pages/profile/Configuracion';
 
+import ResetPassword from './pages/auth/ResetPassword';
+
 function App() {
   return (
     <Routes>
       {/* Ruta pública - Login */}
       <Route path="/login" element={<Login />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/oauth-callback" element={<OAuthCallback />} />
 
       {/* Rutas protegidas con Layout */}
