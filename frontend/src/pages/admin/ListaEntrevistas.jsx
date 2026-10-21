@@ -93,22 +93,24 @@ export default function ListaEntrevistas() {
             </select>
           )}
 
-          <button
-            onClick={() => navigate('/admin/alumnos/especial')}
-            style={{
-              backgroundColor: '#0284c7',
-              color: '#ffffff',
-              border: 'none',
-              padding: '9px 16px',
-              borderRadius: '8px',
-              fontSize: '13px',
-              fontWeight: '700',
-              cursor: 'pointer',
-              boxShadow: '0 2px 6px rgba(2, 132, 199, 0.3)'
-            }}
-          >
-            + Registrar Alumno Especial
-          </button>
+          {isAdmin && (
+            <button
+              onClick={() => navigate('/admin/alumnos/especial')}
+              style={{
+                backgroundColor: '#0284c7',
+                color: '#ffffff',
+                border: 'none',
+                padding: '9px 16px',
+                borderRadius: '8px',
+                fontSize: '13px',
+                fontWeight: '700',
+                cursor: 'pointer',
+                boxShadow: '0 2px 6px rgba(2, 132, 199, 0.3)'
+              }}
+            >
+              + Registrar Alumno Especial
+            </button>
+          )}
         </div>
       </div>
 

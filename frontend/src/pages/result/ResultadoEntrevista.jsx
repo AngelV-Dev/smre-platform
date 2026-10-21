@@ -9,7 +9,7 @@ export default function ResultadoEntrevista() {
   const navigate = useNavigate();
   const { auth } = useAuth();
   const user = auth?.user ?? null;
-  const isAdmin = user?.role === "ADMIN" || user?.rol === "ADMIN";
+  const isAdmin = user?.role === "ADMIN" || user?.rol === "ADMIN" || user?.role === "ADMIN_TUTOR" || user?.rol === "ADMIN_TUTOR";
 
   const [resultado, setResultado] = useState(null);
   const [cargando, setCargando] = useState(true);

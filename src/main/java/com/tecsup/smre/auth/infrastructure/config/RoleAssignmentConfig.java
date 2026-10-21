@@ -6,15 +6,11 @@ import com.tecsup.smre.auth.domain.port.out.UsuarioRepositoryPort;
 import com.tecsup.smre.auth.domain.service.RoleAssignmentService;
 import com.tecsup.smre.auth.infrastructure.adapter.out.persistence.RoleAssignmentLogRepositoryAdapter;
 import com.tecsup.smre.auth.infrastructure.adapter.out.persistence.JpaRoleAssignmentLogRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RoleAssignmentConfig {
-
-    @Value("${app.superadmin.email:ksalas@tecsup.edu.pe}")
-    private String superAdminEmail;
 
     @Bean
     public RoleAssignmentLogRepositoryPort roleAssignmentLogRepositoryPort(
@@ -30,7 +26,6 @@ public class RoleAssignmentConfig {
         return new RoleAssignmentService(
                 usuarioRepositoryPort,
                 emailMatriculadoRepositoryPort,
-                roleAssignmentLogRepositoryPort,
-                superAdminEmail);
+                roleAssignmentLogRepositoryPort);
     }
 }

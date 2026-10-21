@@ -41,7 +41,7 @@ public class StudentController {
     }
 
     @PostMapping("/especial")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('TUTOR')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<StudentResponse>> createEspecial(@Valid @RequestBody StudentRequest request) {
         StudentResponse response = manageStudentUseCase.create(request);
         return ResponseEntity
