@@ -24,3 +24,5 @@ jwt.expiration=86400000
 spring.security.oauth2.client.registration.google.client-id=TU_GOOGLE_CLIENT_://googleusercontent.com
 spring.security.oauth2.client.registration.google.client-secret=TU_GOOGLE_CLIENT_SECRET
 spring.security.oauth2.client.registration.google.scope=openid,profile,email
+
+

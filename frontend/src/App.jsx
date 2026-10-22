@@ -19,11 +19,14 @@ import OAuthCallback from './pages/auth/OAuthCallback';
 import Perfil from './pages/profile/Perfil';
 import Configuracion from './pages/profile/Configuracion';
 
+import ResetPassword from './pages/auth/ResetPassword';
+
 function App() {
   return (
     <Routes>
       {/* Ruta pública - Login */}
       <Route path="/login" element={<Login />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/oauth-callback" element={<OAuthCallback />} />
 
       {/* Rutas protegidas con Layout */}
@@ -71,12 +74,14 @@ function App() {
           </PrivateRoute>
         } />
 
-        {/* Registro Manual de Alumno Especial (Task 5) */}
+        {/* Registro Manual de Alumno Especial (solo ADMIN y ADMIN_TUTOR) */}
         <Route path="alumnos/especial" element={
-          <PrivateRoute allowedRoles={["ADMIN", "TUTOR"]}>
+          <PrivateRoute allowedRoles={["ADMIN"]}>
             <RegistroAlumnoEspecial />
           </PrivateRoute>
         } />
+
+
 
         {/* Módulo de Entrevistas (compartido: cada rol ve sus propios datos) */}
         <Route path="entrevistas" element={<ListaEntrevistas />} />
@@ -112,6 +117,15 @@ function App() {
         {/* Perfil y Configuración */}
         <Route path="perfil" element={<Perfil />} />
         <Route path="configuracion" element={<Configuracion />} />
+      </Route>
+
+      {/* Rutas con Layout para Tutor: /tutor/entrevistas */}
+      <Route path="/tutor" element={<Layout />}>
+        <Route path="entrevistas" element={
+          <PrivateRoute allowedRoles={["TUTOR"]}>
+            <ListaEntrevistas />
+          </PrivateRoute>
+        } />
       </Route>
 
       <Route path="/acceso-denegado" element={

@@ -74,10 +74,12 @@ public class TutorController {
 
     @PutMapping("/{id}/rol")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Void>> cambiarRol(
+    public ResponseEntity<ApiResponse<String>> cambiarRol(
             @PathVariable Long id,
-            @RequestParam com.tecsup.smre.auth.domain.model.Role rol) {
-        tutorUseCase.cambiarRol(id, rol);
-        return ResponseEntity.ok(ApiResponse.success(null, "Rol asignado correctamente"));
+            @RequestParam com.tecsup.smre.auth.domain.model.Role rol,
+            org.springframework.security.core.Authentication authentication) {
+        String adminEmail = authentication != null ? authentication.getName() : "SISTEMA";
+        String mensaje = tutorUseCase.cambiarRol(id, rol, adminEmail);
+        return ResponseEntity.ok(ApiResponse.success(mensaje, mensaje));
     }
 }

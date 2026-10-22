@@ -7,6 +7,7 @@ import com.tecsup.smre.user.domain.service.TutorService;
 import com.tecsup.smre.user.infrastructure.adapter.out.persistence.JpaTutorRepository;
 import com.tecsup.smre.user.infrastructure.adapter.out.persistence.PasswordEncoderAdapter;
 import com.tecsup.smre.user.infrastructure.adapter.out.persistence.TutorRepositoryAdapter;
+import com.tecsup.smre.auth.domain.service.RoleAssignmentService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,7 +28,8 @@ public class TutorConfig {
     @Bean
     public TutorService tutorService(TutorRepositoryPort tutorRepositoryPort,
                                      PasswordEncoderPort tutorPasswordEncoderPort,
-                                     UsuarioRepositoryPort usuarioRepositoryPort) {
-        return new TutorService(tutorRepositoryPort, tutorPasswordEncoderPort, usuarioRepositoryPort);
+                                     UsuarioRepositoryPort usuarioRepositoryPort,
+                                     RoleAssignmentService roleAssignmentService) {
+        return new TutorService(tutorRepositoryPort, tutorPasswordEncoderPort, usuarioRepositoryPort, roleAssignmentService);
     }
 }

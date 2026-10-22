@@ -13,20 +13,28 @@ import com.tecsup.smre.user.domain.port.in.TutorUseCase;
 import com.tecsup.smre.user.domain.port.out.PasswordEncoderPort;
 import com.tecsup.smre.user.domain.port.out.TutorRepositoryPort;
 
+import com.tecsup.smre.auth.domain.service.RoleAssignmentService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
+@Slf4j
 public class TutorService implements TutorUseCase {
 
     private final TutorRepositoryPort tutorRepositoryPort;
     private final PasswordEncoderPort passwordEncoderPort;
     private final UsuarioRepositoryPort usuarioRepositoryPort;
+    private final RoleAssignmentService roleAssignmentService;
 
     public TutorService(TutorRepositoryPort tutorRepositoryPort,
                         PasswordEncoderPort passwordEncoderPort,
-                        UsuarioRepositoryPort usuarioRepositoryPort) {
+                        UsuarioRepositoryPort usuarioRepositoryPort,
+                        RoleAssignmentService roleAssignmentService) {
         this.tutorRepositoryPort = tutorRepositoryPort;
         this.passwordEncoderPort = passwordEncoderPort;
         this.usuarioRepositoryPort = usuarioRepositoryPort;
+        this.roleAssignmentService = roleAssignmentService;
     }
 
     @Override
@@ -105,17 +113,40 @@ public class TutorService implements TutorUseCase {
     }
 
     @Override
-    public void cambiarRol(Long id, Role rol) {
+    @Transactional
+    public String cambiarRol(Long id, Role rol, String adminEmail) {
         Tutor tutor = tutorRepositoryPort.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tutor no encontrado con id: " + id));
+
+        if (adminEmail != null && adminEmail.equalsIgnoreCase(tutor.getEmail())) {
+            throw new BadRequestException("No puedes cambiar tu propio rol.");
+        }
+
+        Usuario usuario = usuarioRepositoryPort.findByEmail(tutor.getEmail())
+                .orElse(null);
+
+        Role rolActualUsuarios = usuario != null ? usuario.getRol() : tutor.getRol();
+
+        if (usuario != null && usuario.getRol() != tutor.getRol()) {
+            log.warn("Discrepancia detectada para {}: usuarios.rol={} vs tutores.rol={}",
+                    tutor.getEmail(), usuario.getRol(), tutor.getRol());
+        }
+
+        if (rolActualUsuarios == rol) {
+            return "El usuario ya tiene asignado el rol " + rol.name() + ". No se realizaron cambios.";
+        }
+
         tutor.setRol(rol);
         tutorRepositoryPort.save(tutor);
 
-        usuarioRepositoryPort.findByEmail(tutor.getEmail())
-                .ifPresent(usuario -> {
-                    usuario.setRol(rol);
-                    usuarioRepositoryPort.save(usuario);
-                });
+        if (usuario != null) {
+            usuario.setRol(rol);
+            usuarioRepositoryPort.save(usuario);
+        }
+
+        roleAssignmentService.registrarLog(tutor.getEmail(), rolActualUsuarios, rol, adminEmail);
+
+        return "Rol actualizado correctamente a " + rol.name();
     }
 
     @Override

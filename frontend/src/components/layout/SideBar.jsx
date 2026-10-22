@@ -72,18 +72,7 @@ const SideBar = () => {
               Registro de Tutores
             </NavLink>
 
-            <NavLink
-              to="/admin/registrar-admin"
-              className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="8.5" cy="7" r="4"></circle>
-                <line x1="20" y1="8" x2="20" y2="14"></line>
-                <line x1="17" y1="11" x2="23" y2="11"></line>
-              </svg>
-              Registrar Admin
-            </NavLink>
+
 
             <NavLink
               to="/admin/matricula"
@@ -95,6 +84,8 @@ const SideBar = () => {
               </svg>
               Matrícula de Correos
             </NavLink>
+
+
 
             <NavLink
               to="/admin/estadisticas"
@@ -123,23 +114,25 @@ const SideBar = () => {
           </>
         )}
 
-        {/* Módulo de Alumno Especial para ambos roles */}
-        <NavLink
-          to="/admin/alumnos/especial"
-          className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-            <circle cx="8.5" cy="7" r="4"></circle>
-            <line x1="18" y1="8" x2="23" y2="8"></line>
-            <line x1="20.5" y1="5.5" x2="20.5" y2="10.5"></line>
-          </svg>
-          Alumno Especial
-        </NavLink>
+        {/* Módulo de Alumno Especial solo para administradores (ADMIN y ADMIN_TUTOR) */}
+        {isAdmin && (
+          <NavLink
+            to="/admin/alumnos/especial"
+            className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="8.5" cy="7" r="4"></circle>
+              <line x1="18" y1="8" x2="23" y2="8"></line>
+              <line x1="20.5" y1="5.5" x2="20.5" y2="10.5"></line>
+            </svg>
+            Alumno Especial
+          </NavLink>
+        )}
 
         {/* Entrevistas / Alumnos */}
         <NavLink
-          to="/admin/entrevistas"
+          to={isAdmin ? "/admin/entrevistas" : "/tutor/entrevistas"}
           className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'}
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

@@ -4,5 +4,7 @@ import com.tecsup.smre.auth.domain.model.Usuario;
 
 public interface TokenServicePort {
     String generateToken(Usuario usuario);
-    String extractEmail(String token);  // ← agregar esta línea
+    String extractEmail(String token);
+    String generateResetToken(Usuario usuario);
+    String validateAndExtractResetEmail(String token);
 }
