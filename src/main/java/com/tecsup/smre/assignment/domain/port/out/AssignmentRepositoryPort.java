@@ -8,6 +8,7 @@ import java.util.Optional;
 public interface AssignmentRepositoryPort {
     Assignment save(Assignment assignment);
     List<Assignment> findByPeriodo(String periodo);
+    List<Assignment> findByTutorId(Long tutorId);
     List<Assignment> findAll();
     Optional<Assignment> findById(Long id);
     void deleteById(Long id);

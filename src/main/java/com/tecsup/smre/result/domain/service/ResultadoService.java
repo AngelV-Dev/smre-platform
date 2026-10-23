@@ -10,7 +10,11 @@ import com.tecsup.smre.result.domain.port.in.ExportarResultadoUseCase;
 import com.tecsup.smre.result.domain.port.in.GetHistorialEntrevistasUseCase;
 import com.tecsup.smre.result.domain.port.in.GetResultadoEntrevistaUseCase;
 import com.tecsup.smre.result.domain.port.out.ResultadoRepositoryPort;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -62,34 +66,105 @@ public class ResultadoService implements
 
     @Override
     public byte[] exportar(Long entrevistaId, Usuario solicitante) {
+        if (solicitante == null || (solicitante.getRol() != Role.ADMIN && solicitante.getRol() != Role.ADMIN_TUTOR)) {
+            throw new UnauthorizedException("No tienes permiso para exportar el resultado de la entrevista");
+        }
         ResultadoResponseDto resultado = getResultado(entrevistaId, solicitante);
 
-        StringBuilder csv = new StringBuilder();
+        try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            Sheet sheet = workbook.createSheet("Entrevista");
 
-        // Encabezados
-        csv.append("Campo,Valor\n");
+            // Estilos
+            Font boldFont = workbook.createFont();
+            boldFont.setBold(true);
 
-        // Datos del alumno
-        csv.append("Nombre,").append(resultado.getAlumnoNombre()).append(" ").append(resultado.getAlumnoApellido()).append("\n");
-        csv.append("ID Alumno,").append(resultado.getAlumnoId()).append("\n");
-        csv.append("Tutor,").append(resultado.getTutorNombre()).append("\n");
-        csv.append("Fecha,").append(resultado.getFecha() != null ? resultado.getFecha().toString() : "").append("\n");
+            CellStyle headerStyle = workbook.createCellStyle();
+            headerStyle.setFont(boldFont);
+            headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            headerStyle.setBorderBottom(BorderStyle.THIN);
+            headerStyle.setBorderTop(BorderStyle.THIN);
+            headerStyle.setBorderLeft(BorderStyle.THIN);
+            headerStyle.setBorderRight(BorderStyle.THIN);
 
-        // Resultado
-        csv.append("Puntaje Total,").append(resultado.getPuntajeTotal()).append("\n");
-        csv.append("Nivel de Riesgo,").append(resultado.getNivelRiesgo()).append("\n");
-        csv.append("Recomendación,\"").append(resultado.getRecomendacion() != null ? resultado.getRecomendacion().replace("\"", "\"\"") : "").append("\"\n");
-        csv.append("Observaciones,\"").append(resultado.getObservaciones() != null ? resultado.getObservaciones().replace("\"", "\"\"") : "").append("\"\n");
+            CellStyle boldLabelStyle = workbook.createCellStyle();
+            boldLabelStyle.setFont(boldFont);
 
-        // Respuestas individuales del formulario (antes se calculaban y se descartaban, nunca se guardaban)
-        if (resultado.getRespuestas() != null) {
-            List<String> respuestas = resultado.getRespuestas();
-            for (int i = 0; i < respuestas.size() && i < PREGUNTAS.length; i++) {
-                csv.append("\"").append(PREGUNTAS[i]).append("\",").append(respuestas.get(i)).append("\n");
+            CellStyle sectionHeaderStyle = workbook.createCellStyle();
+            Font sectionFont = workbook.createFont();
+            sectionFont.setBold(true);
+            sectionFont.setColor(IndexedColors.WHITE.getIndex());
+            sectionHeaderStyle.setFont(sectionFont);
+            sectionHeaderStyle.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
+            sectionHeaderStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+            int rowIndex = 0;
+
+            // Encabezado principal
+            Row titleRow = sheet.createRow(rowIndex++);
+            Cell titleCell = titleRow.createCell(0);
+            titleCell.setCellValue("REPORTE DE ENTREVISTA - SMRE");
+            titleCell.setCellStyle(sectionHeaderStyle);
+            titleRow.createCell(1).setCellStyle(sectionHeaderStyle);
+
+            rowIndex++; // Línea en blanco
+
+            // Encabezados de tabla
+            Row headerRow = sheet.createRow(rowIndex++);
+            Cell h1 = headerRow.createCell(0);
+            h1.setCellValue("Campo");
+            h1.setCellStyle(headerStyle);
+            Cell h2 = headerRow.createCell(1);
+            h2.setCellValue("Valor");
+            h2.setCellStyle(headerStyle);
+
+            // Datos del alumno y entrevista
+            addRow(sheet, rowIndex++, boldLabelStyle, "ID Alumno", resultado.getAlumnoId() != null ? resultado.getAlumnoId().toString() : "");
+            addRow(sheet, rowIndex++, boldLabelStyle, "Nombre del Alumno", resultado.getAlumnoNombre() + " " + resultado.getAlumnoApellido());
+            addRow(sheet, rowIndex++, boldLabelStyle, "Tutor", resultado.getTutorNombre() != null ? resultado.getTutorNombre() : "");
+            addRow(sheet, rowIndex++, boldLabelStyle, "Fecha", resultado.getFecha() != null ? resultado.getFecha().toString() : "");
+            addRow(sheet, rowIndex++, boldLabelStyle, "Puntaje Total", resultado.getPuntajeTotal() != null ? resultado.getPuntajeTotal().toString() : "0");
+            addRow(sheet, rowIndex++, boldLabelStyle, "Nivel de Riesgo", resultado.getNivelRiesgo() != null ? resultado.getNivelRiesgo() : "");
+            addRow(sheet, rowIndex++, boldLabelStyle, "Recomendación", resultado.getRecomendacion() != null ? resultado.getRecomendacion() : "");
+            addRow(sheet, rowIndex++, boldLabelStyle, "Observaciones", resultado.getObservaciones() != null ? resultado.getObservaciones() : "");
+
+            rowIndex++; // Línea en blanco
+
+            // Sección: Respuestas por Criterio
+            Row secRow = sheet.createRow(rowIndex++);
+            Cell secCell1 = secRow.createCell(0);
+            secCell1.setCellValue("Criterio");
+            secCell1.setCellStyle(headerStyle);
+            Cell secCell2 = secRow.createCell(1);
+            secCell2.setCellValue("Nivel Evaluado");
+            secCell2.setCellStyle(headerStyle);
+
+            if (resultado.getRespuestas() != null) {
+                List<String> respuestas = resultado.getRespuestas();
+                for (int i = 0; i < respuestas.size() && i < PREGUNTAS.length; i++) {
+                    Row r = sheet.createRow(rowIndex++);
+                    r.createCell(0).setCellValue(PREGUNTAS[i]);
+                    r.createCell(1).setCellValue(respuestas.get(i));
+                }
             }
-        }
 
-        return csv.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            sheet.autoSizeColumn(0);
+            sheet.autoSizeColumn(1);
+
+            workbook.write(out);
+            return out.toByteArray();
+        } catch (IOException e) {
+            throw new RuntimeException("Error al generar el archivo Excel", e);
+        }
+    }
+
+    private void addRow(Sheet sheet, int rowIndex, CellStyle labelStyle, String label, String value) {
+        Row row = sheet.createRow(rowIndex);
+        Cell labelCell = row.createCell(0);
+        labelCell.setCellValue(label);
+        labelCell.setCellStyle(labelStyle);
+        Cell valueCell = row.createCell(1);
+        valueCell.setCellValue(value);
     }
 
     private void validarAcceso(Entrevista entrevista, Usuario solicitante) {

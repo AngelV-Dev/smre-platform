@@ -3,9 +3,13 @@ package com.tecsup.smre.interview.infrastructure.adapter.in;
 import com.tecsup.smre.common.dto.ApiResponse;
 import com.tecsup.smre.interview.application.dto.AlumnoRiesgoDto;
 import com.tecsup.smre.interview.application.dto.EntrevistaResponseDto;
+import com.tecsup.smre.interview.application.dto.EstadisticasTutorResponse;
 import com.tecsup.smre.interview.application.dto.GuardarEntrevistaDto;
+import com.tecsup.smre.interview.application.dto.HistorialGrupoDto;
 import com.tecsup.smre.interview.application.port.in.GetAlumnosTutorUseCase;
 import com.tecsup.smre.interview.application.port.in.GetCriteriosUseCase;
+import com.tecsup.smre.interview.application.port.in.GetEstadisticasTutorUseCase;
+import com.tecsup.smre.interview.application.port.in.GetHistorialGruposTutorUseCase;
 import com.tecsup.smre.interview.application.port.in.GuardarEntrevistaUseCase;
 import com.tecsup.smre.interview.application.port.in.IniciarEntrevistaUseCase;
 import com.tecsup.smre.student.domain.model.Alumno;
@@ -25,21 +29,43 @@ public class EntrevistaController {
     private final IniciarEntrevistaUseCase iniciarEntrevistaUseCase;
     private final GuardarEntrevistaUseCase guardarEntrevistaUseCase;
     private final GetCriteriosUseCase getCriteriosUseCase;
+    private final GetHistorialGruposTutorUseCase getHistorialGruposTutorUseCase;
+    private final GetEstadisticasTutorUseCase getEstadisticasTutorUseCase;
 
     public EntrevistaController(GetAlumnosTutorUseCase getAlumnosTutorUseCase,
                                 IniciarEntrevistaUseCase iniciarEntrevistaUseCase,
                                 GuardarEntrevistaUseCase guardarEntrevistaUseCase,
-                                GetCriteriosUseCase getCriteriosUseCase) {
+                                GetCriteriosUseCase getCriteriosUseCase,
+                                GetHistorialGruposTutorUseCase getHistorialGruposTutorUseCase,
+                                GetEstadisticasTutorUseCase getEstadisticasTutorUseCase) {
         this.getAlumnosTutorUseCase = getAlumnosTutorUseCase;
         this.iniciarEntrevistaUseCase = iniciarEntrevistaUseCase;
         this.guardarEntrevistaUseCase = guardarEntrevistaUseCase;
         this.getCriteriosUseCase = getCriteriosUseCase;
+        this.getHistorialGruposTutorUseCase = getHistorialGruposTutorUseCase;
+        this.getEstadisticasTutorUseCase = getEstadisticasTutorUseCase;
     }
 
     @GetMapping("/tutor/alumnos")
     public ResponseEntity<ApiResponse<List<AlumnoRiesgoDto>>> getAlumnosTutor() {
         List<AlumnoRiesgoDto> alumnos = getAlumnosTutorUseCase.getAlumnosTutor();
         return ResponseEntity.ok(ApiResponse.success(alumnos, "Alumnos obtenidos exitosamente"));
+    }
+
+    @GetMapping("/tutor/historial-grupos")
+    @PreAuthorize("hasAnyRole('TUTOR', 'ADMIN_TUTOR')")
+    public ResponseEntity<ApiResponse<List<HistorialGrupoDto>>> getHistorialGrupos(
+            @RequestParam(required = false) String ciclo,
+            @RequestParam(required = false) String periodo) {
+        List<HistorialGrupoDto> historial = getHistorialGruposTutorUseCase.getHistorialGruposTutor(ciclo, periodo);
+        return ResponseEntity.ok(ApiResponse.success(historial, "Historial de grupos obtenido exitosamente"));
+    }
+
+    @GetMapping("/tutor/estadisticas")
+    @PreAuthorize("hasAnyRole('TUTOR', 'ADMIN_TUTOR')")
+    public ResponseEntity<ApiResponse<EstadisticasTutorResponse>> getEstadisticasTutor() {
+        EstadisticasTutorResponse stats = getEstadisticasTutorUseCase.getEstadisticasTutor();
+        return ResponseEntity.ok(ApiResponse.success(stats, "Estadísticas del tutor obtenidas exitosamente"));
     }
 
     @GetMapping("/entrevistas/nueva/{alumnoId}")

@@ -52,17 +52,17 @@ public class ResultadoController {
     }
 
     @GetMapping("/api/entrevistas/{id}/exportar")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TUTOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMIN_TUTOR')")
     public ResponseEntity<byte[]> exportar(
             @PathVariable Long id,
             @AuthenticationPrincipal UserPrincipal principal) {
         byte[] csv = exportarResultadoUseCase.exportar(id, principal.getUsuario());
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType("text/csv;charset=UTF-8"));
+        headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
         headers.setContentDisposition(
             ContentDisposition.attachment()
-                .filename("resultado_entrevista_" + id + ".csv")
+                .filename("resultado_entrevista_" + id + ".xlsx")
                 .build()
         );
 

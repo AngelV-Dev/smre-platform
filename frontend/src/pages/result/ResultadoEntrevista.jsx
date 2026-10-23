@@ -34,19 +34,19 @@ export default function ResultadoEntrevista() {
       .finally(() => setCargando(false));
   }, [id]);
 
-  const handleDescargarCSV = async () => {
+  const handleDescargarExcel = async () => {
     setDescargando(true);
     try {
       const res = await api.get(`/api/entrevistas/${id}/exportar`, { responseType: "blob" });
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `resultado_entrevista_${id}.csv`);
+      link.setAttribute("download", `resultado_entrevista_${id}.xlsx`);
       document.body.appendChild(link);
       link.click();
       link.remove();
     } catch {
-      alert("No se pudo descargar el CSV.");
+      alert("No se pudo descargar el Excel.");
     } finally {
       setDescargando(false);
     }
@@ -156,11 +156,11 @@ export default function ResultadoEntrevista() {
           </button>
           {isAdmin ? (
             <button
-              onClick={handleDescargarCSV}
+              onClick={handleDescargarExcel}
               disabled={descargando}
               style={{ backgroundColor: "var(--color-success)", color: "white", padding: "10px 20px", borderRadius: "8px", fontSize: "13px", fontWeight: "600", opacity: descargando ? 0.7 : 1 }}
             >
-              {descargando ? "Descargando..." : "CSV del Alumno"}
+              {descargando ? "Descargando..." : "Excel de la Entrevista"}
             </button>
           ) : (
             <button
