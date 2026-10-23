@@ -7,6 +7,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "tutores")
 @Data
@@ -40,4 +43,13 @@ public class TutorEntity {
 
     @Column(nullable = false)
     private boolean activo;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "tutor_carreras", joinColumns = @JoinColumn(name = "tutor_id"))
+    @Column(name = "carrera", nullable = false)
+    @Builder.Default
+    private List<String> carreras = new ArrayList<>();
+
+    @Column(nullable = false)
+    private boolean carrerasConfiguradas;
 }

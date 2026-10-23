@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -17,4 +19,6 @@ public class TutorResponse {
     private String telefono;
     private String rol;
     private boolean activo;
+    private List<String> carreras;
+    private boolean carrerasConfiguradas;
 }

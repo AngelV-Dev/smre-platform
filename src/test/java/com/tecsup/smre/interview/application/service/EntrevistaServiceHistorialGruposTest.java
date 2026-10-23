@@ -13,6 +13,7 @@ import com.tecsup.smre.interview.domain.model.NivelRiesgo;
 import com.tecsup.smre.student.domain.model.Alumno;
 import com.tecsup.smre.student.domain.port.out.StudentRepositoryPort;
 import com.tecsup.smre.user.domain.port.out.TutorRepositoryPort;
+import com.tecsup.smre.user.domain.model.Tutor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.Authentication;
@@ -144,6 +145,59 @@ class EntrevistaServiceHistorialGruposTest {
 
         assertEquals(1, historial.size());
         assertEquals(1L, historial.get(0).getAsignacionId());
+    }
+
+    @Test
+    void listaAlumnosRespetaLasCarrerasConfiguradasDelTutor() {
+        when(tutorRepo.findAll()).thenReturn(List.of(Tutor.builder()
+                .id(4L)
+                .email("tutor@tecsup.edu.pe")
+                .carreras(List.of("Software"))
+                .carrerasConfiguradas(true)
+                .build()));
+        when(assignmentRepo.findAll()).thenReturn(Collections.emptyList());
+        when(studentRepo.findAll()).thenReturn(List.of(
+                Alumno.builder().id(101L).carrera("Software").build(),
+                Alumno.builder().id(102L).carrera("Diseño").build()
+        ));
+        when(entrevistaRepo.findByAlumnoId(anyString())).thenReturn(Collections.emptyList());
+
+        List<Long> ids = service.getAlumnosTutor().stream()
+                .map(alumno -> alumno.getId())
+                .toList();
+
+        assertEquals(List.of(101L), ids);
+    }
+
+    @Test
+    void quitarTodasLasCarrerasOcultaAlumnosPeroConservaHistorialDeGrupo() {
+        Assignment assignment = Assignment.builder()
+                .id(5L)
+                .tutorId(3L)
+                .periodo("2025-2")
+                .especialidad("Software")
+                .ciclo("III")
+                .grupo("A")
+                .build();
+        Alumno alumno = Alumno.builder()
+                .id(101L)
+                .semestre("2025-2")
+                .carrera("Software")
+                .grupo("A")
+                .build();
+
+        when(tutorRepo.findAll()).thenReturn(List.of(Tutor.builder()
+                .id(4L)
+                .email("tutor@tecsup.edu.pe")
+                .carreras(Collections.emptyList())
+                .carrerasConfiguradas(true)
+                .build()));
+        when(assignmentRepo.findAll()).thenReturn(List.of(assignment));
+        when(studentRepo.findAll()).thenReturn(List.of(alumno));
+        when(entrevistaRepo.findByAlumnoId("101")).thenReturn(Collections.emptyList());
+
+        assertTrue(service.getAlumnosTutor().isEmpty());
+        assertEquals(1, service.getHistorialGruposTutor(null, null).size());
     }
 
     @Test

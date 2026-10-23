@@ -2,6 +2,8 @@ package com.tecsup.smre.user.infrastructure.adapter.out.persistence;
 
 import com.tecsup.smre.user.domain.model.Tutor;
 
+import java.util.ArrayList;
+
 public class TutorMapper {
 
     public static Tutor toDomain(TutorEntity entity) {
@@ -14,6 +16,8 @@ public class TutorMapper {
                 .telefono(entity.getTelefono())
                 .rol(entity.getRol())
                 .activo(entity.isActivo())
+                .carreras(entity.getCarreras() == null ? new ArrayList<>() : entity.getCarreras())
+                .carrerasConfiguradas(entity.isCarrerasConfiguradas())
                 .build();
     }
 
@@ -27,6 +31,8 @@ public class TutorMapper {
                 .telefono(tutor.getTelefono())
                 .rol(tutor.getRol())
                 .activo(tutor.isActivo())
+                .carreras(tutor.getCarreras() == null ? new ArrayList<>() : tutor.getCarreras())
+                .carrerasConfiguradas(tutor.isCarrerasConfiguradas())
                 .build();
     }
 }

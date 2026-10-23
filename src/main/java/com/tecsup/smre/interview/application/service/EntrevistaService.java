@@ -23,6 +23,7 @@ import com.tecsup.smre.student.domain.model.Alumno;
 import com.tecsup.smre.student.domain.port.out.StudentRepositoryPort;
 import com.tecsup.smre.user.domain.model.Tutor;
 import com.tecsup.smre.user.domain.port.out.TutorRepositoryPort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -94,16 +96,29 @@ public class EntrevistaService implements GetAlumnosTutorUseCase, IniciarEntrevi
      * o por coincidencia de periodo/semestre, carrera y grupo con sus asignaciones).
      */
     private List<Alumno> filtrarAlumnosTutor(List<Assignment> assignments, Long usuarioId, Long entityId) {
+        Tutor tutor = tutorRepositoryPort.findAll().stream()
+                .filter(candidate -> candidate.getEmail() != null
+                        && candidate.getEmail().equalsIgnoreCase(getTutorEmailAutenticado()))
+                .findFirst()
+                .orElse(null);
+
         return studentRepositoryPort.findAll().stream()
-                .filter(alumno ->
+                .filter(alumno -> {
+                    if (tutor != null && tutor.isCarrerasConfiguradas()) {
+                        List<String> carreras = tutor.getCarreras() == null ? List.of() : tutor.getCarreras();
+                        return alumno.getCarrera() != null && carreras.stream()
+                                .filter(Objects::nonNull)
+                                .anyMatch(carrera -> carrera.equalsIgnoreCase(alumno.getCarrera()));
+                    }
+                    return
                         (alumno.getTutorId() != null &&
                                 (alumno.getTutorId().equals(usuarioId) || (entityId != null && alumno.getTutorId().equals(entityId))))
                         || assignments.stream().anyMatch(asg ->
                                 (alumno.getSemestre() != null && alumno.getSemestre().equalsIgnoreCase(asg.getPeriodo())) &&
                                 (alumno.getCarrera() != null && alumno.getCarrera().equalsIgnoreCase(asg.getEspecialidad())) &&
                                 (alumno.getGrupo() != null && alumno.getGrupo().equalsIgnoreCase(asg.getGrupo()))
-                        )
-                )
+                        );
+                })
                 .collect(Collectors.toList());
     }
 
@@ -304,18 +319,18 @@ public class EntrevistaService implements GetAlumnosTutorUseCase, IniciarEntrevi
 
     @Override
     public Alumno iniciarEntrevista(Long alumnoId) {
-        return studentRepositoryPort.findAll().stream()
+        return obtenerAlumnosTutorAutenticado().stream()
                 .filter(a -> a.getId().equals(alumnoId))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Alumno no encontrado con el ID: " + alumnoId));
+                .orElseThrow(() -> new AccessDeniedException("No tienes acceso a este alumno"));
     }
 
     @Override
     public EntrevistaResponseDto guardarEntrevista(GuardarEntrevistaDto dto) {
-        Alumno alumno = studentRepositoryPort.findAll().stream()
+        Alumno alumno = obtenerAlumnosTutorAutenticado().stream()
                 .filter(a -> a.getId().equals(dto.getAlumnoId()))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Alumno no encontrado con el ID: " + dto.getAlumnoId()));
+                .orElseThrow(() -> new AccessDeniedException("No tienes acceso a este alumno"));
 
         if (dto.getEdad() != null) {
             alumno.setEdad(dto.getEdad());
@@ -392,5 +407,12 @@ public class EntrevistaService implements GetAlumnosTutorUseCase, IniciarEntrevi
             case "6", "VI" -> "6";
             default -> null;
         };
+    }
+
+    private List<Alumno> obtenerAlumnosTutorAutenticado() {
+        Usuario usuario = getTutorAutenticado();
+        Long entityId = obtenerTutorEntityId(usuario.getEmail());
+        List<Assignment> assignments = obtenerAsignacionesTutor(usuario.getId(), entityId);
+        return filtrarAlumnosTutor(assignments, usuario.getId(), entityId);
     }
 }

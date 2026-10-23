@@ -17,7 +17,11 @@ import com.tecsup.smre.auth.domain.service.RoleAssignmentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @Slf4j
 public class TutorService implements TutorUseCase {
@@ -92,6 +96,11 @@ public class TutorService implements TutorUseCase {
 
         if (request.getPassword() != null && !request.getPassword().isBlank()) {
             tutor.setPassword(passwordEncoderPort.encode(request.getPassword()));
+        }
+
+        if (request.getCarreras() != null) {
+            tutor.setCarreras(normalizarCarreras(request.getCarreras()));
+            tutor.setCarrerasConfiguradas(true);
         }
 
         return toResponse(tutorRepositoryPort.save(tutor));
@@ -171,6 +180,20 @@ public class TutorService implements TutorUseCase {
                 .telefono(tutor.getTelefono())
                 .rol(tutor.getRol().name())
                 .activo(tutor.isActivo())
+                .carreras(tutor.getCarreras() == null ? List.of() : List.copyOf(tutor.getCarreras()))
+                .carrerasConfiguradas(tutor.isCarrerasConfiguradas())
                 .build();
+    }
+
+    private List<String> normalizarCarreras(List<String> carreras) {
+        Map<String, String> carrerasUnicas = new LinkedHashMap<>();
+        for (String carrera : carreras) {
+            if (carrera == null || carrera.isBlank()) {
+                continue;
+            }
+            String nombre = carrera.trim();
+            carrerasUnicas.putIfAbsent(nombre.toLowerCase(Locale.ROOT), nombre);
+        }
+        return new ArrayList<>(carrerasUnicas.values());
     }
 }

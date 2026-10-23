@@ -6,33 +6,71 @@ export default function EditarTutor() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [form, setForm] = useState({
-    nombre: '', apellido: '', telefono: '', email: '', password: ''
+    nombre: '', apellido: '', telefono: '', email: '', password: '', carreras: []
   })
+  const [carrerasDisponibles, setCarrerasDisponibles] = useState([])
+  const [cargandoCarreras, setCargandoCarreras] = useState(true)
+  const [errorCarreras, setErrorCarreras] = useState('')
+  const [carrerasModificadas, setCarrerasModificadas] = useState(false)
   const [mensaje, setMensaje] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    const cargar = async () => {
-      try {
-        const res = await api.get(`/api/v1/admin/tutores/${id}`)
+    let activo = true
+
+    api.get(`/api/v1/admin/tutores/${id}`)
+      .then(res => {
+        if (!activo) return
         const t = res.data.data
         setForm({
           nombre: t.nombre,
           apellido: t.apellido,
           telefono: t.telefono,
           email: t.email,
-          password: ''
+          password: '',
+          carreras: t.carreras || []
         })
-      } catch (err) {
-        setError('No se pudo cargar el tutor')
-      }
+      })
+      .catch(() => {
+        if (activo) setError('No se pudo cargar el tutor')
+      })
+
+    api.get('/api/v1/students')
+      .then(res => {
+        if (!Array.isArray(res.data?.data)) {
+          throw new Error('Respuesta inválida al cargar alumnos')
+        }
+        const alumnos = res.data.data
+        const carreras = [...new Set(
+          alumnos.map(alumno => alumno.carrera?.trim()).filter(Boolean)
+        )].sort((a, b) => a.localeCompare(b))
+        if (activo) setCarrerasDisponibles(carreras)
+      })
+      .catch(() => {
+        if (activo) setErrorCarreras('No se pudieron cargar las carreras disponibles.')
+      })
+      .finally(() => {
+        if (activo) setCargandoCarreras(false)
+      })
+
+    return () => {
+      activo = false
     }
-    cargar()
   }, [id])
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
+  }
+
+  const cambiarCarrera = (carrera) => {
+    setCarrerasModificadas(true)
+    setForm(current => ({
+      ...current,
+      carreras: current.carreras.includes(carrera)
+        ? current.carreras.filter(actual => actual !== carrera)
+        : [...current.carreras, carrera]
+    }))
   }
 
   const handleSubmit = async (e) => {
@@ -41,7 +79,11 @@ export default function EditarTutor() {
     setMensaje('')
     try {
       setLoading(true)
-      await api.put(`/api/v1/admin/tutores/${id}`, form)
+      const request = { ...form }
+      if (!carrerasModificadas) {
+        delete request.carreras
+      }
+      await api.put(`/api/v1/admin/tutores/${id}`, request)
       setMensaje('Tutor actualizado correctamente')
     } catch (err) {
       setError(err.response?.data?.message || 'Error al actualizar tutor')
@@ -116,6 +158,33 @@ export default function EditarTutor() {
             className="smre-input" 
           />
         </div>
+
+        <fieldset style={{ border: '1px solid #d1d5db', borderRadius: '8px', padding: '14px' }}>
+          <legend style={{ padding: '0 6px', fontWeight: '700', fontSize: '13px' }}>Carreras asignadas</legend>
+          <p style={{ margin: '0 0 10px', fontSize: '12px', color: '#6b7280' }}>
+            El tutor verá alumnos de las carreras seleccionadas. Sus asignaciones e entrevistas de ciclos anteriores se conservan.
+          </p>
+          {cargandoCarreras ? (
+            <p style={{ margin: 0, fontSize: '13px', color: '#6b7280' }}>Cargando carreras...</p>
+          ) : errorCarreras ? (
+            <p className="smre-alert-danger">{errorCarreras}</p>
+          ) : carrerasDisponibles.length === 0 && form.carreras.length === 0 ? (
+            <p style={{ margin: 0, fontSize: '13px', color: '#6b7280' }}>No hay carreras registradas en los alumnos.</p>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '8px' }}>
+              {[...new Set([...carrerasDisponibles, ...form.carreras])].map(carrera => (
+                <label key={carrera} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
+                  <input
+                    type="checkbox"
+                    checked={form.carreras.includes(carrera)}
+                    onChange={() => cambiarCarrera(carrera)}
+                  />
+                  {carrera}
+                </label>
+              ))}
+            </div>
+          )}
+        </fieldset>
 
         {mensaje && <p className="smre-alert-success">{mensaje}</p>}
         {error && <p className="smre-alert-danger">{error}</p>}

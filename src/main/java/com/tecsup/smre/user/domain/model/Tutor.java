@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -19,4 +22,8 @@ public class Tutor {
     private String telefono;
     private Role rol;
     private boolean activo;
+
+    @Builder.Default
+    private List<String> carreras = new ArrayList<>();
+    private boolean carrerasConfiguradas;
 }
