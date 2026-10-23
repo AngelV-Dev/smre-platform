@@ -6,10 +6,12 @@ import com.tecsup.smre.auth.domain.model.Usuario;
 import com.tecsup.smre.auth.domain.port.out.UsuarioRepositoryPort;
 import com.tecsup.smre.interview.application.dto.AlumnoRiesgoDto;
 import com.tecsup.smre.interview.application.dto.EntrevistaResponseDto;
+import com.tecsup.smre.interview.application.dto.EstadisticasTutorResponse;
 import com.tecsup.smre.interview.application.dto.GuardarEntrevistaDto;
 import com.tecsup.smre.interview.application.dto.HistorialGrupoDto;
 import com.tecsup.smre.interview.application.port.in.GetAlumnosTutorUseCase;
 import com.tecsup.smre.interview.application.port.in.GetCriteriosUseCase;
+import com.tecsup.smre.interview.application.port.in.GetEstadisticasTutorUseCase;
 import com.tecsup.smre.interview.application.port.in.GetHistorialGruposTutorUseCase;
 import com.tecsup.smre.interview.application.port.in.GuardarEntrevistaUseCase;
 import com.tecsup.smre.interview.application.port.in.IniciarEntrevistaUseCase;
@@ -25,12 +27,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class EntrevistaService implements GetAlumnosTutorUseCase, IniciarEntrevistaUseCase, GuardarEntrevistaUseCase, GetCriteriosUseCase, GetHistorialGruposTutorUseCase {
+public class EntrevistaService implements GetAlumnosTutorUseCase, IniciarEntrevistaUseCase, GuardarEntrevistaUseCase, GetCriteriosUseCase, GetHistorialGruposTutorUseCase, GetEstadisticasTutorUseCase {
 
     private final EntrevistaRepositoryPort entrevistaRepositoryPort;
     private final StudentRepositoryPort studentRepositoryPort;
@@ -114,8 +118,13 @@ public class EntrevistaService implements GetAlumnosTutorUseCase, IniciarEntrevi
         List<Alumno> alumnos = filtrarAlumnosTutor(assignments, usuarioId, entityId);
 
         return alumnos.stream().map(alumno -> {
-            List<Entrevista> entrevistas = entrevistaRepositoryPort.findByAlumnoId(alumno.getId().toString());
-            NivelRiesgo riesgo = entrevistas.isEmpty() ? null : entrevistas.get(entrevistas.size() - 1).getNivelRiesgo();
+            List<Entrevista> entrevistas = new java.util.ArrayList<>(entrevistaRepositoryPort.findByAlumnoId(alumno.getId().toString()));
+            NivelRiesgo riesgo = null;
+            if (entrevistas != null && !entrevistas.isEmpty()) {
+                // Si un alumno tiene varias entrevistas, se toma estrictamente la más reciente
+                entrevistas.sort(Comparator.comparing(Entrevista::getFecha, Comparator.nullsLast(Comparator.naturalOrder())));
+                riesgo = entrevistas.get(entrevistas.size() - 1).getNivelRiesgo();
+            }
             return AlumnoRiesgoDto.builder()
                     .id(alumno.getId())
                     .codigo(alumno.getCodigo())
@@ -170,7 +179,7 @@ public class EntrevistaService implements GetAlumnosTutorUseCase, IniciarEntrevi
             // Definición explícita: "entrevista completada" = alumno del grupo con al menos 1 entrevista registrada
             long entrevistasCompletadas = alumnosGrupo.stream()
                     .filter(al -> {
-                        List<Entrevista> ent = entrevistaRepositoryPort.findByAlumnoId(al.getId().toString());
+                        List<Entrevista> ent = new java.util.ArrayList<>(entrevistaRepositoryPort.findByAlumnoId(al.getId().toString()));
                         return ent != null && !ent.isEmpty();
                     })
                     .count();
@@ -191,6 +200,106 @@ public class EntrevistaService implements GetAlumnosTutorUseCase, IniciarEntrevi
                     .nota(nota)
                     .build();
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public EstadisticasTutorResponse getEstadisticasTutor() {
+        Usuario usuario = getTutorAutenticado();
+        String email = usuario.getEmail();
+        Long entityId = obtenerTutorEntityId(email);
+        Long usuarioId = usuario.getId();
+
+        List<Assignment> assignments = obtenerAsignacionesTutor(usuarioId, entityId);
+        List<Alumno> todosAlumnos = studentRepositoryPort.findAll();
+
+        // Alumnos bajo la tutela del tutor logueado (filtro compartido)
+        List<Alumno> alumnosTutor = filtrarAlumnosTutor(assignments, usuarioId, entityId);
+
+        int totalAlumnos = alumnosTutor.size();
+        int evaluadosCount = 0;
+        int altoCount = 0;
+        int medioCount = 0;
+        int bajoCount = 0;
+
+        for (Alumno al : alumnosTutor) {
+            List<Entrevista> entrevistas = new java.util.ArrayList<>(entrevistaRepositoryPort.findByAlumnoId(al.getId().toString()));
+            if (entrevistas != null && !entrevistas.isEmpty()) {
+                evaluadosCount++;
+                // REGLA CLAVE: Si un alumno tiene varias entrevistas, se usa estrictamente la más reciente
+                entrevistas.sort(Comparator.comparing(Entrevista::getFecha, Comparator.nullsLast(Comparator.naturalOrder())));
+                Entrevista masReciente = entrevistas.get(entrevistas.size() - 1);
+                NivelRiesgo riesgo = masReciente.getNivelRiesgo();
+
+                if (riesgo == NivelRiesgo.ALTO) {
+                    altoCount++;
+                } else if (riesgo == NivelRiesgo.MEDIO) {
+                    medioCount++;
+                } else if (riesgo == NivelRiesgo.BAJO) {
+                    bajoCount++;
+                }
+            }
+        }
+
+        int pendientesCount = totalAlumnos - evaluadosCount;
+
+        // Desglose por grupo
+        List<EstadisticasTutorResponse.GrupoEstadisticaDto> gruposDto = new ArrayList<>();
+
+        for (Assignment asg : assignments) {
+            List<Alumno> alumnosGrupo = todosAlumnos.stream()
+                    .filter(al -> (al.getSemestre() != null && al.getSemestre().equalsIgnoreCase(asg.getPeriodo())) &&
+                                  (al.getCarrera() != null && al.getCarrera().equalsIgnoreCase(asg.getEspecialidad())) &&
+                                  (al.getGrupo() != null && al.getGrupo().equalsIgnoreCase(asg.getGrupo())))
+                    .collect(Collectors.toList());
+
+            int totalGrupo = alumnosGrupo.size();
+            int evalGrupo = 0;
+            int altoGrupo = 0;
+            int medioGrupo = 0;
+            int bajoGrupo = 0;
+
+            for (Alumno al : alumnosGrupo) {
+                List<Entrevista> ent = new java.util.ArrayList<>(entrevistaRepositoryPort.findByAlumnoId(al.getId().toString()));
+                if (ent != null && !ent.isEmpty()) {
+                    evalGrupo++;
+                    ent.sort(Comparator.comparing(Entrevista::getFecha, Comparator.nullsLast(Comparator.naturalOrder())));
+                    Entrevista ult = ent.get(ent.size() - 1);
+                    if (ult.getNivelRiesgo() == NivelRiesgo.ALTO) altoGrupo++;
+                    else if (ult.getNivelRiesgo() == NivelRiesgo.MEDIO) medioGrupo++;
+                    else if (ult.getNivelRiesgo() == NivelRiesgo.BAJO) bajoGrupo++;
+                }
+            }
+
+            String nota = totalGrupo == 0
+                    ? "Sin alumnos activos registrados actualmente para este periodo/grupo"
+                    : "Conteos calculados en base a alumnos activos en la base de datos";
+
+            gruposDto.add(EstadisticasTutorResponse.GrupoEstadisticaDto.builder()
+                    .asignacionId(asg.getId())
+                    .periodo(asg.getPeriodo())
+                    .ciclo(asg.getCiclo())
+                    .especialidad(asg.getEspecialidad())
+                    .grupo(asg.getGrupo())
+                    .secciones(asg.getSecciones())
+                    .totalAlumnos(totalGrupo)
+                    .evaluadosCount(evalGrupo)
+                    .pendientesCount(totalGrupo - evalGrupo)
+                    .altoRiesgoCount(altoGrupo)
+                    .medioRiesgoCount(medioGrupo)
+                    .bajoRiesgoCount(bajoGrupo)
+                    .nota(nota)
+                    .build());
+        }
+
+        return EstadisticasTutorResponse.builder()
+                .totalAlumnos(totalAlumnos)
+                .evaluadosCount(evaluadosCount)
+                .pendientesCount(pendientesCount)
+                .altoRiesgoCount(altoCount)
+                .medioRiesgoCount(medioCount)
+                .bajoRiesgoCount(bajoCount)
+                .grupos(gruposDto)
+                .build();
     }
 
     @Override

@@ -5,9 +5,11 @@ import com.tecsup.smre.assignment.domain.port.out.AssignmentRepositoryPort;
 import com.tecsup.smre.auth.domain.model.Role;
 import com.tecsup.smre.auth.domain.model.Usuario;
 import com.tecsup.smre.auth.domain.port.out.UsuarioRepositoryPort;
+import com.tecsup.smre.interview.application.dto.EstadisticasTutorResponse;
 import com.tecsup.smre.interview.application.dto.HistorialGrupoDto;
 import com.tecsup.smre.interview.application.port.out.EntrevistaRepositoryPort;
 import com.tecsup.smre.interview.domain.model.Entrevista;
+import com.tecsup.smre.interview.domain.model.NivelRiesgo;
 import com.tecsup.smre.student.domain.model.Alumno;
 import com.tecsup.smre.student.domain.port.out.StudentRepositoryPort;
 import com.tecsup.smre.user.domain.port.out.TutorRepositoryPort;
@@ -17,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -43,7 +46,7 @@ class EntrevistaServiceHistorialGruposTest {
 
         service = new EntrevistaService(entrevistaRepo, studentRepo, usuarioRepo, assignmentRepo, tutorRepo);
 
-        // Mock autenticación usando Authentication mockeada para no invocar clases con nombres sensibles
+        // Mock autenticación usando Authentication mockeada para el tutor con ID 3L
         Usuario tutor = Usuario.builder()
                 .id(3L)
                 .email("tutor@tecsup.edu.pe")
@@ -160,5 +163,97 @@ class EntrevistaServiceHistorialGruposTest {
         List<HistorialGrupoDto> filtroPeriodo = service.getHistorialGruposTutor(null, "2025-2");
         assertEquals(1, filtroPeriodo.size());
         assertEquals("2025-2", filtroPeriodo.get(0).getPeriodo());
+    }
+
+    // ==========================================
+    // TESTS TAREA C: ESTADÍSTICAS DEL TUTOR
+    // ==========================================
+
+    @Test
+    void estadisticasCoincidenConHistorialDeGruposYSanitizanMultiplesEntrevistasConLaMasReciente() {
+        Assignment asg1 = Assignment.builder()
+                .id(1L)
+                .tutorId(3L)
+                .periodo("2026-1")
+                .especialidad("Diseño y Desarrollo de Software")
+                .ciclo("IV")
+                .grupo("A")
+                .build();
+
+        when(assignmentRepo.findAll()).thenReturn(List.of(asg1));
+
+        Alumno al1 = Alumno.builder().id(101L).semestre("2026-1").carrera("Diseño y Desarrollo de Software").grupo("A").build();
+        Alumno al2 = Alumno.builder().id(102L).semestre("2026-1").carrera("Diseño y Desarrollo de Software").grupo("A").build();
+
+        when(studentRepo.findAll()).thenReturn(List.of(al1, al2));
+
+        // al1 tiene 2 entrevistas: primero BAJO, luego ALTO más reciente
+        Entrevista eAntigua = Entrevista.builder().id(1L).nivelRiesgo(NivelRiesgo.BAJO).fecha(LocalDateTime.now().minusDays(10)).build();
+        Entrevista eReciente = Entrevista.builder().id(2L).nivelRiesgo(NivelRiesgo.ALTO).fecha(LocalDateTime.now()).build();
+        when(entrevistaRepo.findByAlumnoId("101")).thenReturn(List.of(eAntigua, eReciente));
+
+        // al2 sin entrevistas
+        when(entrevistaRepo.findByAlumnoId("102")).thenReturn(Collections.emptyList());
+
+        // 1. Obtener Estadísticas
+        EstadisticasTutorResponse stats = service.getEstadisticasTutor();
+
+        // 2. Obtener Historial
+        List<HistorialGrupoDto> historial = service.getHistorialGruposTutor(null, null);
+
+        // Verificación 1: Consistencia de números entre estadísticas e historial
+        assertEquals(historial.get(0).getTotalAlumnos(), stats.getTotalAlumnos());
+        assertEquals(historial.get(0).getEntrevistasCompletadas(), stats.getEvaluadosCount());
+        assertEquals(2, stats.getTotalAlumnos());
+        assertEquals(1, stats.getEvaluadosCount());
+        assertEquals(1, stats.getPendientesCount());
+
+        // Verificación 2: Nivel de riesgo usa estrictamente la más reciente (ALTO, no BAJO)
+        assertEquals(1, stats.getAltoRiesgoCount());
+        assertEquals(0, stats.getBajoRiesgoCount());
+        assertEquals(0, stats.getMedioRiesgoCount());
+
+        // Verificación 3: Desglose por grupo
+        assertEquals(1, stats.getGrupos().size());
+        assertEquals(2, stats.getGrupos().get(0).getTotalAlumnos());
+        assertEquals(1, stats.getGrupos().get(0).getEvaluadosCount());
+        assertEquals(1, stats.getGrupos().get(0).getAltoRiesgoCount());
+    }
+
+    @Test
+    void estadisticasAislanCompletamenteDatosDeTutorAjeno() {
+        Assignment asgPropia = Assignment.builder()
+                .id(1L)
+                .tutorId(3L)
+                .periodo("2026-1")
+                .ciclo("IV")
+                .especialidad("Diseño y Desarrollo de Software")
+                .grupo("A")
+                .build();
+
+        Assignment asgAjena = Assignment.builder()
+                .id(2L)
+                .tutorId(99L) // Tutor ajeno
+                .periodo("2026-1")
+                .ciclo("IV")
+                .especialidad("Diseño y Desarrollo de Software")
+                .grupo("B")
+                .build();
+
+        when(assignmentRepo.findAll()).thenReturn(List.of(asgPropia, asgAjena));
+
+        Alumno alPropio = Alumno.builder().id(101L).semestre("2026-1").carrera("Diseño y Desarrollo de Software").grupo("A").build();
+        Alumno alAjeno = Alumno.builder().id(999L).semestre("2026-1").carrera("Diseño y Desarrollo de Software").grupo("B").build();
+
+        when(studentRepo.findAll()).thenReturn(List.of(alPropio, alAjeno));
+        when(entrevistaRepo.findByAlumnoId("101")).thenReturn(Collections.emptyList());
+        when(entrevistaRepo.findByAlumnoId("999")).thenReturn(List.of(new Entrevista()));
+
+        EstadisticasTutorResponse stats = service.getEstadisticasTutor();
+
+        // El tutor 3L solo debe ver a su alumno propio (101), no al alumno del grupo ajeno (999)
+        assertEquals(1, stats.getTotalAlumnos());
+        assertEquals(1, stats.getGrupos().size());
+        assertEquals(1L, stats.getGrupos().get(0).getAsignacionId());
     }
 }
