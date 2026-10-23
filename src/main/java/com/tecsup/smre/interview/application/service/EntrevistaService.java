@@ -153,7 +153,7 @@ public class EntrevistaService implements GetAlumnosTutorUseCase, IniciarEntrevi
         // 2. Aplicar filtros opcionales de ciclo y periodo
         if (ciclo != null && !ciclo.trim().isEmpty()) {
             asignaciones = asignaciones.stream()
-                    .filter(a -> a.getCiclo() != null && a.getCiclo().equalsIgnoreCase(ciclo.trim()))
+                    .filter(a -> coincideCiclo(a.getCiclo(), ciclo))
                     .collect(Collectors.toList());
         }
 
@@ -368,5 +368,29 @@ public class EntrevistaService implements GetAlumnosTutorUseCase, IniciarEntrevi
                 "Pregunta 5", "Trabajo / Economía: ¿Actualmente trabajas o enfrentas dificultades económicas?",
                 "Pregunta 6", "Estrés - estado emocional: ¿Con qué frecuencia sientes que el estrés o la ansiedad afectan tu desempeño?"
         );
+    }
+
+    private boolean coincideCiclo(String cicloAsg, String cicloFiltro) {
+        if (cicloAsg == null || cicloFiltro == null) return false;
+        String asg = cicloAsg.trim();
+        String filtro = cicloFiltro.trim();
+        if (asg.equalsIgnoreCase(filtro)) return true;
+
+        String asgNorm = normalizarCiclo(asg);
+        String filtroNorm = normalizarCiclo(filtro);
+        return asgNorm != null && asgNorm.equals(filtroNorm);
+    }
+
+    private String normalizarCiclo(String ciclo) {
+        if (ciclo == null) return null;
+        return switch (ciclo.trim().toUpperCase()) {
+            case "1", "I" -> "1";
+            case "2", "II" -> "2";
+            case "3", "III" -> "3";
+            case "4", "IV" -> "4";
+            case "5", "V" -> "5";
+            case "6", "VI" -> "6";
+            default -> null;
+        };
     }
 }

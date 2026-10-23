@@ -237,11 +237,9 @@ export default function ListaEntrevistas() {
               <label style={{ display: 'block', fontSize: '11px', fontWeight: '800', color: darkMode ? '#cbd5e1' : '#64748b', textTransform: 'uppercase', marginBottom: '4px' }}>
                 Filtrar por Ciclo:
               </label>
-              <input
-                type="text"
+              <select
                 value={filtroCiclo}
                 onChange={(e) => setFiltroCiclo(e.target.value)}
-                placeholder="Ej: IV"
                 style={{
                   padding: '6px 12px',
                   borderRadius: '6px',
@@ -250,7 +248,15 @@ export default function ListaEntrevistas() {
                   color: darkMode ? '#ffffff' : '#0f172a',
                   fontSize: '13px'
                 }}
-              />
+              >
+                <option value="">Todos los ciclos</option>
+                <option value="1">Ciclo 1 (I)</option>
+                <option value="2">Ciclo 2 (II)</option>
+                <option value="3">Ciclo 3 (III)</option>
+                <option value="4">Ciclo 4 (IV)</option>
+                <option value="5">Ciclo 5 (V)</option>
+                <option value="6">Ciclo 6 (VI)</option>
+              </select>
             </div>
 
             <div>

@@ -256,4 +256,57 @@ class EntrevistaServiceHistorialGruposTest {
         assertEquals(1, stats.getGrupos().size());
         assertEquals(1L, stats.getGrupos().get(0).getAsignacionId());
     }
+
+    @Test
+    void filtroCicloNumeroEncuentraAsignacionConRomanoYConNumero() {
+        Assignment asgRomano = Assignment.builder()
+                .id(1L).tutorId(3L).periodo("2026-1").ciclo("IV").especialidad("Software").grupo("A").build();
+        Assignment asgNumero = Assignment.builder()
+                .id(2L).tutorId(3L).periodo("2026-1").ciclo("4").especialidad("Redes").grupo("B").build();
+        Assignment asgOtro = Assignment.builder()
+                .id(3L).tutorId(3L).periodo("2026-1").ciclo("2").especialidad("Mecatrónica").grupo("C").build();
+
+        when(assignmentRepo.findAll()).thenReturn(List.of(asgRomano, asgNumero, asgOtro));
+        when(studentRepo.findAll()).thenReturn(Collections.emptyList());
+
+        // Filtrar con número "4" debe encontrar tanto "IV" como "4"
+        List<HistorialGrupoDto> res = service.getHistorialGruposTutor("4", null);
+
+        assertEquals(2, res.size());
+        assertTrue(res.stream().anyMatch(g -> g.getCiclo().equals("IV")));
+        assertTrue(res.stream().anyMatch(g -> g.getCiclo().equals("4")));
+    }
+
+    @Test
+    void filtroCicloRomanoEncuentraAsignacionConRomanoYConNumero() {
+        Assignment asgRomano = Assignment.builder()
+                .id(1L).tutorId(3L).periodo("2026-1").ciclo("IV").especialidad("Software").grupo("A").build();
+        Assignment asgNumero = Assignment.builder()
+                .id(2L).tutorId(3L).periodo("2026-1").ciclo("4").especialidad("Redes").grupo("B").build();
+
+        when(assignmentRepo.findAll()).thenReturn(List.of(asgRomano, asgNumero));
+        when(studentRepo.findAll()).thenReturn(Collections.emptyList());
+
+        // Filtrar con romano "IV" debe encontrar tanto "IV" como "4"
+        List<HistorialGrupoDto> res = service.getHistorialGruposTutor("IV", null);
+
+        assertEquals(2, res.size());
+        assertTrue(res.stream().anyMatch(g -> g.getCiclo().equals("IV")));
+        assertTrue(res.stream().anyMatch(g -> g.getCiclo().equals("4")));
+    }
+
+    @Test
+    void filtroCicloInvalidoNoRompeYDevuelveVacio() {
+        Assignment asg1 = Assignment.builder()
+                .id(1L).tutorId(3L).periodo("2026-1").ciclo("IV").especialidad("Software").grupo("A").build();
+
+        when(assignmentRepo.findAll()).thenReturn(List.of(asg1));
+        when(studentRepo.findAll()).thenReturn(Collections.emptyList());
+
+        // Valor inválido "99" o texto raro no debe lanzar excepción y debe devolver lista vacía
+        List<HistorialGrupoDto> res = service.getHistorialGruposTutor("99", null);
+
+        assertNotNull(res);
+        assertTrue(res.isEmpty());
+    }
 }
