@@ -35,6 +35,13 @@ public class AsignacionRepositoryAdapter implements AssignmentRepositoryPort {
     }
 
     @Override
+    public List<Assignment> findByTutorId(Long tutorId) {
+        return jpaRepository.findByTutorId(tutorId).stream()
+                .map(AsignacionMapper::toModel)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<Assignment> findAll() {
         return jpaRepository.findAll().stream()
                 .map(AsignacionMapper::toModel)

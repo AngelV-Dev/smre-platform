@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface AsignacionJpaRepository extends JpaRepository<AsignacionEntity, Long> {
     List<AsignacionEntity> findByPeriodo(String periodo);
+    List<AsignacionEntity> findByTutorId(Long tutorId);
 }

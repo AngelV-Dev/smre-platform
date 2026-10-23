@@ -17,6 +17,12 @@ export default function ListaEntrevistas() {
   const initialTab = queryParams.get('tab') || 'Evaluaciones'
   const [activeTab, setActiveTab] = useState(initialTab)
 
+  // Estados para Tarea B: Historial de Grupos
+  const [historialGrupos, setHistorialGrupos] = useState([])
+  const [loadingHistorial, setLoadingHistorial] = useState(false)
+  const [filtroCiclo, setFiltroCiclo] = useState('')
+  const [filtroPeriodo, setFiltroPeriodo] = useState('')
+
   useEffect(() => {
     const params = new URLSearchParams(location.search)
     const tab = params.get('tab')
@@ -58,10 +64,38 @@ export default function ListaEntrevistas() {
     fetchAlumnos()
   }, [filtroVista, isTutor])
 
+  // Cargar Historial de Grupos cuando se selecciona la pestaña correspondiente
+  useEffect(() => {
+    if (activeTab === 'HistorialGrupos' && isTutor) {
+      cargarHistorialGrupos()
+    }
+  }, [activeTab, filtroCiclo, filtroPeriodo, isTutor])
+
+  const cargarHistorialGrupos = async () => {
+    try {
+      setLoadingHistorial(true)
+      const params = new URLSearchParams()
+      if (filtroCiclo) params.append('ciclo', filtroCiclo)
+      if (filtroPeriodo) params.append('periodo', filtroPeriodo)
+
+      const res = await api.get(`/api/v1/tutor/historial-grupos?${params.toString()}`)
+      const data = res.data.data || res.data
+      setHistorialGrupos(Array.isArray(data) ? data : [])
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoadingHistorial(false)
+    }
+  }
+
   const totalAlumnos = alumnos.length
   const evaluadosCount = alumnos.filter(a => a.nivelRiesgo).length
   const altoRiesgoCount = alumnos.filter(a => a.nivelRiesgo === 'ALTO').length
   const medioRiesgoCount = alumnos.filter(a => a.nivelRiesgo === 'MEDIO').length
+
+  const tabsList = isTutor
+    ? ['Resumen', 'Asistencias', 'Evaluaciones', 'Detalle', 'HistorialGrupos']
+    : ['Resumen', 'Asistencias', 'Evaluaciones', 'Detalle']
 
   return (
     <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '16px' }}>
@@ -129,10 +163,12 @@ export default function ListaEntrevistas() {
         borderRadius: '10px',
         boxShadow: darkMode ? '0 4px 16px rgba(0,0,0,0.4)' : '0 1px 3px rgba(0,0,0,0.1)',
         border: `1px solid ${darkMode ? '#253652' : '#e2e8f0'}`,
-        marginBottom: '24px'
+        marginBottom: '24px',
+        flexWrap: 'wrap'
       }}>
-        {['Resumen', 'Asistencias', 'Evaluaciones', 'Detalle'].map((tab) => {
+        {tabsList.map((tab) => {
           const isActive = activeTab === tab;
+          const label = tab === 'HistorialGrupos' ? 'Historial de Grupos' : tab;
           return (
             <button
               key={tab}
@@ -152,13 +188,127 @@ export default function ListaEntrevistas() {
                 boxShadow: isActive ? '0 2px 6px rgba(0, 51, 102, 0.25)' : 'none'
               }}
             >
-              {tab}
+              {label}
             </button>
           );
         })}
       </div>
 
-      {loading ? (
+      {/* VISTA HISTORIAL DE GRUPOS (Tarea B) */}
+      {activeTab === 'HistorialGrupos' && isTutor ? (
+        <div>
+          {/* Filtros opcionales por ciclo y periodo */}
+          <div style={{
+            display: 'flex',
+            gap: '16px',
+            marginBottom: '20px',
+            padding: '16px',
+            backgroundColor: darkMode ? '#18233c' : '#ffffff',
+            borderRadius: '12px',
+            border: `1px solid ${darkMode ? '#253652' : '#e2e8f0'}`,
+            alignItems: 'center',
+            flexWrap: 'wrap'
+          }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: '800', color: darkMode ? '#cbd5e1' : '#64748b', textTransform: 'uppercase', marginBottom: '4px' }}>
+                Filtrar por Ciclo:
+              </label>
+              <input
+                type="text"
+                value={filtroCiclo}
+                onChange={(e) => setFiltroCiclo(e.target.value)}
+                placeholder="Ej: IV"
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: '6px',
+                  border: `1px solid ${darkMode ? '#334155' : '#cbd5e1'}`,
+                  backgroundColor: darkMode ? '#0f172a' : '#ffffff',
+                  color: darkMode ? '#ffffff' : '#0f172a',
+                  fontSize: '13px'
+                }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: '800', color: darkMode ? '#cbd5e1' : '#64748b', textTransform: 'uppercase', marginBottom: '4px' }}>
+                Filtrar por Periodo:
+              </label>
+              <input
+                type="text"
+                value={filtroPeriodo}
+                onChange={(e) => setFiltroPeriodo(e.target.value)}
+                placeholder="Ej: 2026-1"
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: '6px',
+                  border: `1px solid ${darkMode ? '#334155' : '#cbd5e1'}`,
+                  backgroundColor: darkMode ? '#0f172a' : '#ffffff',
+                  color: darkMode ? '#ffffff' : '#0f172a',
+                  fontSize: '13px'
+                }}
+              />
+            </div>
+
+            {(filtroCiclo || filtroPeriodo) && (
+              <button
+                onClick={() => { setFiltroCiclo(''); setFiltroPeriodo(''); }}
+                style={{
+                  marginTop: '18px',
+                  padding: '6px 14px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  backgroundColor: '#64748b',
+                  color: '#ffffff',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  cursor: 'pointer'
+                }}
+              >
+                Limpiar Filtros
+              </button>
+            )}
+          </div>
+
+          {loadingHistorial ? (
+            <div style={{ textAlign: 'center', padding: '48px 0', color: darkMode ? '#cbd5e1' : '#64748b', fontWeight: '600' }}>
+              Cargando historial de grupos...
+            </div>
+          ) : historialGrupos.length === 0 ? (
+            <div style={{ textAlign: 'center', color: darkMode ? '#cbd5e1' : '#64748b', padding: '48px', backgroundColor: darkMode ? '#18233c' : '#ffffff', borderRadius: '12px', border: `1px solid ${darkMode ? '#253652' : '#e2e8f0'}` }}>
+              No se encontraron grupos asignados con los filtros indicados.
+            </div>
+          ) : (
+            <div style={{ backgroundColor: darkMode ? '#18233c' : '#ffffff', borderRadius: '12px', border: `1px solid ${darkMode ? '#253652' : '#e2e8f0'}`, boxShadow: darkMode ? '0 4px 16px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.04)', overflow: 'hidden' }}>
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Periodo</th>
+                    <th>Ciclo</th>
+                    <th>Especialidad</th>
+                    <th>Grupo / Sec.</th>
+                    <th style={{ textAlign: 'center' }}>Total Alumnos</th>
+                    <th style={{ textAlign: 'center' }}>Entrevistas Completadas</th>
+                    <th>Estado de Datos</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {historialGrupos.map((item) => (
+                    <tr key={item.asignacionId}>
+                      <td style={{ fontWeight: '700', color: darkMode ? '#ffffff' : '#1e293b' }}>{item.periodo}</td>
+                      <td>{item.ciclo || '—'}</td>
+                      <td>{item.especialidad}</td>
+                      <td>Grupo {item.grupo} {item.secciones ? `(${item.secciones})` : ''}</td>
+                      <td style={{ textAlign: 'center', fontWeight: '700' }}>{item.totalAlumnos}</td>
+                      <td style={{ textAlign: 'center', fontWeight: '700', color: '#16a34a' }}>{item.entrevistasCompletadas}</td>
+                      <td style={{ fontSize: '11px', color: darkMode ? '#94a3b8' : '#64748b' }}>{item.nota}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      ) : loading ? (
         <div style={{ textAlign: 'center', padding: '48px 0', color: darkMode ? '#cbd5e1' : '#64748b', fontWeight: '600' }}>Cargando alumnos...</div>
       ) : alumnos.length === 0 ? (
         <div style={{ textAlign: 'center', color: darkMode ? '#cbd5e1' : '#64748b', padding: '48px', backgroundColor: darkMode ? '#18233c' : '#ffffff', borderRadius: '12px', border: `1px solid ${darkMode ? '#253652' : '#e2e8f0'}` }}>
