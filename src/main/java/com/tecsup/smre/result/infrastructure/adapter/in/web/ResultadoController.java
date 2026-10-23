@@ -59,10 +59,10 @@ public class ResultadoController {
         byte[] csv = exportarResultadoUseCase.exportar(id, principal.getUsuario());
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType("text/csv;charset=UTF-8"));
+        headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
         headers.setContentDisposition(
             ContentDisposition.attachment()
-                .filename("resultado_entrevista_" + id + ".csv")
+                .filename("resultado_entrevista_" + id + ".xlsx")
                 .build()
         );
 

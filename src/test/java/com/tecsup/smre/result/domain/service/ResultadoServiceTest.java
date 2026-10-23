@@ -8,8 +8,12 @@ import com.tecsup.smre.interview.domain.model.Entrevista;
 import com.tecsup.smre.interview.domain.model.NivelRiesgo;
 import com.tecsup.smre.result.application.dto.response.ResultadoResponseDto;
 import com.tecsup.smre.result.domain.port.out.ResultadoRepositoryPort;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +40,7 @@ class ResultadoServiceTest {
                 .recomendacion("Requiere seguimiento cercano")
                 .observaciones("Faltas reiteradas")
                 .fecha(LocalDateTime.now())
+                .respuestas("ALTO,MEDIO,BAJO,ALTO,MEDIO,BAJO")
                 .build();
     }
 
@@ -96,5 +101,32 @@ class ResultadoServiceTest {
         assertEquals(2, historial.size());
         assertEquals("ALTO", historial.get(0).getNivelRiesgo());
         assertEquals("MEDIO", historial.get(1).getNivelRiesgo());
+    }
+
+    @Test
+    void exportarGeneraExcelValidoConDatosYRespuestas() throws Exception {
+        when(repositoryPort.findById(1L)).thenReturn(Optional.of(entrevistaDeEjemplo()));
+
+        Usuario admin = Usuario.builder().id(1L).rol(Role.ADMIN).build();
+
+        byte[] excelBytes = service.exportar(1L, admin);
+
+        assertNotNull(excelBytes);
+        assertTrue(excelBytes.length > 0);
+
+        try (Workbook workbook = new XSSFWorkbook(new ByteArrayInputStream(excelBytes))) {
+            Sheet sheet = workbook.getSheet("Entrevista");
+            assertNotNull(sheet);
+            assertEquals("REPORTE DE ENTREVISTA - SMRE", sheet.getRow(0).getCell(0).getStringCellValue());
+        }
+    }
+
+    @Test
+    void exportarTutorNoAsignadoLanzaUnauthorizedException() {
+        when(repositoryPort.findById(1L)).thenReturn(Optional.of(entrevistaDeEjemplo()));
+
+        Usuario tutorAjeno = Usuario.builder().id(5L).rol(Role.TUTOR).build();
+
+        assertThrows(UnauthorizedException.class, () -> service.exportar(1L, tutorAjeno));
     }
 }
