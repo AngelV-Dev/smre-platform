@@ -66,6 +66,9 @@ public class ResultadoService implements
 
     @Override
     public byte[] exportar(Long entrevistaId, Usuario solicitante) {
+        if (solicitante == null || (solicitante.getRol() != Role.ADMIN && solicitante.getRol() != Role.ADMIN_TUTOR)) {
+            throw new UnauthorizedException("No tienes permiso para exportar el resultado de la entrevista");
+        }
         ResultadoResponseDto resultado = getResultado(entrevistaId, solicitante);
 
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {

@@ -122,11 +122,27 @@ class ResultadoServiceTest {
     }
 
     @Test
-    void exportarTutorNoAsignadoLanzaUnauthorizedException() {
+    void exportarTutorDuenioLanzaUnauthorizedException() {
+        // En entrevistaDeEjemplo el tutorId es '2'
         when(repositoryPort.findById(1L)).thenReturn(Optional.of(entrevistaDeEjemplo()));
 
-        Usuario tutorAjeno = Usuario.builder().id(5L).rol(Role.TUTOR).build();
+        Usuario tutorDuenio = Usuario.builder().id(2L).rol(Role.TUTOR).build();
 
-        assertThrows(UnauthorizedException.class, () -> service.exportar(1L, tutorAjeno));
+        assertThrows(UnauthorizedException.class, () -> service.exportar(1L, tutorDuenio));
+    }
+
+    @Test
+    void exportarAdminTutorPermiteGenerarExcel() throws Exception {
+        when(repositoryPort.findById(1L)).thenReturn(Optional.of(entrevistaDeEjemplo()));
+
+        Usuario adminTutor = Usuario.builder().id(2L).rol(Role.ADMIN_TUTOR).build();
+
+        byte[] excelBytes = service.exportar(1L, adminTutor);
+
+        assertNotNull(excelBytes);
+        assertTrue(excelBytes.length > 0);
+        try (Workbook workbook = new XSSFWorkbook(new ByteArrayInputStream(excelBytes))) {
+            assertNotNull(workbook.getSheet("Entrevista"));
+        }
     }
 }

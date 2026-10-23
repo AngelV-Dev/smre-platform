@@ -52,7 +52,7 @@ public class ResultadoController {
     }
 
     @GetMapping("/api/entrevistas/{id}/exportar")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TUTOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMIN_TUTOR')")
     public ResponseEntity<byte[]> exportar(
             @PathVariable Long id,
             @AuthenticationPrincipal UserPrincipal principal) {
