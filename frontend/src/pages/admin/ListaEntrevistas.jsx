@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import api from '../../api/axiosInstance'
 import { useAuth } from '../../context/AuthContext'
 import { useDarkMode } from '../../context/DarkModeContext'
+import EntrevistasAgrupadas from './components/EntrevistasAgrupadas'
 
 export default function ListaEntrevistas() {
   const [alumnos, setAlumnos] = useState([])
@@ -229,7 +230,8 @@ export default function ListaEntrevistas() {
           )}
 
           {/* VISTA EVALUACIONES */}
-          {activeTab === 'Evaluaciones' && (
+          {activeTab === 'Evaluaciones' && filtroVista === 'todos' && <EntrevistasAgrupadas />}
+          {activeTab === 'Evaluaciones' && filtroVista !== 'todos' && (
             <div style={{ backgroundColor: darkMode ? '#18233c' : '#ffffff', borderRadius: '12px', border: `1px solid ${darkMode ? '#253652' : '#e2e8f0'}`, boxShadow: darkMode ? '0 4px 16px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.04)', overflow: 'hidden', marginBottom: '24px' }}>
               <table className="data-table">
                 <thead>

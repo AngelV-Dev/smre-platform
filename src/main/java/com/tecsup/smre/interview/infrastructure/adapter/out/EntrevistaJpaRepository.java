@@ -9,4 +9,6 @@ import java.util.List;
 public interface EntrevistaJpaRepository extends JpaRepository<EntrevistaEntity, Long> {
     List<EntrevistaEntity> findByAlumnoId(String alumnoId);
     List<EntrevistaEntity> findByAlumnoIdOrderByFechaDesc(String alumnoId);
+    /** Una sola consulta para obtener todas las entrevistas ordenadas (más reciente primero). Evita N+1. */
+    List<EntrevistaEntity> findAllByOrderByFechaDesc();
 }
