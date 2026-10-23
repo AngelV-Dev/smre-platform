@@ -132,6 +132,15 @@ class ResultadoServiceTest {
     }
 
     @Test
+    void exportarTutorNoAsignadoLanzaUnauthorizedException() {
+        when(repositoryPort.findById(1L)).thenReturn(Optional.of(entrevistaDeEjemplo()));
+
+        Usuario tutorAjeno = Usuario.builder().id(5L).rol(Role.TUTOR).build();
+
+        assertThrows(UnauthorizedException.class, () -> service.exportar(1L, tutorAjeno));
+    }
+
+    @Test
     void exportarAdminTutorPermiteGenerarExcel() throws Exception {
         when(repositoryPort.findById(1L)).thenReturn(Optional.of(entrevistaDeEjemplo()));
 
